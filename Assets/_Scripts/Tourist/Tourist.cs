@@ -13,8 +13,6 @@ public class Tourist
     // Szummája a kettőnek - Mood - Maximum: 100 Minimum: 0.01
     public float TotalMood { get; private set; }
     // Látható-e a Viewban
-    public bool IsVisible;
-    // A Túrista pozíciója a pályán
     public Vector3 Position { get; set; }
     // Eltelt idő a WaitingMoodhoz
     public float ElapsedTime { get; set; }
@@ -27,7 +25,6 @@ public class Tourist
         TotalMood = 100;
         WaitingMood = 100;
         TourMood = 100;
-        IsVisible = true;
     }
 
     public void SetState(TouristState newState)
