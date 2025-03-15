@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using System;
 // Model Layer for Tourist 
 public class Tourist
 {
@@ -17,11 +17,11 @@ public class Tourist
     // A Túrista pozíciója a pályán
     public Vector3 Position { get; set; }
     // Eltelt idő a WaitingMoodhoz
-    public float WaitingTime { get; set; };
+    public float ElapsedTime { get; set; }
 
     public Tourist(Vector3 startingPosition)
     {
-        WaitingTime = 0;
+        ElapsedTime = 0;
         Position = startingPosition;
         state = TouristState.IN_QUEUE;
         TotalMood = 100;
@@ -35,7 +35,25 @@ public class Tourist
         state = newState;
     }
 
-
+    // int AnimalsSeen - Egy pozitív szám éppen, hány állatot lát a körzetében
+    public void CalculateMood(int AnimalsSeen)
+    {
+        switch (state)
+        {
+            case TouristState.IN_QUEUE:
+                // Amennyiben sorban áll, egy 100*e^-0,03*ElapsedTime képlettel kiszámoljuk mennyi legyen a Moodja
+                WaitingMood = 100 * Mathf.Exp(-0.03f * ElapsedTime);
+                break;
+            case TouristState.ON_TOUR:
+                // Az éppen saját körzetben látott állatok alapján kiszámított Mood
+                float k = AnimalsSeen > 0 ? AnimalsSeen * 2f : -2f;
+                TourMood = Mathf.Clamp(TourMood + k * ElapsedTime, 0.01f, 100);
+                break;
+            default:
+                break;
+        }
+        TotalMood = (0.3f * WaitingMood) + (0.7f * TourMood);
+    }
 
 }
 
