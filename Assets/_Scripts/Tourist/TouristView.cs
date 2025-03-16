@@ -6,8 +6,8 @@ using UnityEngine.AI;
 public class TouristView : MonoBehaviour
 {
 
-    private Tourist tourist;
-    private NavMeshAgent agent;
+    public Tourist tourist;
+    public NavMeshAgent agent;
     public int AnimalsSeen = 0;
     public void Init(Tourist tourist)
     {
@@ -23,7 +23,14 @@ public class TouristView : MonoBehaviour
         {
             transform.position = agent.transform.position;
             tourist.CalculateMood(AnimalsSeen);
+            Debug.Log(tourist.WaitingMood);
+            Debug.Log(tourist.TotalMood);
         }
+    }
+
+    public TouristState GetState()
+    {
+        return tourist.state;
     }
 
     // Elindítja a NavMesh-t az autóhoz

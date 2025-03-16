@@ -50,6 +50,11 @@ public class Tourist
                 break;
         }
         TotalMood = (0.3f * WaitingMood) + (0.7f * TourMood);
+
+        if (WaitingMood < 15)
+        {
+            state = TouristState.FINISHED;
+        }
     }
 
 }

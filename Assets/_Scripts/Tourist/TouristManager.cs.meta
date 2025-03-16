@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: f5247e09b97cd1f4ba52c103eb785237
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - touristPrefab: {fileID: 2171680306416783369, guid: b6a396a5e1aad754eb47deea865fedd4, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
