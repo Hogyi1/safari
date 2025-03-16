@@ -1,0 +1,108 @@
+﻿using System;
+using System.Collections;
+using UnityEngine;
+
+public class TimeManager : MonoBehaviour
+{
+    // Singleton instance
+    public TimeManager Instance;
+    // A teljes játékban kezdéstől használt idő
+    public GameTime GlobalGameTime;
+    // A játék sebességét befolyásoló változó
+    private float timeMultiplier = 1.0f;
+    // Megállítva?
+    private bool isPaused;
+    // Minden 15. perc eltelése a játékban / másodperc
+    private float secondsPer15GameMinute = 5.0f;
+    // Két random event közti várakozási idő
+    private int randomEventMinDelay = 1, randomEventMaxDelay = 5;
+    public void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+        GlobalGameTime = new GameTime();
+    }
+
+    public void Start()
+    {
+        StartRandomEventLoop(randomEventMinDelay, randomEventMaxDelay);
+        StartCoroutine(UpdateTime());
+    }
+
+    public IEnumerator UpdateTime()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(secondsPer15GameMinute);
+
+            if (!isPaused)
+            {
+                GlobalGameTime.AddMinutes(15);
+                Debug.Log(GlobalGameTime.ToString());
+            }
+        }
+    }
+    public void PauseTime()
+    {
+        Time.timeScale = 0;
+        isPaused = true;
+    }
+
+    public void ResumeTime()
+    {
+        Time.timeScale = timeMultiplier;
+    }
+
+    public void SpeedUpTime(float speed)
+    {
+        timeMultiplier = speed;
+        Time.timeScale = timeMultiplier;
+    }
+
+
+    /*Random Event választása*/
+
+    //Delay a két randomEvent között
+    public void StartRandomEventLoop(int minDelay, int maxDelay)
+    {
+        StartCoroutine(RandomEventCoroutine(minDelay, maxDelay));
+    }
+
+    // Delay két random event kiválasztása között
+    public IEnumerator RandomEventCoroutine(int minDelay, int maxDelay)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(new System.Random().Next(minDelay, maxDelay));
+
+            if (!isPaused) TriggerRandomEvent();
+        }
+    }
+
+    // Kiválaszt egy random eventet, amennyiben nem üres elküldi a RandomEvents observable osztálynak
+    public void TriggerRandomEvent()
+    {
+        RandomEvent choosenRandomEvent = GetRandomEvent();
+        if (choosenRandomEvent != RandomEvent.NONE)
+        {
+            RandomEvents.Instance.NotifyObservers(choosenRandomEvent);
+        }
+    }
+
+    // Mindegyiknek van egy "valószínűsége", a NextDouble 0.0 és 1.0 - között fog választani
+    public RandomEvent GetRandomEvent()
+    {
+        double roll = new System.Random().NextDouble();
+        if (roll < 0.05) return RandomEvent.START_RAID;
+        if (roll < 0.07) return RandomEvent.BREED;
+        if (roll < 0.1) return RandomEvent.REGROW;
+        if (roll < 0.95) return RandomEvent.SPAWN_TOURIST;
+        return RandomEvent.NONE;
+    }
+}

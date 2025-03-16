@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class TouristManager : MonoBehaviour //: IRandomEventObserver
+public class TouristManager : MonoBehaviour, IRandomEventObserver
 {
     // Singleton pattern
     public static TouristManager Instance { get; private set; }
@@ -28,30 +28,33 @@ public class TouristManager : MonoBehaviour //: IRandomEventObserver
         DontDestroyOnLoad(gameObject);
     }
 
-    /* Teszteléshez - lespawnol egy túristát majd elindítja egy autóhoz
+
     public void Start()
     {
+        //RandomEvents.Instance.AddObserver(this);
         SpawnTourist();
         StartCoroutine(tocar());
     }
-
+    /* Teszteléshez - lespawnol egy túristát majd elindítja egy autóhoz */
     private IEnumerator tocar()
     {
         yield return new WaitForSeconds(1);
         activeTourists[0].StartWalkingToCar(new Vector3(2.0f, 0.1f, -1.0f));
     }
-    */
+
 
     public void SpawnTourist()
     {
 
         Tourist newTourist = new Tourist(Entrance);
+        Debug.Log(newTourist.patienceLevel + " Patience Level");
         GameObject newTouristGO = Instantiate(touristPrefab, Entrance, Quaternion.identity);
         TouristView view = newTouristGO.GetComponent<TouristView>();
         view.Init(newTourist);
         activeTourists.Add(view);
+
         // A hely ahova lespawnolja
-        // Entrance += new Vector3(-1.0f, 0.0f, 0.0f);
+        Entrance += new Vector3(-1.0f, 0.0f, 0.0f);
     }
 
     public void RemoveTourist(TouristView tourist)
@@ -82,12 +85,12 @@ public class TouristManager : MonoBehaviour //: IRandomEventObserver
         }
     }
 
-    /*public void OnNotify(RandomEvent event)
+    public void OnNotify(RandomEvent randomEvent)
     {
-        // TODO
-        if (event == RandomEvent.SPAWN_TOURIST) 
+
+        if (randomEvent == RandomEvent.SPAWN_TOURIST)
         {
             SpawnTourist();
         }
-    }*/
+    }
 }

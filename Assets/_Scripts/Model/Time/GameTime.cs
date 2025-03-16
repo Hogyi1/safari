@@ -21,30 +21,33 @@ public class GameTime
     // Ha egy teljesen új időt akarunk létrehozni
     public GameTime() { }
 
+    // Percek hozzáadása
     public void AddMinutes(int min)
     {
         minutes += min;
 
         if (minutes >= 60)
         {
-            minutes = 0;
+            minutes -= 60;
             AddHours(1);
         }
 
     }
 
+    // Órák hozzáadása
     public void AddHours(int h)
     {
         hours += h;
 
         if (hours >= 24)
         {
-            hours = 0;
+            hours -= 24;
             AddDays(1);
         }
 
     }
 
+    // Napok hozzáadása
     public void AddDays(int d)
     {
         totalDays += d;
@@ -53,12 +56,13 @@ public class GameTime
 
         if (days >= 30)
         {
-            days = 0;
+            days -= 30;
             AddMonth(1);
         }
 
     }
 
+    // Hónapok hozzáadása
     public void AddMonth(int m)
     {
         month += m;
@@ -66,12 +70,13 @@ public class GameTime
 
         if (month >= 12)
         {
-            month = 0;
+            month -= 12;
             TimeEvents.Instance.NotifyObservers(TimeEvent.YEAR_PASSED);
         }
 
     }
 
+    // Kiíratás console biztos formában
     public override string ToString()
     {
         return $"{days} | {hours}:{minutes}";

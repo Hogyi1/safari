@@ -16,9 +16,13 @@ public class Tourist
     public Vector3 Position { get; set; }
     // Eltelt idő a WaitingMoodhoz
     public float ElapsedTime { get; set; }
-
+    // A türelmességi szintje
+    public float patienceLevel;
     public Tourist(Vector3 startingPosition)
     {
+        System.Random random = new System.Random();
+
+        patienceLevel = (float)(random.NextDouble() * (-0.03f - 0f)) + 0f;
         ElapsedTime = 0;
         Position = startingPosition;
         state = TouristState.IN_QUEUE;
@@ -39,7 +43,7 @@ public class Tourist
         {
             case TouristState.IN_QUEUE:
                 // Amennyiben sorban áll, egy 100*e^-0,03*ElapsedTime képlettel kiszámoljuk mennyi legyen a Moodja
-                WaitingMood = 100 * Mathf.Exp(-0.03f * ElapsedTime);
+                WaitingMood = 100 * Mathf.Exp(patienceLevel * ElapsedTime);
                 break;
             case TouristState.ON_TOUR:
                 // Az éppen saját körzetben látott állatok alapján kiszámított Mood
@@ -56,6 +60,5 @@ public class Tourist
             state = TouristState.FINISHED;
         }
     }
-
 }
 
