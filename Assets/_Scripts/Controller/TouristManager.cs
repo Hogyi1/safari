@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class TouristManager : MonoBehaviour /*: IRandomEventObserver*/
+public class TouristManager : MonoBehaviour //: IRandomEventObserver
 {
     // Singleton pattern
     public static TouristManager Instance { get; private set; }
@@ -27,6 +28,20 @@ public class TouristManager : MonoBehaviour /*: IRandomEventObserver*/
         DontDestroyOnLoad(gameObject);
     }
 
+    /* Teszteléshez - lespawnol egy túristát majd elindítja egy autóhoz
+    public void Start()
+    {
+        SpawnTourist();
+        StartCoroutine(tocar());
+    }
+
+    private IEnumerator tocar()
+    {
+        yield return new WaitForSeconds(1);
+        activeTourists[0].StartWalkingToCar(new Vector3(2.0f, 0.1f, -1.0f));
+    }
+    */
+
     public void SpawnTourist()
     {
 
@@ -35,7 +50,8 @@ public class TouristManager : MonoBehaviour /*: IRandomEventObserver*/
         TouristView view = newTouristGO.GetComponent<TouristView>();
         view.Init(newTourist);
         activeTourists.Add(view);
-        Entrance += new Vector3(-1.0f, 0.0f, 0.0f);
+        // A hely ahova lespawnolja
+        // Entrance += new Vector3(-1.0f, 0.0f, 0.0f);
     }
 
     public void RemoveTourist(TouristView tourist)
@@ -66,8 +82,12 @@ public class TouristManager : MonoBehaviour /*: IRandomEventObserver*/
         }
     }
 
-    public void OnNotify(/*RandomEvent event*/)
+    /*public void OnNotify(RandomEvent event)
     {
         // TODO
-    }
+        if (event == RandomEvent.SPAWN_TOURIST) 
+        {
+            SpawnTourist();
+        }
+    }*/
 }
