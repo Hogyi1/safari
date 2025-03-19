@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
+
     // Singleton instance
     public TimeManager Instance;
     // A teljes játékban kezdéstől használt idő
@@ -59,9 +60,9 @@ public class TimeManager : MonoBehaviour
         Time.timeScale = timeMultiplier;
     }
 
-    public void SpeedUpTime(float speed)
+    public void SpeedUpTime()
     {
-        timeMultiplier = speed;
+        timeMultiplier = timeMultiplier >= 2f ? 1.0f : timeMultiplier + 0.5f;
         Time.timeScale = timeMultiplier;
     }
 
@@ -95,14 +96,14 @@ public class TimeManager : MonoBehaviour
         }
     }
 
-    // Mindegyiknek van egy "valószínűsége", a NextDouble 0.0 és 1.0 - között fog választani
+    // Mindegyiknek van egy "valószínűsége", a Random 0.0 és 1.0 - között fog választani
     public RandomEvent GetRandomEvent()
     {
-        double roll = new System.Random().NextDouble();
-        if (roll < 0.05) return RandomEvent.START_RAID;
-        if (roll < 0.07) return RandomEvent.BREED;
-        if (roll < 0.1) return RandomEvent.REGROW;
-        if (roll < 0.95) return RandomEvent.SPAWN_TOURIST;
+        float roll = UnityEngine.Random.Range(0f, 1f);
+        if (roll < 0.001f) return RandomEvent.START_RAID;
+        if (roll < 0.01f) return RandomEvent.BREED;
+        if (roll < 0.1f) return RandomEvent.REGROW;
+        if (roll < 0.95f) return RandomEvent.SPAWN_TOURIST;
         return RandomEvent.NONE;
     }
 }
