@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -6,55 +6,39 @@ using UnityEngine.AI;
 public class TouristView : MonoBehaviour
 {
 
-    public Tourist tourist;
+    private Tourist tourist;
     private NavMeshAgent agent;
     private Animator animator;
-    public int AnimalsSeen = 0;
+
+    // Inicializ√°l√°s
     public void Init(Tourist tourist)
     {
         this.tourist = tourist;
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
-
-        transform.position = tourist.Position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (tourist != null)
-        {
-            transform.position = agent.transform.position;
-            tourist.CalculateMood(AnimalsSeen);
 
-            // TesztelÈshez 
-            // Debug.Log(tourist.WaitingMood);
-            // Debug.Log(tourist.TotalMood);
-        }
     }
 
-
-    //Visszaadja a state-jÈt a touristnak
-    public TouristState GetState()
-    {
-        return tourist.state;
-    }
-
-    // ElindÌtja a NavMesh-t az autÛhoz
+    // Elind√≠tja a NavMesh-t az aut√≥hoz
     public void StartWalkingToCar(Vector3 destination)
     {
         if (agent != null && tourist != null)
         {
-            tourist.SetState(TouristState.ON_WALK);
             agent.SetDestination(destination);
             animator.SetBool("isWalking", true);
             StartCoroutine(WaitForArrival());
         }
     }
 
-    // Megv·rja mÌg odaÈr a kocsihoz, majd eltunteti (besz·ll a kocsiba)
+    // Megv√°rja m√≠g oda√©r a kocsihoz, majd eltunteti (besz√°ll a kocsiba)
     private IEnumerator WaitForArrival()
     {
+
         while (agent.pathPending || agent.remainingDistance > 0.5f)
         {
             yield return null;
@@ -65,5 +49,12 @@ public class TouristView : MonoBehaviour
         yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
         tourist.SetState(TouristState.IN_CAR);
         gameObject.SetActive(false);
+    }
+
+    // Elind√≠tja az agentet
+    public void MoveTo(Vector3 Position)
+    {
+        agent.SetDestination(Position);
+        animator.SetBool("isWalking", true);
     }
 }

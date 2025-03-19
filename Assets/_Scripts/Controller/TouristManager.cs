@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,10 +13,21 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
     // Tourist prefabje
     [SerializeField]
     public GameObject touristPrefab;
+
     // Az aktív touristok
-    public List<TouristView> activeTourists = new List<TouristView>();
+    private List<Tourist> activeTourists = new List<Tourist>();
+    private Dictionary<int, TouristView> touristViews = new Dictionary<int, TouristView>();
+
+    // Mindenkinek egy saját ID
+    private static int nextID = 0;
+
     //Hova spawnolja
+    [SerializeField]
     public Vector3 Entrance = new Vector3(7.5f, 0.1f, -3.5f);
+
+    // Az átlag kedv
+    private float OverallMood = 0f;
+
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -31,58 +43,92 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
 
     public void Start()
     {
-        //RandomEvents.Instance.AddObserver(this);
-        SpawnTourist();
-        StartCoroutine(tocar());
-    }
-    /* Teszteléshez - lespawnol egy túristát majd elindítja egy autóhoz */
-    private IEnumerator tocar()
-    {
-        yield return new WaitForSeconds(1);
-        activeTourists[0].StartWalkingToCar(new Vector3(2.0f, 0.1f, -1.0f));
+        RandomEvents.Instance.AddObserver(this);
     }
 
+    public int GenerateID()
+    {
+        nextID++;
+        return nextID;
+    }
 
     public void SpawnTourist()
     {
 
-        Tourist newTourist = new Tourist(Entrance);
-        Debug.Log(newTourist.patienceLevel + " Patience Level");
+        Tourist newTourist = new Tourist(GenerateID());
+        activeTourists.Add(newTourist);
+
         GameObject newTouristGO = Instantiate(touristPrefab, Entrance, Quaternion.identity);
         TouristView view = newTouristGO.GetComponent<TouristView>();
         view.Init(newTourist);
-        activeTourists.Add(view);
+        touristViews[newTourist.GetID()] = view;
+        Debug.Log($"Új turista ID: {newTourist.GetID()}, Patience: {newTourist.patienceLevel}");
+
 
         // A hely ahova lespawnolja
         Entrance += new Vector3(-1.0f, 0.0f, 0.0f);
     }
 
-    public void RemoveTourist(TouristView tourist)
+    public void RemoveTourist(int touristID)
     {
-        activeTourists.Remove(tourist);
-        Destroy(tourist.gameObject);
+        Tourist tourist = activeTourists.Find(t => t.GetID() == touristID);
+        if (tourist != null)
+        {
+            activeTourists.Remove(tourist);
+        }
+
+        if (touristViews.TryGetValue(touristID, out TouristView view))
+        {
+            touristViews.Remove(touristID);
+            Destroy(view.gameObject);
+            Destroy(view);
+        }
     }
 
     public void Update()
     {
-        foreach (var view in activeTourists)
+        var Mood = 0f;
+        var finishedTourists = activeTourists.Where(t => t.GetState() == TouristState.FINISHED).ToList();
+        foreach (var tourist in finishedTourists)
+        {
+            RemoveTourist(tourist.GetID());
+        }
+
+        foreach (var tourist in activeTourists)
         {
             float delta = Time.deltaTime;
-            if (view.GetState() == TouristState.FINISHED)
+            int AnimalsInRange = 0;
+            if (tourist.GetState() == TouristState.IN_QUEUE)
             {
-                RemoveTourist(view);
+                tourist.AddElapsedTime(delta);
+                var carPosition = VehicleManager.Instance.AssignTouristToVehicle(tourist);
+                if (carPosition != null)
+                {
+                    TouristView view = touristViews[tourist.GetID()];
+                    tourist.SetState(TouristState.ON_WALK);
+                    view.StartWalkingToCar((Vector3)carPosition);
+                }
             }
-            else if (view.GetState() == TouristState.IN_QUEUE)
+            else if (tourist.GetState() == TouristState.ON_TOUR)
             {
-                // TODO kocsiba helyezés
-                view.tourist.ElapsedTime += delta;
+                AnimalsInRange = GetAnimalsInRange();
+                tourist.SetElapsedTime(delta);
+            }
 
-            }
-            else if (view.GetState() == TouristState.ON_TOUR)
-            {
-                view.tourist.ElapsedTime = delta;
-            }
+            // Később ide jön az, hogy megnézi mennyi állat van körülötte
+            tourist.CalculateMood(AnimalsInRange);
+
+            Mood += tourist.TotalMood;
         }
+
+        OverallMood = Mood / activeTourists.Count;
+        // Debug.Log(OverallMood);
+    }
+
+    public int GetAnimalsInRange()
+    {
+        // TODO
+        return 0;
     }
 
     public void OnNotify(RandomEvent randomEvent)
