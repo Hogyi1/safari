@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67ef54d2a776a2046a69c531d25dda1b, type: 3}
+  m_Name: VanScriptableObject
+  m_EditorClassIdentifier: 
+  capacity: 6
+  price: 4000
+  speed: 4
+  spacetaken: 2
+  type: 2
+  vehiclePrefab: {fileID: 7545155770517747716, guid: adef5825ee1ee9c4ea4bfcd5e9b753ed, type: 3}
