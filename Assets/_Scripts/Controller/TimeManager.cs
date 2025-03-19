@@ -6,7 +6,7 @@ public class TimeManager : MonoBehaviour
 {
 
     // Singleton instance
-    public TimeManager Instance;
+    public static TimeManager Instance;
     // A teljes játékban kezdéstől használt idő
     public GameTime GlobalGameTime;
     // A játék sebességét befolyásoló változó
@@ -17,6 +17,16 @@ public class TimeManager : MonoBehaviour
     private float secondsPer15GameMinute = 5.0f;
     // Két random event közti várakozási idő
     private int randomEventMinDelay = 1, randomEventMaxDelay = 5;
+
+    // Zárási idő
+    [SerializeField]
+    private int ClosingHour = 18;
+
+    // Nyitási idő
+    [SerializeField]
+    private int OpeningHour = 8;
+
+
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -28,6 +38,7 @@ public class TimeManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         GlobalGameTime = new GameTime();
+        GlobalGameTime.AddHours(OpeningHour);
     }
 
     public void Start()
@@ -100,10 +111,15 @@ public class TimeManager : MonoBehaviour
     public RandomEvent GetRandomEvent()
     {
         float roll = UnityEngine.Random.Range(0f, 1f);
-        if (roll < 0.001f) return RandomEvent.START_RAID;
+        if (roll < 0.001f && GlobalGameTime.hours >= ClosingHour && GlobalGameTime.hours <= OpeningHour) return RandomEvent.START_RAID;
         if (roll < 0.01f) return RandomEvent.BREED;
         if (roll < 0.1f) return RandomEvent.REGROW;
-        if (roll < 0.95f) return RandomEvent.SPAWN_TOURIST;
+        if (roll < 0.95f && GlobalGameTime.hours <= ClosingHour && GlobalGameTime.hours >= OpeningHour) return RandomEvent.SPAWN_TOURIST;
         return RandomEvent.NONE;
+    }
+
+    public GameTime GetCurrentTime()
+    {
+        return GlobalGameTime;
     }
 }

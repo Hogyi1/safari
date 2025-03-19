@@ -107,6 +107,7 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
                     TouristView view = touristViews[tourist.GetID()];
                     tourist.SetState(TouristState.ON_WALK);
                     view.StartWalkingToCar((Vector3)carPosition);
+                    EconomyManager.Instance.PayForTicket();
                 }
             }
             else if (tourist.GetState() == TouristState.ON_TOUR)
