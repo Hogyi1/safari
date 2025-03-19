@@ -10,19 +10,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 5073f548fa3d56340ae48978ef4afd5f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5073f548fa3d56340ae48978ef4afd5f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.14999986
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5073f548fa3d56340ae48978ef4afd5f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -7.55
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5073f548fa3d56340ae48978ef4afd5f, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.10617737
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5073f548fa3d56340ae48978ef4afd5f, type: 3}
       propertyPath: m_LocalRotation.x
@@ -30,7 +30,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5073f548fa3d56340ae48978ef4afd5f, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.9943472
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5073f548fa3d56340ae48978ef4afd5f, type: 3}
       propertyPath: m_LocalRotation.z
@@ -42,7 +42,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5073f548fa3d56340ae48978ef4afd5f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -167.81
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5073f548fa3d56340ae48978ef4afd5f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -84,8 +84,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfd4ea42fae07514db06bcbe038552ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  AnimalsSeen: 0
 --- !u!195 &-4926828061111059769
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -97,7 +95,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 2
-  m_Acceleration: 8
+  m_Acceleration: 4
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
