@@ -77,15 +77,15 @@ public class TerrainController : MonoBehaviour
         terrainData.SetHeights(xCenter - radius / 2, zCenter - radius / 2, newHeights);
     }
 
-    public void RestoreTerrain(Vector3 position)
+    public void RestoreTerrain(GameObject building)
     {
-        if (!storedHeights.ContainsKey(position))
+        if (!storedHeights.ContainsKey(building.transform.position))
         {
             Debug.LogWarning("No stored terrain data found for this position.");
             return;
         }
 
-        StartCoroutine(SmoothRestore(position));
+        StartCoroutine(SmoothRestore(building.transform.position));
     }
 
     private IEnumerator SmoothRestore(Vector3 position)
