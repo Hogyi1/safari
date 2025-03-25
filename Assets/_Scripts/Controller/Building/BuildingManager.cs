@@ -45,6 +45,8 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
     [SerializeField]
     private PreviewSystem PreviewSystem;
 
+    [SerializeField]
+    private TerrainController TerrainController;
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -106,7 +108,8 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 
         if (LastDetectedPosition != gridPosition)
         {
-            BuildingState.UpdateState(gridPosition);
+            Debug.Log(gridPosition);
+            BuildingState.UpdateState(mousePosition);
             LastDetectedPosition = gridPosition;
         }
     }
@@ -164,9 +167,8 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         if (InputManager.Instance.IsPointerOverUI()) return;
 
         Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
-        Vector3Int gridPosition = grid.WorldToCell(mousePosition);
 
-        BuildingState.OnAction(gridPosition);
+        BuildingState.OnAction(mousePosition);
     }
 
     public int AddBuilding(BuildingData Data, Vector3 position)
@@ -179,6 +181,8 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         BuildingView view = newBuildingGO.GetComponent<BuildingView>();
         view.Init(newBuilding);
         buildingViews[newBuilding.GetID()] = view;
+
+        TerrainController.AdjustTerrainToBuilding(newBuildingGO);
 
         Debug.Log($"Új építmény lehelyezve, ID {newBuilding.GetID()}");
 
@@ -196,8 +200,12 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 
         if (buildingViews.TryGetValue(buildingID, out BuildingView view))
         {
-            MapData.RemoveObjectAt(grid.WorldToCell(view.transform.position));
+            Vector3Int gridPosition = grid.WorldToCell(view.transform.position);
+            Vector3Int flatGridPosition = new Vector3Int(gridPosition.x, 0, gridPosition.z);
+
+            MapData.RemoveObjectAt(flatGridPosition);
             buildingViews.Remove(buildingID);
+            TerrainController.RestoreTerrain(view.gameObject);
             Destroy(view.gameObject);
         }
 
