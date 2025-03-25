@@ -10,20 +10,15 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
     // Singleton pattern
     public static TouristManager Instance { get; private set; }
 
-    // Tourist prefabje
-    [SerializeField]
-    public GameObject touristPrefab;
-
     // Az aktív touristok
     private List<Tourist> activeTourists = new List<Tourist>();
     private Dictionary<int, TouristView> touristViews = new Dictionary<int, TouristView>();
 
+    [SerializeField]
+    private TouristFactory factory;
+
     // Mindenkinek egy saját ID
     private static int nextID = 0;
-
-    //Hova spawnolja
-    [SerializeField]
-    public Vector3 Entrance = new Vector3(7.5f, 0.1f, -3.5f);
 
     // Az átlag kedv
     private float OverallMood = 0f;
@@ -39,6 +34,7 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
+
 
 
     public void Start()
@@ -58,15 +54,15 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
         Tourist newTourist = new Tourist(GenerateID());
         activeTourists.Add(newTourist);
 
-        GameObject newTouristGO = Instantiate(touristPrefab, Entrance, Quaternion.identity);
-        TouristView view = newTouristGO.GetComponent<TouristView>();
-        view.Init(newTourist);
+        //GameObject newTouristGO = Instantiate(touristPrefab, Entrance, Quaternion.identity);
+        //TouristView view = newTouristGO.GetComponent<TouristView>();
+        //view.Init(newTourist);
+
+        TouristView view = factory.CreateTourist(newTourist);
+
         touristViews[newTourist.GetID()] = view;
         Debug.Log($"Új turista ID: {newTourist.GetID()}, Patience: {newTourist.patienceLevel}");
 
-
-        // A hely ahova lespawnolja
-        Entrance += new Vector3(-1.0f, 0.0f, 0.0f);
     }
 
     public void RemoveTourist(int touristID)

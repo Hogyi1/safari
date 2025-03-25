@@ -8,14 +8,14 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Placement
   - Water
   - UI
   - Vehicle
-  - 
-  - 
-  - 
-  - 
+  - No Shadow
+  - Selectable
+  - Road
+  - Decoration
   - 
   - 
   - 

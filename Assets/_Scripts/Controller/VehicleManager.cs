@@ -33,13 +33,13 @@ public class VehicleManager : MonoBehaviour
         }
 
         Instance = this;
-        LoadAllVehicles();
         DontDestroyOnLoad(gameObject);
     }
 
     void Start()
     {
         //SpawnVehicle(VehicleType.BUS);
+        LoadAllVehicles();
         SpawnVehicle(VehicleType.JEEP);
     }
 

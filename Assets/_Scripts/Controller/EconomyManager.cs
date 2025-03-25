@@ -6,7 +6,7 @@ public class EconomyManager : MonoBehaviour
     public static EconomyManager Instance { get; private set; }
 
     // Az economy amire mindenki lálát
-    private Economy Economy { get; }
+    private Economy Economy { get; set; }
 
     public void Awake()
     {
@@ -18,6 +18,11 @@ public class EconomyManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
+    {
+        this.Economy = new Economy();
     }
 
     // Methods
