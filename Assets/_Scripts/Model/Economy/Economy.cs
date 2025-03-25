@@ -3,17 +3,33 @@ using UnityEngine;
 public class Economy
 {
     // Adattagok
-    [SerializeField]
-    public int CurrentMoney = 500;
-    [SerializeField]
-    public int CurrentExpenses = 0;
-    [SerializeField]
-    [Range(1, 50)]
-    public int TicketPrice = 10;
-    [SerializeField]
-    public int RangerSalary = 1000;
-    [SerializeField]
+    public int CurrentMoney;
+
+    public int CurrentExpenses;
+
+    public int TicketPrice;
+
+    public int RangerSalary;
+
     public int OverallIncome = 0;
-    [SerializeField]
+
     public int OverallExpense = 0;
+
+    public Economy()
+    {
+        CurrentMoney = 500;
+        CurrentExpenses = 0;
+        TicketPrice = 10;
+        RangerSalary = 100;
+    }
+
+    public Economy(int currentMoney, int currentExpenses, int ticketPrice, int rangerSalary, int overallIncome, int overallExpense)
+    {
+        CurrentMoney = currentMoney;
+        CurrentExpenses = currentExpenses;
+        TicketPrice = ticketPrice;
+        RangerSalary = rangerSalary;
+        OverallIncome = overallIncome;
+        OverallExpense = overallExpense;
+    }
 }
