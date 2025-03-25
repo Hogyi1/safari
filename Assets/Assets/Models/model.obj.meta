@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5e84beea871ba8141828ab6ac98c9edf
+guid: 5c3c6702097feb8408a1cb814a479e64
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,38 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: VanMat
-    second: {fileID: 2100000, guid: bdd72718b3d2c22449e6d858bfbc2f64, type: 2}
+      name: mesh170484009Mat
+    second: {fileID: 2100000, guid: 12a0eb12cec336041a060bb6b84436ea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mesh2133846589Mat
+    second: {fileID: 2100000, guid: 12a0eb12cec336041a060bb6b84436ea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mesh272399213Mat
+    second: {fileID: 2100000, guid: 12a0eb12cec336041a060bb6b84436ea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mesh354396859Mat
+    second: {fileID: 2100000, guid: 12a0eb12cec336041a060bb6b84436ea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mesh474279194Mat
+    second: {fileID: 2100000, guid: 12a0eb12cec336041a060bb6b84436ea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mesh526615061Mat
+    second: {fileID: 2100000, guid: 12a0eb12cec336041a060bb6b84436ea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mesh977002837Mat
+    second: {fileID: 2100000, guid: 12a0eb12cec336041a060bb6b84436ea, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -38,7 +68,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.06
+    globalScale: 1
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -93,7 +123,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.06
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
