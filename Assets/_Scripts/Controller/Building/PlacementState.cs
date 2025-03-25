@@ -30,20 +30,31 @@ public class PlacementState : IBuildingState
         previewSystem.StopShowingPreview();
     }
 
-    public void OnAction(Vector3Int gridPosition)
+    public void OnAction(Vector3 mousePosition)
     {
-        if (!MapData.CanPlaceObjectAt(gridPosition, Data.SpaceTaken)) return;
+        Vector3Int gridPosition = grid.WorldToCell(mousePosition);
+        Vector3Int flatGridPosition = new Vector3Int(gridPosition.x, 0, gridPosition.z);
 
-        int index = BuildingManager.Instance.AddBuilding(Data, grid.CellToWorld(gridPosition));
+        if (!MapData.CanPlaceObjectAt(flatGridPosition, Data.SpaceTaken)) return;
 
-        MapData.AddObjectAt(gridPosition, Data.SpaceTaken, Data.BuildingID, index);
-        previewSystem.UpdatePosition(grid.CellToWorld(gridPosition), false);
+        Vector3 buildingPos = new Vector3(gridPosition.x, mousePosition.y, gridPosition.z);
+
+        int index = BuildingManager.Instance.AddBuilding(Data, buildingPos);
+
+        Debug.Log("Építmény ezen a pozicion lehelyezve " + buildingPos + "\n Az építmény ezen a pozicion lesz elmentve " + flatGridPosition);
+        MapData.AddObjectAt(flatGridPosition, Data.SpaceTaken, Data.BuildingID, index);
+        previewSystem.UpdatePosition(mousePosition, false);
     }
 
-    public void UpdateState(Vector3Int gridPosition)
+    public void UpdateState(Vector3 mousePosition)
     {
-        bool placementValidity = MapData.CanPlaceObjectAt(gridPosition, Data.SpaceTaken);
+        Vector3Int gridPosition = grid.WorldToCell(mousePosition);
+        Vector3Int flatGridPosition = new Vector3Int(gridPosition.x, 0, gridPosition.z);
 
-        previewSystem.UpdatePosition(grid.CellToWorld(gridPosition), placementValidity);
+        bool placementValidity = MapData.CanPlaceObjectAt(flatGridPosition, Data.SpaceTaken);
+
+        Vector3 buildingPos = new Vector3(gridPosition.x, mousePosition.y, gridPosition.z);
+
+        previewSystem.UpdatePosition(buildingPos, placementValidity);
     }
 }

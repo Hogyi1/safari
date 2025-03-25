@@ -13,11 +13,12 @@ public class TerrainController : MonoBehaviour
 
     public void AdjustTerrainToBuilding(GameObject building)
     {
+        if (terrain == null) return;
         TerrainData terrainData = terrain.terrainData;
 
         Vector3 buildingPos = building.transform.position;
-        float buildingBottom = building.GetComponent<Renderer>().bounds.min.y; // Bottom Y position
-        float buildingTop = building.GetComponent<Renderer>().bounds.max.y;   // Top of the building
+        float buildingBottom = building.GetComponentInChildren<Renderer>().bounds.min.y; // Bottom Y position
+        float buildingTop = building.GetComponentInChildren<Renderer>().bounds.max.y;   // Top of the building
 
         int heightmapWidth = terrainData.heightmapResolution;
         int heightmapHeight = terrainData.heightmapResolution;
@@ -90,6 +91,8 @@ public class TerrainController : MonoBehaviour
 
     private IEnumerator SmoothRestore(Vector3 position)
     {
+        if (terrain == null) yield return null;
+
         TerrainData terrainData = terrain.terrainData;
 
         int heightmapWidth = terrainData.heightmapResolution;

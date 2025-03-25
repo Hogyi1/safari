@@ -2365,7 +2365,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 2048
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 21fa178edf4975e459d9eb2c4f3afb00, type: 2}
   m_TargetDisplay: 0
@@ -10809,7 +10809,7 @@ GameObject:
   - component: {fileID: 1707113765}
   - component: {fileID: 1707113764}
   - component: {fileID: 1707113763}
-  m_Layer: 6
+  m_Layer: 11
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
