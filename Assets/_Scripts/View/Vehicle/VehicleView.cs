@@ -9,12 +9,17 @@ public class VehicleView : MonoBehaviour
     private Vehicle vehicle;
     private NavMeshAgent agent;
     private Animator animator;
+    private NavMeshObstacle obstacle;
     // Inicializálás
     public void Init(Vehicle vehicle)
     {
         this.vehicle = vehicle;
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        obstacle = GetComponent<NavMeshObstacle>();
+
+        agent.enabled = false;
+        obstacle.enabled = true;
     }
 
     // Update is called once per frame
@@ -32,6 +37,8 @@ public class VehicleView : MonoBehaviour
     // Beállítja az agent úticélját
     public void MoveTo(Vector3 Position)
     {
+        obstacle.enabled = false;
+        agent.enabled = true;
         agent.SetDestination(Position);
         StartCoroutine(WaitForArrival());
     }
@@ -39,7 +46,10 @@ public class VehicleView : MonoBehaviour
     // Elindítja az útvonalkövetést
     public void MoveOnRoute(Vector3[] Waypoints)
     {
-        StartCoroutine(FollowWaypoints(Waypoints));
+        obstacle.enabled = false;
+        agent.enabled = true;
+        if (!agent.hasPath)
+            StartCoroutine(FollowWaypoints(Waypoints));
     }
 
     // Követi a megadott útvonalat
@@ -61,6 +71,8 @@ public class VehicleView : MonoBehaviour
         }
 
         vehicle.State = VehicleState.FINISHED;
+        agent.enabled = false;
+        obstacle.enabled = true;
     }
 
     private IEnumerator WaitForArrival()
@@ -75,7 +87,7 @@ public class VehicleView : MonoBehaviour
             vehicle.State = VehicleState.EMPTY;
         }
 
-        Debug.Log("A kocsi state-je " + vehicle.State);
-
+        agent.enabled = false;
+        obstacle.enabled = true;
     }
 }
