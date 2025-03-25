@@ -4,7 +4,7 @@ using UnityEngine;
 public class PreviewSystem : MonoBehaviour
 {
     [SerializeField]
-    private float previewYOffset = 0.06f;
+    private float previewYOffset = 0.1f;
 
     [SerializeField]
     private GameObject cellIndicator;
@@ -97,7 +97,10 @@ public class PreviewSystem : MonoBehaviour
 
     private void MoveCursor(Vector3 position)
     {
-        cellIndicator.transform.position = position;
+        cellIndicator.transform.position = new Vector3(
+            position.x,
+            position.y + previewYOffset,
+            position.z);
     }
 
     private void MovePreview(Vector3 position)
