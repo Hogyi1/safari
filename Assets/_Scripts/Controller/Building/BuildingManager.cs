@@ -181,7 +181,7 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         view.Init(newBuilding);
         buildingViews[newBuilding.GetID()] = view;
 
-        TerrainController.AdjustTerrainToBuilding(newBuildingGO);
+        TerrainController.AdjustTerrainToBuilding(newBuildingGO, GeneratedID);
 
         Debug.Log($"Új építmény lehelyezve, ID {newBuilding.GetID()}");
 
@@ -204,7 +204,7 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 
             MapData.RemoveObjectAt(flatGridPosition);
             buildingViews.Remove(buildingID);
-            TerrainController.RestoreTerrain(view.gameObject);
+            TerrainController.RestoreTerrain(buildingID);
             Destroy(view.gameObject);
         }
 
