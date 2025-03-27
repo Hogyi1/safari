@@ -28,7 +28,7 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
     private BuildingView LastView = null;
 
     [SerializeField]
-    private MapData MapData;
+    public MapData MapData;
 
     [SerializeField]
     private Grid grid;
@@ -46,7 +46,7 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
     private PreviewSystem PreviewSystem;
 
     [SerializeField]
-    private TerrainController TerrainController;
+    public TerrainController TerrainController;
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -108,7 +108,6 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 
         if (LastDetectedPosition != gridPosition)
         {
-            Debug.Log(gridPosition);
             BuildingState.UpdateState(mousePosition);
             LastDetectedPosition = gridPosition;
         }
@@ -254,5 +253,11 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         {
             RegrowEvent();
         }
+    }
+
+    public bool IsEmpty(Vector3 position)
+    {
+        Vector3Int gridPosition = grid.WorldToCell(position);
+        return !MapData.IsOccupied(new Vector3Int(gridPosition.x, 0, gridPosition.z));
     }
 }

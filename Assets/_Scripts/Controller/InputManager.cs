@@ -50,36 +50,6 @@ public class InputManager : MonoBehaviour
         {
             OnExit?.Invoke();
         }
-
-
-
-        //if (Physics.Raycast(ray, out hit, 999f, SelectableLayermask))
-        //{
-
-        //    // Próbáljuk meg kiolvasni a rajta lévő "Building" komponenst
-        //    BuildingView building = hitObject.GetComponentInParent<BuildingView>();
-        //    if (building != null && lastHitObject != hitObject && !isCoroutineStarted)
-        //    {
-        //        isCoroutineStarted = true;
-        //        foreach (Transform t in hitObject.transform)
-        //        {
-        //            StartCoroutine(PreparePreview(t.gameObject));
-        //        }
-        //        Debug.Log(hitObject);
-        //        // hitObject.GetComponent<Renderer>().material = materials;
-        //        lastHitObject = hitObject;
-        //    }
-        //}
-        //else if (lastHitObject != null && !isCoroutineStarted)
-        //{
-        //    isCoroutineStarted = true;
-        //    foreach (Transform t in lastHitObject.transform)
-        //    {
-        //        StartCoroutine(ResetObject(t.gameObject));
-        //    }
-
-        //    lastHitObject = null;
-        //}
     }
 
 
@@ -103,7 +73,6 @@ public class InputManager : MonoBehaviour
     public Vector3 GetSelectedMapPosition()
     {
         Vector3 mousePos = Input.mousePosition;
-        // mousePos.z = SceneCamera.nearClipPlane;
         Ray ray = SceneCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 100, PlacementLayermask))

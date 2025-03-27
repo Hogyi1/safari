@@ -59,6 +59,13 @@ public class MapData
             return -1;
         return ObjectsPlacedOnGrid[gridPosition].PlacedObjectIndex;
     }
+
+    public bool IsOccupied(Vector3Int gridPosition)
+    {
+        if (ObjectsPlacedOnGrid.ContainsKey(gridPosition))
+            return true;
+        return false;
+    }
 }
 
 public class PlacementData

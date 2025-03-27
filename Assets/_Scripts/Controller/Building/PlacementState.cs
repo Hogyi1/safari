@@ -37,13 +37,19 @@ public class PlacementState : IBuildingState
 
         if (!MapData.CanPlaceObjectAt(flatGridPosition, Data.SpaceTaken)) return;
 
-        Vector3 buildingPos = new Vector3(gridPosition.x, mousePosition.y, gridPosition.z);
+        float height = mousePosition.y;
+        if (Data.type == BuildingType.ROAD)
+        {
+            height = grid.transform.position.y;
+        }
+
+        Vector3 buildingPos = new Vector3(gridPosition.x, height, gridPosition.z);
 
         int index = BuildingManager.Instance.AddBuilding(Data, buildingPos);
 
         Debug.Log("Építmény ezen a pozicion lehelyezve " + buildingPos + "\n Az építmény ezen a pozicion lesz elmentve " + flatGridPosition);
         MapData.AddObjectAt(flatGridPosition, Data.SpaceTaken, Data.BuildingID, index);
-        previewSystem.UpdatePosition(mousePosition, false);
+        previewSystem.UpdatePosition(buildingPos, false);
     }
 
     public void UpdateState(Vector3 mousePosition)
@@ -53,7 +59,14 @@ public class PlacementState : IBuildingState
 
         bool placementValidity = MapData.CanPlaceObjectAt(flatGridPosition, Data.SpaceTaken);
 
-        Vector3 buildingPos = new Vector3(gridPosition.x, mousePosition.y, gridPosition.z);
+        float height = mousePosition.y;
+        if (Data.type == BuildingType.ROAD)
+        {
+            height = grid.transform.position.y;
+        }
+
+
+        Vector3 buildingPos = new Vector3(gridPosition.x, height, gridPosition.z);
 
         previewSystem.UpdatePosition(buildingPos, placementValidity);
     }
