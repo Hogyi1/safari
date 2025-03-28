@@ -97,7 +97,6 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
             if (hoveredObject == null && LastView != null)
             {
                 LastView.isHovered = false;
-                //LastView = null;
             }
             return;
         }
@@ -181,7 +180,7 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         view.Init(newBuilding);
         buildingViews[newBuilding.GetID()] = view;
 
-        TerrainController.AdjustTerrainToBuilding(newBuildingGO, GeneratedID);
+        TerrainController.AdjustTerrainToBuilding(newBuildingGO, GeneratedID, true);
 
         Debug.Log($"Új építmény lehelyezve, ID {newBuilding.GetID()}");
 
@@ -255,9 +254,13 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         }
     }
 
-    public bool IsEmpty(Vector3 position)
+    // Megnézi van azon a pozicion egy GameObject ha igen visszaadja ha nem akkor nullt ad
+    public GameObject IsEmpty(Vector3 position)
     {
         Vector3Int gridPosition = grid.WorldToCell(position);
-        return !MapData.IsOccupied(new Vector3Int(gridPosition.x, 0, gridPosition.z));
+        int buildingID = MapData.IsOccupied(new Vector3Int(gridPosition.x, 0, gridPosition.z));
+        if (buildingID > -1)
+            return buildingViews[buildingID].gameObject;
+        return null;
     }
 }

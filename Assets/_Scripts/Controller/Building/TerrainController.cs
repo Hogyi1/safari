@@ -2,17 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+using System;
+using System.Linq;
 
 public class TerrainController : MonoBehaviour
 {
     public Terrain terrain;
 
     [SerializeField]
-    float restoreSpeed = 5f;
+    private float restoreSpeed = 5f;
     [SerializeField]
-    float blendingStrength = 5f;
+    private float blendingStrength = 5f;
     [SerializeField]
-    int blendingArea = 5;
+    private float blendingArea = 1f;
 
 
     public GameObject CurrentObject;
@@ -37,10 +39,15 @@ public class TerrainController : MonoBehaviour
     // Resolution 513
     int res;
 
+
+
     // xStart, yStart, Index - heightMap
     private Dictionary<Vector3Int, float[,]> storedHeights = new Dictionary<Vector3Int, float[,]>();
 
-    public void AdjustTerrainToBuilding(GameObject building, int buildingIndex)
+    // private byte[,] heights = new byte[513,513]; a valtoztatott koordiinatak 
+
+    // private Dictionary<Vector3Int, int>
+    public void AdjustTerrainToBuilding(GameObject building, int buildingIndex, bool saveOriginal)
     {
         if (terrain == null) return;
 
@@ -48,7 +55,7 @@ public class TerrainController : MonoBehaviour
         SetCurrentData(building);
 
         // Elmenti az eredeti magasságokat, hogyha visszaakarnánk állítani
-        SaveOriginalHeightMap(buildingIndex);
+        SaveOriginalHeightMap(buildingIndex, saveOriginal);
 
         // felhúzza a domborzatot az épület aljáig
         FlattenTerrainUnderBuilding();
@@ -71,11 +78,27 @@ public class TerrainController : MonoBehaviour
         // Resolution 513
         res = terrainData.heightmapResolution;
 
+        // A jelenlegire beállítom
+        CurrentObject = building;
+
         // Building világ koordinátái
         buildingPos = building.transform.position;
 
-        // Building sarkok világ koordinátái
-        bounds = building.GetComponentInChildren<Renderer>().bounds;
+
+        // Building tényleges alja
+        try
+        {
+            GameObject bottom = CurrentObject.GetComponentsInChildren<GameObject>().FirstOrDefault(t => t.name.ToUpper() == "FLOOR");
+            bounds = bottom.GetComponent<Renderer>().bounds;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning(ex);
+
+            // Ha nincs Floor akkor az alapot használjuk
+            bounds = building.GetComponentInChildren<Renderer>().bounds;
+            Debug.LogWarning("Floor nem található, Renderer bounds lesz használva!");
+        }
 
         // A building aljának koordinátája átváltva - normalizálva heightmapre
         targetHeightInHeightMap = (bounds.min.y - terrainWorldPos.y) / terrainData.size.y;
@@ -113,7 +136,7 @@ public class TerrainController : MonoBehaviour
     private void FlattenTerrainNearbyBuilding()
     {
         // Offset az épület nagysága szerint
-        Vector3 offset = bounds.center - bounds.min;
+        Vector3 offset = new Vector3(blendingArea, 0, blendingArea);
 
         // Koordináta amihez nézze az eltolást
         Vector3 offsetPosition = new Vector3(bounds.min.x - offset.x, bounds.min.y, bounds.min.z - offset.z);
@@ -137,8 +160,10 @@ public class TerrainController : MonoBehaviour
         float[,] newHeights = new float[depth, width];
 
         // Legtávolabbi távolság a pontok és a ház között
-        float maxDistance = Vector3.Distance(bounds.min, relativeCorner) + 0.1f;
+        float maxDistance2 = Vector3.Distance(bounds.min, relativeCorner);
+        float maxDistance = Vector3.Distance(bounds.min, new Vector3(bounds.min.x - offset.x, bounds.min.y, bounds.min.z));
         Debug.Log(maxDistance + " Maxdistance ");
+        Debug.Log(maxDistance2 + " Maxdistance2 ");
         Debug.Log("The offset is: " + relativeCorner);
 
 
@@ -148,7 +173,7 @@ public class TerrainController : MonoBehaviour
             // Végigmegyünk minden X (oszlop) elemén a Z sorban
             for (int x = 0; x < width; x++)
             {
-                // A heightmap (x, z) indexhez tartozó világkoordináta kiszámítása X tengelyen
+                // A heightmap jelenlegi pontja a világ koordinátában
                 float worldX = terrainWorldPos.x + ((float)(xStart + x) / res) * terrainSize.x;
                 float worldZ = terrainWorldPos.z + ((float)(zStart + z) / res) * terrainSize.z;
 
@@ -158,10 +183,11 @@ public class TerrainController : MonoBehaviour
                 float distance = Vector3.Distance(worldPoint, bounds.ClosestPoint(worldPoint));
 
                 // Foglalt-e már a hely
-                bool canDeform = BuildingManager.Instance.IsEmpty(worldPoint);
+                GameObject canDeform = BuildingManager.Instance.IsEmpty(worldPoint);
+
 
                 // A távolságot normalizáljuk 0 és 1 közé (1 = legmesszebb, 0 = mellette van)
-                float normalizedDistance = canDeform ? Mathf.Clamp01(distance / maxDistance) : 1f;
+                float normalizedDistance = (canDeform == null || canDeform == CurrentObject) ? Mathf.Clamp01(distance / maxDistance) : 1f;
 
                 // Az adott heightmap pont eredeti magassága
                 float originalHeight = currentHeightMap[z, x];
@@ -180,10 +206,11 @@ public class TerrainController : MonoBehaviour
 
     }
 
-    private void SaveOriginalHeightMap(int index)
+    private void SaveOriginalHeightMap(int index, bool saveOriginal)
     {
+
         // Offset az épület nagysága szerint
-        Vector3 offset = bounds.center - bounds.min;
+        Vector3 offset = new Vector3(blendingArea, 0, blendingArea);
 
         // Koordináta amihez nézze az eltolást
         Vector3 offsetPosition = new Vector3(bounds.min.x - offset.x, bounds.min.y, bounds.min.z - offset.z);
@@ -209,7 +236,15 @@ public class TerrainController : MonoBehaviour
 
         // A kulcs, xStart, zStart és a buildingIndex-ből áll
         Vector3Int SaveKey = new Vector3Int(xStart, zStart, index);
-        storedHeights[SaveKey] = originalHeightMap;
+
+        if (saveOriginal)
+        {
+            storedHeights[SaveKey] = originalHeightMap;
+        }
+        else
+        {
+            storedHeights.Remove(SaveKey);
+        }
     }
 
     public void RestoreTerrain(int buildingIndex)
@@ -230,7 +265,7 @@ public class TerrainController : MonoBehaviour
 
         if (RestoreKey == Vector3Int.zero)
         {
-            Debug.LogError("Ilyen ID-val rendelkező építmén nem létezik a terrainen: " + buildingIndex);
+            Debug.LogError("Ilyen ID-val rendelkező építmény nem létezik a domborzaton: " + buildingIndex);
             return;
         }
 
@@ -242,10 +277,14 @@ public class TerrainController : MonoBehaviour
     {
         if (terrain == null) yield return null;
 
+
         int width = originalHeightMap.GetLength(1);  // - X 
         int depth = originalHeightMap.GetLength(0);  // - Z 
 
         float progress = 0.0f;
+
+        // Visszaállításra szorolú épületek
+        HashSet<GameObject> restore = new();
 
         while (progress < 1f)
         {
@@ -267,20 +306,44 @@ public class TerrainController : MonoBehaviour
                     Vector3 worldPoint = new Vector3(worldX, buildingPos.y, worldZ);
 
                     // Foglalt-e már a hely
-                    bool canDeform = BuildingManager.Instance.IsEmpty(worldPoint);
+                    GameObject building = BuildingManager.Instance.IsEmpty(worldPoint);
+                    if (building != null)
+                    {
+                        restore.Add(building);
+                    }
 
-                    float interpolation = canDeform ? progress : 0f;
+                    // Most átírtam tehát visszaviszi az eredetire
+                    // float interpolation = building != null ? progress : 0f;
 
-                    newHeights[z, x] = Mathf.Lerp(currentHeights[z, x], originalHeightMap[z, x], interpolation);
+                    newHeights[z, x] = Mathf.Lerp(currentHeights[z, x], originalHeightMap[z, x], progress);
                 }
             }
 
             terrainData.SetHeights(xStart, zStart, newHeights);
             yield return null;
         }
+
+        RestoreTerrainForAffectedBuildings(restore);
     }
 
+    private void RestoreTerrainForAffectedBuildings(HashSet<GameObject> restore)
+    {
+        foreach (GameObject go in restore)
+        {
+            int ID = go.GetComponent<BuildingView>().GetID();
+            Vector3 currentPosition = go.transform.position;
 
+            float terrainHeight = terrain.SampleHeight(currentPosition);
 
+            Vector3 newPosition = new Vector3(currentPosition.x, Mathf.Lerp(terrainHeight, currentPosition.y, 0.65f), currentPosition.z);
+
+            go.transform.position = newPosition;
+
+            AdjustTerrainToBuilding(go, ID, false);
+
+        }
+
+        restore.Clear();
+    }
 }
 

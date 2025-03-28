@@ -60,11 +60,12 @@ public class MapData
         return ObjectsPlacedOnGrid[gridPosition].PlacedObjectIndex;
     }
 
-    public bool IsOccupied(Vector3Int gridPosition)
+    // Visszaadja a buildingindexet, hogy meg tudjam keresni az eredeti View-t hozzá
+    public int IsOccupied(Vector3Int gridPosition)
     {
         if (ObjectsPlacedOnGrid.ContainsKey(gridPosition))
-            return true;
-        return false;
+            return ObjectsPlacedOnGrid[gridPosition].PlacedObjectIndex;
+        return -1;
     }
 }
 

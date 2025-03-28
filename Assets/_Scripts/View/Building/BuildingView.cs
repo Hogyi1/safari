@@ -28,7 +28,7 @@ public class BuildingView : MonoBehaviour
     private void Start()
     {
         renderers = gameObject.GetComponentsInChildren<Renderer>();
-        Debug.Log(renderers.Length);
+        // Debug.Log(renderers.Length);
     }
 
     private void Update()
@@ -163,45 +163,13 @@ public class BuildingView : MonoBehaviour
         }
     }
 
-    internal void HideUI()
+    public void HideUI()
     {
         //throw new NotImplementedException();
     }
+
+    public int GetID()
+    {
+        return MyBuilding.GetID();
+    }
 }
-
-//foreach (Renderer renderer in renderers)
-//{
-//    Material[] materials = renderer.materials;
-//    foreach (var mat in materials)
-//    {
-//        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-//        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-//        mat.SetInt("_ZWrite", 0);
-//        mat.SetInt("_Surface", 1);
-
-//        mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-//        mat.SetShaderPassEnabled("DepthOnly", false);
-//        mat.SetShaderPassEnabled("SHADOWCASTER", enabled);
-
-//        mat.SetOverrideTag("RenderType", "Transparent");
-
-//        mat.EnableKeyword("SURFACE_TYPE_TRANSPARENT");
-//        mat.EnableKeyword("_ALPHAPREMULTIPLY_ON");
-//    }
-
-//    float time = 0f;
-//    while (materials[0].color.a > 0.5f)
-//    {
-//        foreach (var mat in materials)
-//        {
-//            if (mat.HasProperty("_Color"))
-//            {
-//                mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, Mathf.Lerp(1f, 0.5f, time * 5f));
-//            }
-//        }
-
-//        time += Time.deltaTime;
-//        renderer.materials = materials;
-//        yield return null;
-//    }
-//}
