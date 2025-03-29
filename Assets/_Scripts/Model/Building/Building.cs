@@ -8,6 +8,7 @@ public class Building
     public bool HasCapacity { get; private set; } = false;
     public bool IsFeeder;
     public DietType ForAnimalType;
+    public BuildingType type;
     public int RefillPrice;
 
     private int ID;
@@ -17,6 +18,7 @@ public class Building
     public Building(int id, BuildingData Data)
     {
         this.ID = id;
+        this.type = Data.type;
     }
 
     private void Init()
@@ -59,5 +61,10 @@ public class Building
     internal void Destroy()
     {
         throw new NotImplementedException();
+    }
+
+    public BuildingType GetBuildingType()
+    {
+        return type;
     }
 }

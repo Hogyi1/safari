@@ -39,14 +39,9 @@ public class TerrainController : MonoBehaviour
     // Resolution 513
     int res;
 
-
-
     // xStart, yStart, Index - heightMap
     private Dictionary<Vector3Int, float[,]> storedHeights = new Dictionary<Vector3Int, float[,]>();
 
-    // private byte[,] heights = new byte[513,513]; a valtoztatott koordiinatak 
-
-    // private Dictionary<Vector3Int, int>
     public void AdjustTerrainToBuilding(GameObject building, int buildingIndex, bool saveOriginal)
     {
         if (terrain == null) return;
@@ -183,7 +178,7 @@ public class TerrainController : MonoBehaviour
                 float distance = Vector3.Distance(worldPoint, bounds.ClosestPoint(worldPoint));
 
                 // Foglalt-e már a hely
-                GameObject canDeform = BuildingManager.Instance.IsEmpty(worldPoint);
+                GameObject canDeform = PlacementManager.Instance.IsEmpty(worldPoint);
 
 
                 // A távolságot normalizáljuk 0 és 1 közé (1 = legmesszebb, 0 = mellette van)
@@ -265,7 +260,7 @@ public class TerrainController : MonoBehaviour
 
         if (RestoreKey == Vector3Int.zero)
         {
-            Debug.LogError("Ilyen ID-val rendelkező építmény nem létezik a domborzaton: " + buildingIndex);
+            Debug.LogWarning("Ilyen ID-val rendelkező építmény nem létezik a domborzaton: " + buildingIndex);
             return;
         }
 
@@ -306,7 +301,7 @@ public class TerrainController : MonoBehaviour
                     Vector3 worldPoint = new Vector3(worldX, buildingPos.y, worldZ);
 
                     // Foglalt-e már a hely
-                    GameObject building = BuildingManager.Instance.IsEmpty(worldPoint);
+                    GameObject building = PlacementManager.Instance.IsEmpty(worldPoint);
                     if (building != null)
                     {
                         restore.Add(building);
@@ -328,18 +323,25 @@ public class TerrainController : MonoBehaviour
 
     private void RestoreTerrainForAffectedBuildings(HashSet<GameObject> restore)
     {
+        // A körülötte lévő épületeket újra építjük
         foreach (GameObject go in restore)
         {
             int ID = go.GetComponent<BuildingView>().GetID();
+
+            BuildingType type = go.GetComponent<BuildingView>().GetBuildingType();
             Vector3 currentPosition = go.transform.position;
 
-            float terrainHeight = terrain.SampleHeight(currentPosition);
+            float terrainHeight = type == BuildingType.ROAD ? currentPosition.y : terrain.SampleHeight(currentPosition);
 
             Vector3 newPosition = new Vector3(currentPosition.x, Mathf.Lerp(terrainHeight, currentPosition.y, 0.65f), currentPosition.z);
 
             go.transform.position = newPosition;
 
-            AdjustTerrainToBuilding(go, ID, false);
+            if (type == BuildingType.ROAD)
+                AdjustTerrainToBuilding(go, ID, true);
+            else
+                AdjustTerrainToBuilding(go, ID, false);
+
 
         }
 

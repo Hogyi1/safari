@@ -23,6 +23,7 @@ public class PlacementState : IBuildingState
 
 
         previewSystem.StartShowingPlacementPreview(Data.BuildingPrefab, Data.SpaceTaken);
+
     }
 
     public void EndState()
@@ -47,7 +48,7 @@ public class PlacementState : IBuildingState
 
         int index = BuildingManager.Instance.AddBuilding(Data, buildingPos);
 
-        Debug.Log("Építmény ezen a pozicion lehelyezve " + buildingPos + "\n Az építmény ezen a pozicion lesz elmentve " + flatGridPosition);
+        Debug.Log("Építmény ezen a pozicion lehelyezve! " + buildingPos + "\n Az építmény ezen a pozicion lesz elmentve " + flatGridPosition);
         MapData.AddObjectAt(flatGridPosition, Data.SpaceTaken, Data.BuildingID, index);
         previewSystem.UpdatePosition(buildingPos, false);
     }

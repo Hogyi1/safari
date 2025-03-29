@@ -28,7 +28,6 @@ public class BuildingView : MonoBehaviour
     private void Start()
     {
         renderers = gameObject.GetComponentsInChildren<Renderer>();
-        // Debug.Log(renderers.Length);
     }
 
     private void Update()
@@ -150,17 +149,9 @@ public class BuildingView : MonoBehaviour
         isCoroutineFinished = true;
     }
 
-    public void ShowUI(Material ActiveMaterial)
+    public void ShowUI()
     {
-        foreach (var ren in renderers)
-        {
-            Material[] materials = ren.materials;
 
-            for (int i = 0; i < materials.Length; i++)
-            {
-                materials[i] = ActiveMaterial;
-            }
-        }
     }
 
     public void HideUI()
@@ -172,4 +163,10 @@ public class BuildingView : MonoBehaviour
     {
         return MyBuilding.GetID();
     }
+
+    public BuildingType GetBuildingType()
+    {
+        return MyBuilding.GetBuildingType();
+    }
 }
+

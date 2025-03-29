@@ -8,45 +8,19 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 {
     public static BuildingManager Instance;
 
-    [SerializeField]
-    private List<BuildingData> buildingDatabase = new List<BuildingData>();
-
-    [SerializeField]
     private int nextID = 0;
 
     [SerializeField]
     private List<Building> activeBuildings = new List<Building>();
-
-    [SerializeField]
-    private Dictionary<int, BuildingView> buildingViews = new Dictionary<int, BuildingView>();
-
-    [SerializeField]
-    private Building ActiveBuilding = null;
-    [SerializeField]
-    private BuildingView ActiveView = null;
-    [SerializeField]
-    private BuildingView LastView = null;
-
-    [SerializeField]
-    public MapData MapData;
-
-    [SerializeField]
-    private Grid grid;
-
-    [SerializeField]
-    private Material ActiveMaterial;
+    public Dictionary<int, BuildingView> buildingViews = new Dictionary<int, BuildingView>();
 
     private bool isPlacementModeActive = false;
-    private Vector3Int LastDetectedPosition = Vector3Int.zero;
 
-    [SerializeField]
-    IBuildingState BuildingState;
+    private Building ActiveBuilding = null;
+    private BuildingView ActiveView = null;
+    private BuildingView LastView = null;
 
-    [SerializeField]
-    private PreviewSystem PreviewSystem;
 
-    [SerializeField]
-    public TerrainController TerrainController;
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -62,21 +36,17 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
     void Start()
     {
         // RandomEvents.Instance.AddObserver(this);
-        LoadAllBuildings();
-
-        StopPlacement();
-        this.MapData = new MapData();
 
         InputManager.Instance.OnClicked += SetViewActive;
-        InputManager.Instance.OnClicked += SetViewInActive;
+        InputManager.Instance.OnClicked += SetViewInactive;
     }
 
     // Update is called once per frame
     void Update()
     {
-        BuildingView hoveredObject = InputManager.Instance.GetHoveredObjectScript();
         if (!isPlacementModeActive)
         {
+            BuildingView hoveredObject = InputManager.Instance.GetHoveredObjectScript();
 
             if (hoveredObject != LastView)
             {
@@ -84,14 +54,12 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
                 {
                     LastView.isHovered = false;
                 }
-
                 LastView = hoveredObject;
 
                 if (LastView != null)
                 {
                     LastView.isHovered = true;
                 }
-
             }
 
             if (hoveredObject == null && LastView != null)
@@ -100,73 +68,6 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
             }
             return;
         }
-
-        Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
-        Vector3Int gridPosition = grid.WorldToCell(mousePosition);
-
-
-        if (LastDetectedPosition != gridPosition)
-        {
-            BuildingState.UpdateState(mousePosition);
-            LastDetectedPosition = gridPosition;
-        }
-    }
-
-    private void SetViewInActive()
-    {
-        if (ActiveView != null)
-        {
-            ActiveView.isActive = false;
-            ActiveView.HideUI();
-            ActiveView = null;
-        }
-    }
-
-    private void SetViewActive()
-    {
-        if (LastView != null)
-        {
-            SetViewInActive();
-            ActiveView = LastView;
-            ActiveView.isActive = true;
-            ActiveView.ShowUI(ActiveMaterial);
-        }
-    }
-
-    public void StartPlacingItem(int BuildingID)
-    {
-        BuildingData Structure = buildingDatabase.Find(t => t.BuildingID == BuildingID);
-        StopPlacement();
-        isPlacementModeActive = Structure != null;
-        if (isPlacementModeActive)
-        {
-            BuildingState = new PlacementState(Structure, grid, PreviewSystem, MapData);
-            InputManager.Instance.OnClicked -= SetViewActive;
-            InputManager.Instance.OnClicked += PlaceStructure;
-            InputManager.Instance.OnExit += StopPlacement;
-        }
-
-    }
-
-    public void StopPlacement()
-    {
-        if (!isPlacementModeActive) return;
-        isPlacementModeActive = false;
-        BuildingState.EndState();
-        InputManager.Instance.OnClicked += SetViewActive;
-        InputManager.Instance.OnClicked -= PlaceStructure;
-        InputManager.Instance.OnExit -= StopPlacement;
-        LastDetectedPosition = Vector3Int.zero;
-        BuildingState = null;
-    }
-
-    private void PlaceStructure()
-    {
-        if (InputManager.Instance.IsPointerOverUI()) return;
-
-        Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
-
-        BuildingState.OnAction(mousePosition);
     }
 
     public int AddBuilding(BuildingData Data, Vector3 position)
@@ -175,12 +76,8 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 
         Building newBuilding = new Building(GeneratedID, Data);
         activeBuildings.Add(newBuilding);
-        GameObject newBuildingGO = Instantiate(Data.BuildingPrefab, position, Quaternion.identity);
-        BuildingView view = newBuildingGO.GetComponent<BuildingView>();
-        view.Init(newBuilding);
+        BuildingView view = PlacementManager.Instance.PlaceStructure(Data, position, newBuilding);
         buildingViews[newBuilding.GetID()] = view;
-
-        TerrainController.AdjustTerrainToBuilding(newBuildingGO, GeneratedID, true);
 
         Debug.Log($"Új építmény lehelyezve, ID {newBuilding.GetID()}");
 
@@ -192,22 +89,15 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         Building building = activeBuildings.Find(t => t.GetID() == buildingID);
         if (building != null)
         {
-            // building.Destroy();
             activeBuildings.Remove(building);
         }
 
         if (buildingViews.TryGetValue(buildingID, out BuildingView view))
         {
-            Vector3Int gridPosition = grid.WorldToCell(view.transform.position);
-            Vector3Int flatGridPosition = new Vector3Int(gridPosition.x, 0, gridPosition.z);
 
-            MapData.RemoveObjectAt(flatGridPosition);
+            PlacementManager.Instance.RemoveStructure(view);
             buildingViews.Remove(buildingID);
-            TerrainController.RestoreTerrain(buildingID);
-            Destroy(view.gameObject);
         }
-
-
     }
 
     public void RegrowEvent()
@@ -231,13 +121,6 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         }
     }
 
-    // Betölti a Resource folderból az összes BuildingData ScriptableObjectet
-    private void LoadAllBuildings()
-    {
-        buildingDatabase = new List<BuildingData>(Resources.LoadAll<BuildingData>("Buildings"));
-        Debug.Log($"Betöltve {buildingDatabase.Count} épület.");
-    }
-
     // Generál egy új ID-t
     public int GenerateID()
     {
@@ -254,13 +137,28 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         }
     }
 
-    // Megnézi van azon a pozicion egy GameObject ha igen visszaadja ha nem akkor nullt ad
-    public GameObject IsEmpty(Vector3 position)
+
+    /// <summary>
+    /// A Viewk kezelése kattintásra
+    /// </summary>
+    private void SetViewInactive()
     {
-        Vector3Int gridPosition = grid.WorldToCell(position);
-        int buildingID = MapData.IsOccupied(new Vector3Int(gridPosition.x, 0, gridPosition.z));
-        if (buildingID > -1)
-            return buildingViews[buildingID].gameObject;
-        return null;
+        if (ActiveView != null)
+        {
+            ActiveView.isActive = false;
+            ActiveView.HideUI();
+            ActiveView = null;
+        }
+    }
+
+    private void SetViewActive()
+    {
+        if (LastView != null)
+        {
+            SetViewInactive();
+            ActiveView = LastView;
+            ActiveView.isActive = true;
+            ActiveView.ShowUI();
+        }
     }
 }

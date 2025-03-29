@@ -16,7 +16,7 @@ public class InputManager : MonoBehaviour
 
     private Vector3 LastPosition;
 
-    public event Action OnClicked, OnExit;
+    public event Action OnClicked, OnExit, Left, Right;
 
     [SerializeField]
     private Material setMaterial;
@@ -49,6 +49,15 @@ public class InputManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             OnExit?.Invoke();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            Left?.Invoke();
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            Right?.Invoke();
         }
     }
 
