@@ -39,12 +39,10 @@ public class BuildingView : MonoBehaviour
                 if (isHovered && !Faded)
                 {
                     StartCoroutine(PreparePreview());
-                    Debug.Log("Coroutine started PreparePreview");
                 }
                 else if (!isHovered && Faded)
                 {
                     StartCoroutine(ResetPreview());
-                    Debug.Log("Coroutine started ResetPreview");
                 }
             }
         }
@@ -147,16 +145,6 @@ public class BuildingView : MonoBehaviour
         }
         Faded = false;
         isCoroutineFinished = true;
-    }
-
-    public void ShowUI()
-    {
-
-    }
-
-    public void HideUI()
-    {
-        //throw new NotImplementedException();
     }
 
     public int GetID()

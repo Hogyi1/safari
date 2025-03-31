@@ -12,8 +12,6 @@ public class TerrainController : MonoBehaviour
     [SerializeField]
     private float restoreSpeed = 5f;
     [SerializeField]
-    private float blendingStrength = 5f;
-    [SerializeField]
     private float blendingArea = 1f;
 
 
@@ -42,6 +40,36 @@ public class TerrainController : MonoBehaviour
     // xStart, yStart, Index - heightMap
     private Dictionary<Vector3Int, float[,]> storedHeights = new Dictionary<Vector3Int, float[,]>();
 
+    private void Start()
+    {
+        // Terrain és building adatainak beállítása
+        terrainData = terrain.terrainData;
+
+        // Terrain világ koordinátában
+        terrainWorldPos = terrain.transform.position;
+
+        // Terrain szélesség hosszúság világ koordinátában 100-600-100
+        terrainSize = terrainData.size;
+
+        // Resolution 513
+        res = terrainData.heightmapResolution;
+
+        List<Vector3> treePositions = new();
+
+        foreach (var tree in terrainData.treeInstances)
+        {
+            Vector3 worldPosition = new Vector3(
+                tree.position.x * terrainData.size.x + terrainWorldPos.x,
+                tree.position.y * terrainData.size.y + terrainWorldPos.y,
+                tree.position.z * terrainData.size.z + terrainWorldPos.z
+            );
+
+            treePositions.Add(worldPosition);
+        }
+
+        PlacementManager.Instance.SetTreePositions(treePositions);
+    }
+
     public void AdjustTerrainToBuilding(GameObject building, int buildingIndex, bool saveOriginal)
     {
         if (terrain == null) return;
@@ -61,17 +89,6 @@ public class TerrainController : MonoBehaviour
 
     private void SetCurrentData(GameObject building)
     {
-        // Terrain és building adatainak beállítása
-        terrainData = terrain.terrainData;
-
-        // Terrain világ koordinátában
-        terrainWorldPos = terrain.transform.position;
-
-        // Terrain szélesség hosszúság világ koordinátában 100-600-100
-        terrainSize = terrainData.size;
-
-        // Resolution 513
-        res = terrainData.heightmapResolution;
 
         // A jelenlegire beállítom
         CurrentObject = building;
@@ -83,7 +100,7 @@ public class TerrainController : MonoBehaviour
         // Building tényleges alja
         try
         {
-            GameObject bottom = CurrentObject.GetComponentsInChildren<GameObject>().FirstOrDefault(t => t.name.ToUpper() == "FLOOR");
+            GameObject bottom = CurrentObject.transform.Find("Floor").gameObject;
             bounds = bottom.GetComponent<Renderer>().bounds;
         }
         catch (Exception ex)

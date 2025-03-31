@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,7 +10,6 @@ public class PlacementManager : MonoBehaviour
     [SerializeField]
     private List<BuildingData> buildingDatabase = new List<BuildingData>();
 
-    [SerializeField]
     public MapData MapData;
 
     [SerializeField]
@@ -45,9 +45,9 @@ public class PlacementManager : MonoBehaviour
 
     void Start()
     {
+        if (MapData == null) MapData = new MapData();
         LoadAllBuildings();
         StopPlacement();
-        this.MapData = new MapData();
     }
 
     void Update()
@@ -147,6 +147,18 @@ public class PlacementManager : MonoBehaviour
     {
         buildingDatabase = new List<BuildingData>(Resources.LoadAll<BuildingData>("Buildings"));
         Debug.Log($"Betöltve {buildingDatabase.Count} épület.");
+    }
+
+    public void SetTreePositions(List<Vector3> treePositions)
+    {
+        foreach (var pos in treePositions)
+        {
+            Vector3Int gridpos = Grid.WorldToCell(pos);
+            Vector2Int gridPosition = new Vector2Int(gridpos.x, gridpos.z);
+            Vector2Int objectSize = new Vector2Int(2, 2);
+            if (MapData == null) MapData = new MapData();
+            MapData.AddObjectAt(gridPosition, objectSize, -1, -1);
+        }
     }
 
 

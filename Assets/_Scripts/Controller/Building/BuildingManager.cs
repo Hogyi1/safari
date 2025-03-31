@@ -16,10 +16,14 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 
     private bool isPlacementModeActive = false;
 
+    [SerializeField]
     private Building ActiveBuilding = null;
+    [SerializeField]
     private BuildingView ActiveView = null;
+    [SerializeField]
     private BuildingView LastView = null;
 
+    public GameObject Popup;
 
     public void Awake()
     {
@@ -37,8 +41,19 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
     {
         // RandomEvents.Instance.AddObserver(this);
 
-        InputManager.Instance.OnClicked += SetViewActive;
-        InputManager.Instance.OnClicked += SetViewInactive;
+        InputManager.Instance.OnClicked += HandleClick;
+    }
+
+    private void HandleClick()
+    {
+        if (LastView != null)
+        {
+            SetViewActive();
+        }
+        else
+        {
+            if (!InputManager.Instance.IsPointerOverUI()) SetViewInactive();
+        }
     }
 
     // Update is called once per frame
@@ -81,6 +96,8 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 
         Debug.Log($"Új építmény lehelyezve, ID {newBuilding.GetID()}");
 
+        SetViewInactive();
+
         return GeneratedID;
     }
 
@@ -97,6 +114,8 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
             PlacementManager.Instance.RemoveStructure(view);
             buildingViews.Remove(buildingID);
         }
+
+        Popup.gameObject.SetActive(false);
     }
 
     public void RegrowEvent()
@@ -113,7 +132,7 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
     public void Refill(int ID)
     {
         var building = activeBuildings.Find(t => t.GetID() == ID);
-        if (EconomyManager.Instance.HasEnoughMoney(building.RefillPrice) && building.IsFeeder)
+        if (EconomyManager.Instance.HasEnoughMoney(building.RefillPrice) && building.isFeeder)
         {
             building.Refill();
             EconomyManager.Instance.AddMoney(building.RefillPrice);
@@ -145,8 +164,8 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         if (ActiveView != null)
         {
             ActiveView.isActive = false;
-            ActiveView.HideUI();
             ActiveView = null;
+            Popup.gameObject.SetActive(false);
         }
     }
 
@@ -157,7 +176,15 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
             SetViewInactive();
             ActiveView = LastView;
             ActiveView.isActive = true;
-            ActiveView.ShowUI();
+
+            Building building = activeBuildings.Find(t => t.GetID() == ActiveView.GetID());
+            Bounds bounds = ActiveView.GetComponentInChildren<Renderer>().bounds;
+
+            Billboard billboard = Popup.GetComponentInChildren<Billboard>();
+            Popup.gameObject.SetActive(true);
+            Popup.transform.position = new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
+            billboard.SetBuilding(building);
+
         }
     }
 }

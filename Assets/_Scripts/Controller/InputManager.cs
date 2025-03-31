@@ -18,12 +18,6 @@ public class InputManager : MonoBehaviour
 
     public event Action OnClicked, OnExit, Left, Right;
 
-    [SerializeField]
-    private Material setMaterial;
-
-    GameObject lastHitObject = null;
-
-    bool isCoroutineStarted = false;
 
     public static InputManager Instance;
     public void Awake()

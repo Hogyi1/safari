@@ -3,14 +3,14 @@ using UnityEngine;
 
 public class Building
 {
-    private int Capacity { get; set; }
+    public int Capacity { get; set; }
     public int MaxCapacity { get; private set; }
     public bool HasCapacity { get; private set; } = false;
-    public bool IsFeeder;
+    public bool isFeeder;
     public DietType ForAnimalType;
     public BuildingType type;
     public int RefillPrice;
-
+    public string name;
     private int ID;
 
     public bool isPlant { get; }
@@ -19,11 +19,22 @@ public class Building
     {
         this.ID = id;
         this.type = Data.type;
+        isPlant = Data.isPlant;
+        MaxCapacity = Data.Capacity;
+        Capacity = Data.Capacity;
+        isFeeder = Data.isFeeder;
+        RefillPrice = Data.Price;
+        name = type.ToString();
     }
 
     private void Init()
     {
 
+    }
+
+    public string GetCapacityString()
+    {
+        return Capacity + "/" + MaxCapacity;
     }
 
     public void Regrow(int amount)
