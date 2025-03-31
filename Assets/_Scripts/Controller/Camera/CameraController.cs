@@ -17,9 +17,6 @@ public class CameraController : MonoBehaviour
     public InputActionReference zoomScrollAction;
     public InputActionReference zoomTriggerAction;
 
-    private enum InputDeviceType { None, MouseKeyboard, Gamepad }
-    private InputDeviceType lastUsedDevice = InputDeviceType.None;
-
     private void OnEnable()
     {
         moveAction.action.Enable();
@@ -27,12 +24,6 @@ public class CameraController : MonoBehaviour
         heightAction.action.Enable();
         zoomScrollAction.action.Enable();
         zoomTriggerAction.action.Enable();
-
-        moveAction.action.performed += UpdateLastUsedDevice;
-        rotateAction.action.performed += UpdateLastUsedDevice;
-        heightAction.action.performed += UpdateLastUsedDevice;
-        zoomScrollAction.action.performed += UpdateLastUsedDevice;
-        zoomTriggerAction.action.performed += UpdateLastUsedDevice;
     }
 
     private void OnDisable()
@@ -42,20 +33,6 @@ public class CameraController : MonoBehaviour
         heightAction.action.Disable();
         zoomScrollAction.action.Disable();
         zoomTriggerAction.action.Disable();
-    }
-
-    private void UpdateLastUsedDevice(InputAction.CallbackContext ctx)
-    {
-        if (ctx.control.device is Gamepad)
-        {
-            lastUsedDevice = InputDeviceType.Gamepad;
-            cursorView.HideCursor();
-        }
-        else if (ctx.control.device is Keyboard || ctx.control.device is Mouse)
-        {
-            lastUsedDevice = InputDeviceType.MouseKeyboard;
-            cursorView.SetDefaultCursor();
-        }
     }
 
     private void Update()
@@ -89,7 +66,7 @@ public class CameraController : MonoBehaviour
 
     private void HandleRotation()
     {
-        if (lastUsedDevice == InputDeviceType.MouseKeyboard)
+        if (InputDeviceDetector.LastUsedDevice == InputDeviceDetector.InputDeviceType.MouseKeyboard)
         {
             if (Mouse.current.rightButton.isPressed)
             {
@@ -102,7 +79,7 @@ public class CameraController : MonoBehaviour
                 cursorView.SetDefaultCursor();
             }
         }
-        else if (lastUsedDevice == InputDeviceType.Gamepad)
+        else if (InputDeviceDetector.LastUsedDevice == InputDeviceDetector.InputDeviceType.Gamepad)
         {
             Vector2 rotateInput = rotateAction.action.ReadValue<Vector2>();
             view.Rotate(rotateInput.x * model.rotateSpeed);

@@ -7,26 +7,39 @@ public class CursorView : MonoBehaviour
     [SerializeField] private Texture2D lookCursor;
     [SerializeField] private Vector2 hotspot = Vector2.zero;
 
-    private void Start()
+    private void OnEnable()
     {
-        SetDefaultCursor();
+        InputDeviceDetector.OnDeviceChanged += HandleDeviceChange;
     }
 
-    public void SetDefaultCursor()
+    private void OnDisable()
     {
-        Cursor.SetCursor(defaultCursor, hotspot, CursorMode.Auto);
+        InputDeviceDetector.OnDeviceChanged -= HandleDeviceChange;
+    }
+
+    private void HandleDeviceChange(InputDeviceDetector.InputDeviceType device)
+    {
+        if (device == InputDeviceDetector.InputDeviceType.Gamepad)
+        {
+            Cursor.visible = false;
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        }
+        else if (device == InputDeviceDetector.InputDeviceType.MouseKeyboard)
+        {
+            Cursor.visible = true;
+            Cursor.SetCursor(defaultCursor, hotspot, CursorMode.Auto);
+        }
     }
 
     public void SetLookCursor()
     {
-        Cursor.SetCursor(lookCursor, hotspot, CursorMode.Auto);
+        if (InputDeviceDetector.LastUsedDevice == InputDeviceDetector.InputDeviceType.MouseKeyboard)
+            Cursor.SetCursor(lookCursor, hotspot, CursorMode.Auto);
     }
 
-    public void HideCursor()
+    public void SetDefaultCursor()
     {
-        Cursor.visible = false;
-        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        if (InputDeviceDetector.LastUsedDevice == InputDeviceDetector.InputDeviceType.MouseKeyboard)
+            Cursor.SetCursor(defaultCursor, hotspot, CursorMode.Auto);
     }
-
-    // Implement more cursor methods here...
 }
