@@ -47,9 +47,15 @@ public class CameraController : MonoBehaviour
     private void UpdateLastUsedDevice(InputAction.CallbackContext ctx)
     {
         if (ctx.control.device is Gamepad)
+        {
             lastUsedDevice = InputDeviceType.Gamepad;
+            cursorView.HideCursor();
+        }
         else if (ctx.control.device is Keyboard || ctx.control.device is Mouse)
+        {
             lastUsedDevice = InputDeviceType.MouseKeyboard;
+            cursorView.SetDefaultCursor();
+        }
     }
 
     private void Update()
