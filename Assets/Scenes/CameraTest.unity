@@ -690,7 +690,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ab29cf90ea8e7d4891a6327e2b48a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: {fileID: 1966696936}
   cinemachineCamera: {fileID: 346249291}
 --- !u!1 &1827900239
 GameObject:
@@ -839,6 +838,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 1966696936}
   view: {fileID: 630188761}
+  cursorView: {fileID: 1978206108}
   moveAction: {fileID: -1733462901839014797, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   rotateAction: {fileID: 7725193369223130656, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   heightAction: {fileID: -3845971346627866169, guid: 052faaac586de48259a63d0c4782560b, type: 3}
@@ -859,6 +859,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2100631395}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1978206106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1978206107}
+  - component: {fileID: 1978206108}
+  m_Layer: 0
+  m_Name: CursorManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1978206107
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1978206106}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2100631395}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1978206108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1978206106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b81b3eea78b0446ad0eb6c0ecaca94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultCursor: {fileID: 2800000, guid: dd6f87ef102004945b7848531da4e9b6, type: 3}
+  lookCursor: {fileID: 2800000, guid: 49250d5bb914fc64c832c967c101a8a3, type: 3}
+  hotspot: {x: 0, y: 0}
 --- !u!1 &2032111191
 GameObject:
   m_ObjectHideFlags: 0
@@ -1017,6 +1064,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1966696938}
+  - {fileID: 1978206107}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
