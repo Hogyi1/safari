@@ -7,6 +7,9 @@ public class CameraController : MonoBehaviour
     [SerializeField] private CameraModel model;
     [SerializeField] private CameraView view;
 
+    [Header("UI Components")]
+    [SerializeField] private CursorView cursorView;
+
     [Header("Input Actions")]
     public InputActionReference moveAction;
     public InputActionReference rotateAction;
@@ -84,8 +87,13 @@ public class CameraController : MonoBehaviour
         {
             if (Mouse.current.rightButton.isPressed)
             {
+                cursorView.SetLookCursor();
                 Vector2 rotateInput = rotateAction.action.ReadValue<Vector2>();
                 view.Rotate(rotateInput.x * model.rotateSpeed);
+            }
+            else
+            {
+                cursorView.SetDefaultCursor();
             }
         }
         else if (lastUsedDevice == InputDeviceType.Gamepad)
