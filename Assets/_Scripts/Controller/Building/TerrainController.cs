@@ -157,10 +157,6 @@ public class TerrainController : MonoBehaviour
         // Legtávolabbi távolság a pontok és a ház között
         float maxDistance2 = Vector3.Distance(bounds.min, relativeCorner);
         float maxDistance = Vector3.Distance(bounds.min, new Vector3(bounds.min.x - offset.x, bounds.min.y, bounds.min.z));
-        Debug.Log(maxDistance + " Maxdistance ");
-        Debug.Log(maxDistance2 + " Maxdistance2 ");
-        Debug.Log("The offset is: " + relativeCorner);
-
 
         // Végigmegyünk a lekért heightmap szelet minden Z (sor) elemén
         for (int z = 0; z < depth; z++)
@@ -333,6 +329,7 @@ public class TerrainController : MonoBehaviour
 
             float terrainHeight = type == BuildingType.ROAD ? currentPosition.y : terrain.SampleHeight(currentPosition);
 
+            // Valahol a jelenlegi és az eredeti közötti magasságra helyezem
             Vector3 newPosition = new Vector3(currentPosition.x, Mathf.Lerp(terrainHeight, currentPosition.y, 0.65f), currentPosition.z);
 
             go.transform.position = newPosition;

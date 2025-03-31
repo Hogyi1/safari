@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class PreviewSystem : MonoBehaviour
 {
@@ -26,6 +27,13 @@ public class PreviewSystem : MonoBehaviour
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
     }
 
+    public void SetGridSize(float size)
+    {
+        Material mat = gridVisualization.GetComponent<DecalProjector>().material;
+
+        mat.SetVector("_Size", new Vector4(size, size, 0f, 0f));
+        mat.SetFloat("_Thickness", size < 1f ? 0.04f : 0.1f);
+    }
     public void StartShowingPlacementPreview(GameObject prefab, Vector2Int size)
     {
         gridVisualization.SetActive(true);

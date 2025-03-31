@@ -94,7 +94,6 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 
         if (buildingViews.TryGetValue(buildingID, out BuildingView view))
         {
-
             PlacementManager.Instance.RemoveStructure(view);
             buildingViews.Remove(buildingID);
         }

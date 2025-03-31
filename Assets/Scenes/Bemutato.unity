@@ -5161,7 +5161,7 @@ GameObject:
   - component: {fileID: 827967248}
   - component: {fileID: 827967247}
   m_Layer: 5
-  m_Name: Canvas (1)
+  m_Name: Building buttons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7678,7 +7678,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1184893778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7691,7 +7691,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 612d6315ce1e3544aafaff306c5a413a, type: 2}
+  m_Material: {fileID: 2100000, guid: 7a25fb07d47638141873f7ca19b319e8, type: 2}
   m_DrawDistance: 1000
   m_FadeScale: 0.9
   m_StartAngleFade: 180
@@ -9107,14 +9107,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21531681c30575945a69475911f64cd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingDatabase: []
-  nextID: 0
-  ActiveView: {fileID: 0}
-  LastView: {fileID: 0}
-  grid: {fileID: 840568156}
-  ActiveMaterial: {fileID: 2100000, guid: f07c1dc33592be246953d70953666e66, type: 2}
-  PreviewSystem: {fileID: 2047799302}
-  TerrainController: {fileID: 1710880673}
 --- !u!1 &1395223826
 GameObject:
   m_ObjectHideFlags: 0
@@ -9398,14 +9390,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1380440422}
-        m_TargetAssemblyTypeName: BuildingManager, Assembly-CSharp
+      - m_Target: {fileID: 2121186587}
+        m_TargetAssemblyTypeName: PlacementManager, Assembly-CSharp
         m_MethodName: StartPlacingItem
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -12820,6 +12812,7 @@ Transform:
   - {fileID: 2047799301}
   - {fileID: 291372111}
   - {fileID: 1710880674}
+  - {fileID: 2121186586}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1835139224
@@ -14142,6 +14135,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2092036695}
   m_CullTransparentMesh: 1
+--- !u!1 &2121186585
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2121186586}
+  - component: {fileID: 2121186587}
+  m_Layer: 0
+  m_Name: PlacementManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2121186586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2121186585}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 54.34923, y: 9.317846, z: 45.904526}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1833966694}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2121186587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2121186585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfc1806e0c7d101478bf6632a3e544a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildingDatabase: []
+  grid: {fileID: 840568156}
+  PreviewSystem: {fileID: 2047799302}
+  TerrainController: {fileID: 1710880673}
 --- !u!1 &2130131732
 GameObject:
   m_ObjectHideFlags: 0
