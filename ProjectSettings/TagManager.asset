@@ -16,7 +16,7 @@ TagManager:
   - Selectable
   - Road
   - Decoration
-  - Terrain
+  - 
   - 
   - 
   - 
@@ -50,4 +50,3 @@ TagManager:
   - Light Layer 5
   - Light Layer 6
   - Light Layer 7
-  - Grid Layer
