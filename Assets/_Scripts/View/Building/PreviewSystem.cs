@@ -1,10 +1,11 @@
-
+﻿
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class PreviewSystem : MonoBehaviour
 {
     [SerializeField]
-    private float previewYOffset = 0.1f;
+    private float previewYOffset = 0.2f;
 
     [SerializeField]
     private GameObject cellIndicator;
@@ -19,13 +20,39 @@ public class PreviewSystem : MonoBehaviour
 
     private Renderer cellIndicatorRenderer;
 
+    [SerializeField]
+    private Color WrongColor;
+
+    [SerializeField]
+    private Color ValidColor;
+
     private void Start()
     {
         previewMaterialInstance = new Material(previewMaterialPrefab);
+        gridVisualization.SetActive(false);
         cellIndicator.SetActive(false);
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
     }
 
+    void Update()
+    {
+        if (previewObject != null)
+        {
+            float t = 0.5f + 0.2f * Mathf.Sin(Time.unscaledTime * 5f);
+
+            Color color = previewMaterialInstance.color;
+            color.a = t;
+            previewMaterialInstance.color = color;
+        }
+    }
+
+    public void SetGridSize(float size)
+    {
+        Material mat = gridVisualization.GetComponent<DecalProjector>().material;
+
+        mat.SetVector("_Size", new Vector4(size, size, 0f, 0f));
+        mat.SetFloat("_Thickness", size < 1f ? 0.04f : 0.1f);
+    }
     public void StartShowingPlacementPreview(GameObject prefab, Vector2Int size)
     {
         gridVisualization.SetActive(true);
@@ -72,7 +99,6 @@ public class PreviewSystem : MonoBehaviour
         {
             MovePreview(position);
             ApplyFeedbackToPreview(validity);
-
         }
 
         MoveCursor(position);
@@ -81,7 +107,7 @@ public class PreviewSystem : MonoBehaviour
 
     private void ApplyFeedbackToPreview(bool validity)
     {
-        Color c = validity ? Color.white : Color.red;
+        Color c = validity ? ValidColor : WrongColor;
 
         c.a = 0.5f;
         previewMaterialInstance.color = c;
@@ -89,7 +115,7 @@ public class PreviewSystem : MonoBehaviour
 
     private void ApplyFeedbackToCursor(bool validity)
     {
-        Color c = validity ? Color.white : Color.red;
+        Color c = validity ? ValidColor : WrongColor;
 
         c.a = 0.5f;
         cellIndicatorRenderer.material.color = c;

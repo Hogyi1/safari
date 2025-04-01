@@ -9,7 +9,7 @@ public class BuildingData : ScriptableObject
     /// Építéshez szükséseges adatok
     /// </summary>
     [SerializeField]
-    [Tooltip("EZ EGY EGYEDI AZONOSÍTÓ")]
+    [Tooltip("EZ EGY EGYEDI AZONOSÍTÓ! Minden épület rendelkezik eggyel. NEM UGYANAZ MINT A VIEW ID")]
     public int BuildingID;
 
     [SerializeField]
