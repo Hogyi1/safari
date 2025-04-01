@@ -173,18 +173,23 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
     {
         if (LastView != null)
         {
-            SetViewInactive();
-            ActiveView = LastView;
-            ActiveView.isActive = true;
+            try
+            {
+                SetViewInactive();
+                ActiveView = LastView;
+                ActiveView.isActive = true;
 
-            Building building = activeBuildings.Find(t => t.GetID() == ActiveView.GetID());
-            Bounds bounds = ActiveView.GetComponentInChildren<Renderer>().bounds;
 
-            Billboard billboard = Popup.GetComponentInChildren<Billboard>();
-            Popup.gameObject.SetActive(true);
-            Popup.transform.position = new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
-            billboard.SetBuilding(building);
+                Building building = activeBuildings.Find(t => t.GetID() == ActiveView.GetID());
+                Bounds bounds = ActiveView.GetComponentInChildren<Renderer>().bounds;
 
+                Billboard billboard = Popup.GetComponentInChildren<Billboard>();
+                Popup.gameObject.SetActive(true);
+                Popup.transform.position = new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
+                billboard.SetBuilding(building);
+
+            }
+            catch (Exception e) { }
         }
     }
 }
