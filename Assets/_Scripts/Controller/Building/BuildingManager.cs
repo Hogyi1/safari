@@ -90,8 +90,6 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         BuildingView view = PlacementManager.Instance.PlaceStructure(Data, position, newBuilding);
         buildingViews[newBuilding.GetID()] = view;
 
-        TerrainController.AdjustTerrainToBuilding(newBuildingGO);
-
         Debug.Log($"Új építmény lehelyezve, ID {newBuilding.GetID()}");
 
         SetViewInactive();
