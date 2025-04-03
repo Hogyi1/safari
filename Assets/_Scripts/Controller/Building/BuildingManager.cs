@@ -19,6 +19,8 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 
     public GameObject Popup;
 
+    [SerializeField]
+    private TerrainController TerrainController;
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -87,6 +89,8 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         activeBuildings.Add(newBuilding);
         BuildingView view = PlacementManager.Instance.PlaceStructure(Data, position, newBuilding);
         buildingViews[newBuilding.GetID()] = view;
+
+        TerrainController.AdjustTerrainToBuilding(newBuildingGO);
 
         Debug.Log($"Új építmény lehelyezve, ID {newBuilding.GetID()}");
 

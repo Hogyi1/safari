@@ -31,15 +31,15 @@ public class Billboard : MonoBehaviour
 
         SetProgress();
         return;
-        if (!MyBuilding.isPlant)
-            if (EconomyManager.Instance.HasEnoughMoney(MyBuilding.RefillPrice))
-            {
-                refill.enabled = true;
-            }
-            else
-            {
-                refill.enabled = false;
-            }
+        //if (!MyBuilding.isPlant)
+        //    if (EconomyManager.Instance.HasEnoughMoney(MyBuilding.RefillPrice))
+        //    {
+        //        refill.enabled = true;
+        //    }
+        //    else
+        //    {
+        //        refill.enabled = false;
+        //    }
     }
 
     private void SetMax()

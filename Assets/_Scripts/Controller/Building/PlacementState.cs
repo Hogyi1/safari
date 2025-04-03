@@ -50,7 +50,7 @@ public class PlacementState : IBuildingState
         MapData.AddObjectAt(GridPosition, Data.SpaceTaken, Data.BuildingID, index);
         previewSystem.UpdatePosition(buildingPos, false);
 
-        Debug.Log("Építmény ezen a pozicion lehelyezve: " + buildingPos + "\n Az építmény ezen a pozicion lesz elmentve " + GridPosition);
+        Debug.Log("ï¿½pï¿½tmï¿½ny ezen a pozicion lehelyezve: " + buildingPos + "\n Az ï¿½pï¿½tmï¿½ny ezen a pozicion lesz elmentve " + GridPosition);
     }
 
     public void UpdateState(Vector3 mousePosition)

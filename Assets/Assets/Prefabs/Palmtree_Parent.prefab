@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2205627941122500837}
   - component: {fileID: 382182250232200381}
+  - component: {fileID: -41860119179740675}
   m_Layer: 8
   m_Name: Palmtree_Parent
   m_TagString: Untagged
@@ -49,6 +50,18 @@ MonoBehaviour:
   isActive: 0
   isCoroutineFinished: 0
   Faded: 0
+--- !u!114 &-41860119179740675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4768927122218511137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a94389f87ef942046a40d518e788413e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6632409515117780825
 PrefabInstance:
   m_ObjectHideFlags: 0
