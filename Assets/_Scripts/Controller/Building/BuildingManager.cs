@@ -8,19 +8,13 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 {
     public static BuildingManager Instance;
 
-    private int nextID = 0;
-
     [SerializeField]
     private List<Building> activeBuildings = new List<Building>();
     public Dictionary<int, BuildingView> buildingViews = new Dictionary<int, BuildingView>();
 
     private bool isPlacementModeActive = false;
 
-    [SerializeField]
-    private Building ActiveBuilding = null;
-    [SerializeField]
     private BuildingView ActiveView = null;
-    [SerializeField]
     private BuildingView LastView = null;
 
     public GameObject Popup;
@@ -89,14 +83,12 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
 
     public int AddBuilding(BuildingData Data, Vector3 position)
     {
-        int GeneratedID = GenerateID();
+        int GeneratedID = IDGenerator.GenerateID();
 
         Building newBuilding = new Building(GeneratedID, Data);
         activeBuildings.Add(newBuilding);
         BuildingView view = PlacementManager.Instance.PlaceStructure(Data, position, newBuilding);
         buildingViews[newBuilding.GetID()] = view;
-
-        TerrainController.AdjustTerrainToBuilding(newBuildingGO);
 
         Debug.Log($"Új építmény lehelyezve, ID {newBuilding.GetID()}");
 
@@ -143,13 +135,6 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
         }
     }
 
-    // Generál egy új ID-t
-    public int GenerateID()
-    {
-        nextID++;
-        return nextID;
-    }
-
     public void OnNotify(RandomEvent randomEvent)
     {
         // TODO
@@ -193,7 +178,10 @@ public class BuildingManager : MonoBehaviour, IRandomEventObserver
                 billboard.SetBuilding(building);
 
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
         }
     }
 }

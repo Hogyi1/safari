@@ -12,139 +12,35 @@ public class BuildingView : MonoBehaviour
     private Building MyBuilding;
 
     [SerializeField]
-    public bool isHovered, isActive, isCoroutineFinished, Faded;
+    public bool isHovered, isActive;
 
-    Renderer[] renderers;
+    private FadeEffect fadeEffect;
+
+    private void Awake()
+    {
+        fadeEffect = GetComponent<FadeEffect>();
+    }
 
     public void Init(Building building)
     {
         this.MyBuilding = building;
         isHovered = false;
         isActive = false;
-        Faded = false;
-        isCoroutineFinished = true;
-    }
-
-    private void Start()
-    {
-        renderers = gameObject.GetComponentsInChildren<Renderer>();
     }
 
     private void Update()
     {
         if (!isActive)
         {
-            if (isCoroutineFinished)
+            if (isHovered && !fadeEffect.IsFaded)
             {
-                if (isHovered && !Faded)
-                {
-                    StartCoroutine(PreparePreview());
-                }
-                else if (!isHovered && Faded)
-                {
-                    StartCoroutine(ResetPreview());
-                }
+                fadeEffect.FadeIn();
+            }
+            else if (!isHovered && fadeEffect.IsFaded)
+            {
+                fadeEffect.FadeOut();
             }
         }
-    }
-
-    private IEnumerator PreparePreview()
-    {
-        isCoroutineFinished = false;
-        List<Material> allMaterials = new List<Material>();
-        foreach (Renderer renderer in renderers)
-        {
-            Material[] materials = renderer.materials;
-
-            foreach (var mat in materials)
-            {
-                if (!mat.HasProperty("_Color")) continue;
-
-                mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                mat.SetInt("_ZWrite", 0);
-                mat.SetInt("_Surface", 1);
-                mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-
-                mat.SetShaderPassEnabled("DepthOnly", false);
-                mat.SetShaderPassEnabled("SHADOWCASTER", enabled);
-                mat.SetOverrideTag("RenderType", "Transparent");
-
-                mat.EnableKeyword("SURFACE_TYPE_TRANSPARENT");
-                mat.EnableKeyword("_ALPHAPREMULTIPLY_ON");
-
-                allMaterials.Add(mat);
-            }
-        }
-
-
-        float time = 0f;
-        while (allMaterials.Count > 0 && allMaterials[0].color.a > 0.5f)
-        {
-            foreach (var mat in allMaterials)
-            {
-                Color c = mat.color;
-                c.a = Mathf.Lerp(1f, 0.5f, time * 5f);
-                mat.color = c;
-            }
-
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        Faded = true;
-        isCoroutineFinished = true;
-    }
-
-
-    private IEnumerator ResetPreview()
-    {
-        isCoroutineFinished = false;
-        List<Material> allMaterials = new List<Material>();
-
-        foreach (Renderer renderer in renderers)
-        {
-            Material[] materials = renderer.materials;
-
-            foreach (var mat in materials)
-            {
-                if (!mat.HasProperty("_Color")) continue;
-                allMaterials.Add(mat);
-            }
-        }
-
-        float time = 0f;
-        while (allMaterials.Count > 0 && allMaterials[0].color.a < 1.0f)
-        {
-            foreach (var mat in allMaterials)
-            {
-                Color c = mat.color;
-                c.a = Mathf.Lerp(0.5f, 1.0f, time * 5f);
-                mat.color = c;
-            }
-
-            time += Time.deltaTime;
-            yield return null;
-        }
-
-        foreach (var mat in allMaterials)
-        {
-            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-            mat.SetInt("_ZWrite", 1);
-            mat.SetInt("_Surface", 0);
-
-            mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
-            mat.SetShaderPassEnabled("DepthOnly", true);
-            mat.SetShaderPassEnabled("SHADOWCASTER", true);
-
-            mat.SetOverrideTag("RenderType", "Opaque");
-
-            mat.DisableKeyword("SURFACE_TYPE_TRANSPARENT");
-            mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        }
-        Faded = false;
-        isCoroutineFinished = true;
     }
 
     public int GetID()
