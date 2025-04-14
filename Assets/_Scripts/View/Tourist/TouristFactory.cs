@@ -8,22 +8,19 @@ public class TouristFactory : MonoBehaviour
     [SerializeField]
     private List<GameObject> TouristPrefabs;
 
-    [SerializeField]
-    private Vector3 Entrance = new Vector3(7.5f, 0.1f, -3.5f);
+    [SerializeField] private GameObject Entrance;
 
     List<string> clothes = new List<string> { "Shirt", "Pants", "Shoes" };
 
-    [SerializeField]
-    private List<Color> skinColors;
+    [SerializeField] private List<Color> skinColors;
 
-    [SerializeField]
-    private List<Color> hairColors;
+    [SerializeField] private List<Color> hairColors;
 
     public TouristView CreateTourist(Tourist newTourist)
     {
         GameObject prefab = GetRandomPrefab();
 
-        GameObject instance = Instantiate(prefab, Entrance, Quaternion.identity);
+        GameObject instance = Instantiate(prefab, Entrance.transform.position, Quaternion.identity);
         TouristView view = instance.GetComponent<TouristView>();
         view.Init(newTourist);
 
