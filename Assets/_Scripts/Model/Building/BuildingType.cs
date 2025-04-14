@@ -1,12 +1,10 @@
 using UnityEngine;
 
+// Milyen típusú épületek lehetnek, A Factory fogja elvégezni ezek létrehozását
 public enum BuildingType
 {
-    RANGER_HOUSE,
-    THIN_TREE,
-    PALM_TREE,
-    FEEDER,
-    CACTUS,
-    BLOCK_TREE,
-    ROAD
+    Vegetation,
+    Water,
+    Feeder,
+    Road,
 }
