@@ -2,7 +2,8 @@ using UnityEngine;
 
 public enum DietType
 {
-    CARNIVORE,
-    HERBIVORE,
-    NONE
+    Carnivore,
+    Herbivore,
+    Water,
+    None
 }
