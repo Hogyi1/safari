@@ -50,8 +50,8 @@ public class PreviewSystem : MonoBehaviour
     {
         Material mat = gridVisualization.GetComponent<DecalProjector>().material;
 
-        mat.SetVector("_Size", new Vector4(size, size, 0f, 0f));
-        mat.SetFloat("_Thickness", size < 1f ? 0.04f : 0.1f);
+        mat.SetVector("_Size", new Vector4(1f / size, 1f / size, 0f, 0f));
+        mat.SetFloat("_Thickness", 1f / size < 1f ? 0.04f : 0.1f);
     }
     public void StartShowingPlacementPreview(GameObject prefab, Vector2Int size)
     {
@@ -109,7 +109,6 @@ public class PreviewSystem : MonoBehaviour
     {
         Color c = validity ? ValidColor : WrongColor;
 
-        c.a = 0.5f;
         previewMaterialInstance.color = c;
     }
 

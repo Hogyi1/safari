@@ -17,9 +17,6 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
     [SerializeField]
     private TouristFactory factory;
 
-    // Mindenkinek egy saját ID
-    private static int nextID = 0;
-
     // Az átlag kedv
     private float OverallMood = 0f;
 
@@ -42,16 +39,10 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
         RandomEvents.Instance.AddObserver(this);
     }
 
-    public int GenerateID()
-    {
-        nextID++;
-        return nextID;
-    }
-
     public void SpawnTourist()
     {
 
-        Tourist newTourist = new Tourist(GenerateID());
+        Tourist newTourist = new Tourist(IDGenerator.GenerateID());
         activeTourists.Add(newTourist);
 
         //GameObject newTouristGO = Instantiate(touristPrefab, Entrance, Quaternion.identity);

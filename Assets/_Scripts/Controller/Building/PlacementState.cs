@@ -22,7 +22,6 @@ public class PlacementState : IBuildingState
         this.MapData = MapData;
 
         previewSystem.StartShowingPlacementPreview(Data.BuildingPrefab, Data.SpaceTaken);
-
     }
 
     public void EndState()
@@ -34,41 +33,32 @@ public class PlacementState : IBuildingState
     {
         Vector3Int gridPosition = grid.WorldToCell(mousePosition);
 
-        int cellSize = Mathf.RoundToInt(grid.cellSize.x);
+        Vector2Int MapPosition = new Vector2Int(gridPosition.x, gridPosition.z);
 
-        Vector2Int GridPosition = new Vector2Int(gridPosition.x * cellSize, gridPosition.z * cellSize);
-
-        if (!MapData.CanPlaceObjectAt(GridPosition, Data.SpaceTaken)) return;
-
-        float height = Data.type == BuildingType.ROAD ? grid.transform.position.y : mousePosition.y;
+        if (!MapData.CanPlaceObjectAt(MapPosition, Data.SpaceTaken)) return;
 
         Vector3 worldPosition = grid.CellToWorld(gridPosition);
-        Vector3 buildingPos = new Vector3(worldPosition.x, height, worldPosition.z);
+        Vector3 buildingPos = new Vector3(worldPosition.x, mousePosition.y, worldPosition.z);
 
-        int index = BuildingManager.Instance.AddBuilding(Data, buildingPos);
+        int index = StructureManager.Instance.CreateStructure(Data, buildingPos);
 
-        MapData.AddObjectAt(GridPosition, Data.SpaceTaken, Data.BuildingID, index);
+        MapData.AddObjectAt(MapPosition, Data.SpaceTaken, Data.BuildingID, index);
         previewSystem.UpdatePosition(buildingPos, false);
 
-        Debug.Log("�p�tm�ny ezen a pozicion lehelyezve: " + buildingPos + "\n Az �p�tm�ny ezen a pozicion lesz elmentve " + GridPosition);
+        Debug.Log("Epitmeny ezen a pozicion lehelyezve: " + buildingPos + "\n Az Epitmeny ezen a pozicion lesz elmentve " + MapPosition);
     }
 
     public void UpdateState(Vector3 mousePosition)
     {
         Vector3Int gridPosition = grid.WorldToCell(mousePosition);
 
-        int cellSize = Mathf.RoundToInt(grid.cellSize.x);
+        Vector2Int MapPosition = new Vector2Int(gridPosition.x, gridPosition.z);
 
-        Vector2Int GridPosition = new Vector2Int(gridPosition.x * cellSize, gridPosition.z * cellSize);
-
-        bool placementValidity = MapData.CanPlaceObjectAt(GridPosition, Data.SpaceTaken);
-
-        float height = Data.type == BuildingType.ROAD ? grid.transform.position.y : mousePosition.y;
+        bool placementValidity = MapData.CanPlaceObjectAt(MapPosition, Data.SpaceTaken);
 
         Vector3 worldPosition = grid.CellToWorld(gridPosition);
-        Vector3 buildingPos = new Vector3(worldPosition.x, height, worldPosition.z);
+        Vector3 buildingPos = new Vector3(worldPosition.x, mousePosition.y, worldPosition.z);
 
         previewSystem.UpdatePosition(buildingPos, placementValidity);
-
     }
 }
