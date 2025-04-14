@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -38,7 +39,6 @@ public class VehicleManager : MonoBehaviour
 
     void Start()
     {
-        //SpawnVehicle(VehicleType.BUS);
         LoadAllVehicles();
         SpawnVehicle(VehicleType.JEEP);
     }
@@ -107,6 +107,7 @@ public class VehicleManager : MonoBehaviour
      */
     public Vector3? AssignTouristToVehicle(Tourist tourist)
     {
+        if (FindRoute().IsUnityNull()) return null;
         var filteredVehicles = activeVehicles.FindAll(t => t.GetState() != VehicleState.ON_TOUR && t.GetState() != VehicleState.FINISHED && t.GetState() != VehicleState.BUSY);
 
         foreach (var vehicle in filteredVehicles)
@@ -126,19 +127,15 @@ public class VehicleManager : MonoBehaviour
     {
         // TODO
         // Majd itt meg kell valósítani a Map / ParkingManagert
-        return new Vector3(-7f, 0f, -5f);
+        return new Vector3(39f, 4.8f, 13.5f);
     }
 
     // Keres egy utat amin elindítja az autót
     public Vector3[] FindRoute()
     {
-        // TODO
-        Vector3[] list = new Vector3[4];
-        list[0] = new Vector3(-6, 0, 13);
-        list[1] = (new Vector3(4, 0, 13));
-        list[2] = (new Vector3(4, 0, -7));
-        list[3] = (new Vector3(-6, 0, -7));
-        return list;
+        List<Vector3> path = RoadManager.Instance.SearchForPath();
+        if (path.Count == 0) return null;
+        return path.ToArray();
     }
 
     // Elindítja a túrát
