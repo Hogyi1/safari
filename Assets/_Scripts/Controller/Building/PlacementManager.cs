@@ -1,5 +1,8 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.AI.Navigation;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,28 +10,22 @@ public class PlacementManager : MonoBehaviour
 {
     public static PlacementManager Instance;
 
-    [SerializeField]
-    private List<BuildingData> buildingDatabase = new List<BuildingData>();
-
+    // Ezen alapul a teljes tÃ©rkÃ©p rendszer nem Ã©r elbaszni
     public MapData MapData;
+    // Minden Ã©pÃ­tÃ©si SO
+    private List<BuildingData> BuildingDatabase = new List<BuildingData>();
 
-    [SerializeField]
-    private Grid Grid;
-    private readonly int RoadCellSize = 6;
-    private readonly int StructureCellSize = 1;
-
-
-    private bool isPlacementModeActive = false;
+    [SerializeField] private NavMeshSurface RoadNavMesh;
+    [SerializeField] private Grid NormalGrid;
+    [SerializeField] private Grid RoadGrid;
+    [SerializeField] private Grid ActiveGrid;
     private Vector3Int LastDetectedPosition = Vector3Int.zero;
 
-    [SerializeField]
-    IBuildingState BuildingState;
+    [SerializeField] IBuildingState BuildingState;
 
-    [SerializeField]
-    private PreviewSystem PreviewSystem;
+    [SerializeField] private PreviewSystem PreviewSystem;
 
-    [SerializeField]
-    public TerrainController TerrainController;
+    [SerializeField] public TerrainController TerrainController;
 
     public void Awake()
     {
@@ -46,16 +43,15 @@ public class PlacementManager : MonoBehaviour
     void Start()
     {
         if (MapData == null) MapData = new MapData();
-        LoadAllBuildings();
-        StopPlacement();
+        LoadAllStructures();
+        // StopPlacement();
     }
 
     void Update()
     {
-        if (!isPlacementModeActive) return;
+        if (InputManager.Instance.state != State.PlacementMode) return;
         Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
-        Vector3Int gridPosition = Grid.WorldToCell(mousePosition);
-
+        Vector3Int gridPosition = ActiveGrid.WorldToCell(mousePosition);
 
         if (LastDetectedPosition != gridPosition)
         {
@@ -64,32 +60,41 @@ public class PlacementManager : MonoBehaviour
         }
     }
 
-    public void StartPlacingItem(int BuildingID)
+    public void StartPlacingItem(int StructureID)
     {
-        BuildingData Structure = buildingDatabase.Find(t => t.BuildingID == BuildingID);
+        InputManager.Instance.SetState(State.PlacementMode);
+        InputManager.Instance.OnClicked += TryPlacement;
+        InputManager.Instance.OnExit += StopPlacement;
+
         StopPlacement();
-        isPlacementModeActive = Structure != null;
-        int cellSize = Structure.type == BuildingType.ROAD ? RoadCellSize : StructureCellSize;
-        Grid.cellSize = new Vector3(cellSize, 1, cellSize);
-        PreviewSystem.SetGridSize(1f / cellSize);
-        if (isPlacementModeActive)
+
+        BuildingData Data = BuildingDatabase.FirstOrDefault(t => t.BuildingID == StructureID);
+
+        if (Data.IsUnityNull()) return;
+        switch (Data.type)
         {
-            BuildingState = new PlacementState(Structure, Grid, PreviewSystem, MapData);
-            InputManager.Instance.OnClicked += TryPlacement;
-            InputManager.Instance.OnExit += StopPlacement;
+            case BuildingType.Road:
+                ActiveGrid = RoadGrid;
+                BuildingState = new RoadState(Data, ActiveGrid, PreviewSystem, MapData);
+                PreviewSystem.SetGridSize(6f);
+                break;
+            default:
+                ActiveGrid = NormalGrid;
+                BuildingState = new PlacementState(Data, ActiveGrid, PreviewSystem, MapData);
+                PreviewSystem.SetGridSize(1f);
+                break;
         }
     }
 
     public void StopPlacement()
     {
-        if (!isPlacementModeActive) return;
-        isPlacementModeActive = false;
-        Grid.cellSize = new Vector3(StructureCellSize, 1, StructureCellSize);
+        if (BuildingState == null) return;
         BuildingState.EndState();
+        BuildingState = null;
+
+        InputManager.Instance.SetState(State.NormalMode);
         InputManager.Instance.OnClicked -= TryPlacement;
         InputManager.Instance.OnExit -= StopPlacement;
-        LastDetectedPosition = Vector3Int.zero;
-        BuildingState = null;
     }
 
     public void TryPlacement()
@@ -101,74 +106,84 @@ public class PlacementManager : MonoBehaviour
         BuildingState.OnAction(mousePosition);
     }
 
-    public BuildingView PlaceStructure(BuildingData Data, Vector3 position, Building newBuilding)
+    public IPlaceable PlaceStructure(BuildingData Data, Vector3 position, Structure newStructure)
     {
 
-        GameObject newBuildingGO = Instantiate(Data.BuildingPrefab, position, Quaternion.identity);
-        BuildingView view = newBuildingGO.GetComponent<BuildingView>();
-        view.Init(newBuilding);
+        GameObject newStructureGO = Instantiate(Data.BuildingPrefab, position, Quaternion.identity);
+        IPlaceable view = newStructureGO.GetComponent<IPlaceable>();
+        view.Init(newStructure);
 
-        TerrainController.AdjustTerrainToBuilding(newBuildingGO, view.GetID(), true);
+        TerrainController.AdjustTerrainToStructure(newStructureGO, view.GetID(), true);
 
         return view;
     }
 
-    public void RemoveStructure(BuildingView view)
+    public IPlaceable PlaceRoad(BuildingData Data, Vector3 position)
     {
-        Vector3Int gridPosition = Grid.WorldToCell(view.transform.position);
 
-        int cellSize = Mathf.RoundToInt(Grid.cellSize.x);
+        GameObject newStructureGO = Instantiate(Data.BuildingPrefab, position, Quaternion.identity);
+        IPlaceable view = newStructureGO.GetComponent<IPlaceable>();
+        newStructureGO.transform.SetParent(RoadNavMesh.transform, true);
 
-        Vector2Int GridPosition = new Vector2Int(gridPosition.x * cellSize, gridPosition.z * cellSize);
+        TerrainController.AdjustTerrainToStructure(newStructureGO, view.GetID(), true);
 
-        Debug.Log(view.transform.position + "  " + cellSize);
-
-        MapData.RemoveObjectAt(GridPosition);
-        TerrainController.RestoreTerrain(view.GetID());
-        Destroy(view.gameObject);
+        RoadNavMesh.BuildNavMesh();
+        return view;
     }
 
-    // Megnézi van azon a pozicion egy GameObject ha igen visszaadja ha nem akkor nullt ad
-    public GameObject IsEmpty(Vector3 position)
+    public void RemoveStructure(IPlaceable placeable)
     {
-        Vector3Int gridPosition = Grid.WorldToCell(position);
+        Vector3Int gridPosition = ActiveGrid.WorldToCell(placeable.GetGameObject().transform.position);
 
-        int cellSize = Mathf.RoundToInt(Grid.cellSize.x);
+        int cellSize = Mathf.RoundToInt(ActiveGrid.cellSize.x);
+
         Vector2Int GridPosition = new Vector2Int(gridPosition.x * cellSize, gridPosition.z * cellSize);
 
-        int buildingID = MapData.IsOccupied(GridPosition);
-        if (buildingID > -1)
-            return BuildingManager.Instance.buildingViews[buildingID].gameObject;
+        MapData.RemoveObjectAt(GridPosition);
+        TerrainController.RestoreTerrain(placeable.GetID());
+        Destroy(placeable.GetGameObject());
+    }
+
+    // MegnÃ©zi van-e azon a pozicion egy GameObject ha igen visszaadja ha nem akkor nullt ad
+    public GameObject IsEmpty(Vector3 position)
+    {
+        Vector3Int gridPosition = NormalGrid.WorldToCell(position);
+
+        Vector2Int GridPosition = new Vector2Int(gridPosition.x, gridPosition.z);
+
+        int StructureID = MapData.IsOccupied(GridPosition);
+        if (StructureID > -1)
+        {
+            if (StructureManager.Instance.IInteractables.TryGetValue(StructureID, out IPlaceable placeable)) return placeable.GetGameObject();
+            else { RoadManager.Instance.ActiveViews.TryGetValue(StructureID, out RoadView roadview); return roadview.GetGameObject(); }
+        }
         return null;
     }
 
-    // Betölti a Resource folderból az összes BuildingData ScriptableObjectet
-    private void LoadAllBuildings()
+    // BetÃ¶lti a Resource folderbÃ³l az Ã¶sszes StructureData ScriptableObjectet
+    private void LoadAllStructures()
     {
-        buildingDatabase = new List<BuildingData>(Resources.LoadAll<BuildingData>("Buildings"));
-        Debug.Log($"Betöltve {buildingDatabase.Count} épület.");
+        BuildingDatabase = new List<BuildingData>(Resources.LoadAll<BuildingData>("Buildings"));
+        Debug.Log($"BetÃ¶ltve {BuildingDatabase.Count} Ã©pÃ¼let.");
     }
 
+    // Minden elÅ‘re telepÃ­tett fa helyÃ©t lefoglalja
     public void SetTreePositions(List<Vector3> treePositions)
     {
         foreach (var pos in treePositions)
         {
-            Vector3Int gridpos = Grid.WorldToCell(pos);
+            Vector3Int gridpos = NormalGrid.WorldToCell(pos);
             Vector2Int gridPosition = new Vector2Int(gridpos.x, gridpos.z);
             Vector2Int objectSize = new Vector2Int(2, 2);
             if (MapData == null) MapData = new MapData();
             MapData.AddObjectAt(gridPosition, objectSize, -1, -1);
         }
     }
+}
 
-
-
-
-
-
-    // A forgatáshoz szükséges komponensek
-    public enum Direction
-    {
-        UP, DOWN, LEFT, RIGHT
-    }
+public interface IBuildingState
+{
+    void EndState();
+    void OnAction(Vector3 gridPosition);
+    void UpdateState(Vector3 gridPosition);
 }
