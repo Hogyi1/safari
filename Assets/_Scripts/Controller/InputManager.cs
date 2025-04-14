@@ -11,15 +11,16 @@ public class InputManager : MonoBehaviour
     [SerializeField]
     private LayerMask PlacementLayermask;
 
-    [SerializeField]
-    private LayerMask SelectableLayermask;
-
     private Vector3 LastPosition;
 
     public event Action OnClicked, OnExit, Left, Right;
 
+    public State state = State.NormalMode;
 
     public static InputManager Instance;
+
+    [SerializeField] private StructureViewHandler ViewHandler;
+
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -55,26 +56,21 @@ public class InputManager : MonoBehaviour
         }
     }
 
+    public void SetState(State state)
+    {
+        this.state = state;
+        if (state == State.PlacementMode) ViewHandler.gameObject.SetActive(false);
+        else ViewHandler.gameObject.SetActive(true);
+    }
 
 
     public bool IsPointerOverUI() => EventSystem.current.IsPointerOverGameObject();
 
-    public BuildingView GetHoveredObjectScript()
-    {
-        Vector3 mousePos = Input.mousePosition;
-        Ray ray = SceneCamera.ScreenPointToRay(mousePos);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, 999f, SelectableLayermask))
-        {
-            return hit.collider.GetComponentInParent<BuildingView>();
-        }
-
-        return null;
-    }
-
     public Vector3 GetSelectedMapPosition()
     {
+        if (IsPointerOverUI())
+            return Vector3.zero;
+
         Vector3 mousePos = Input.mousePosition;
         Ray ray = SceneCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
@@ -85,4 +81,10 @@ public class InputManager : MonoBehaviour
         return LastPosition;
 
     }
+}
+
+public enum State
+{
+    PlacementMode,
+    NormalMode
 }
