@@ -23,6 +23,7 @@ public static class InputEventChannel
     public static event Action<Vector2> OnCameraMove;
     public static event Action<Vector2> OnCameraRotate;
     public static event Action<float> OnCameraHeight;
+    public static event Action<bool> OnToggleUIMode;
 
     internal static void RaiseMove(Vector2 dir) => OnMove?.Invoke(dir);
     internal static void RaiseLook(Vector2 delta) => OnLook?.Invoke(delta);
@@ -32,4 +33,6 @@ public static class InputEventChannel
     internal static void RaiseCameraMove(Vector2 dir) => OnCameraMove?.Invoke(dir);
     internal static void RaiseCameraRotate(Vector2 delta) => OnCameraRotate?.Invoke(delta);
     internal static void RaiseCameraHeight(float value) => OnCameraHeight?.Invoke(value);
+    internal static void RaiseToggleUIMode(bool active) => OnToggleUIMode?.Invoke(active);
+
 }
