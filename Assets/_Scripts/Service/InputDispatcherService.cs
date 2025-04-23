@@ -20,10 +20,20 @@ public class InputDispatcherService : MonoBehaviour
         input.CameraControls.Height.performed += ctx => InputEventChannel.RaiseCameraHeight(ctx.ReadValue<float>());
         input.CameraControls.ZoomScroll.performed += ctx => InputEventChannel.RaiseZoom(ctx.ReadValue<float>());
         input.CameraControls.ZoomTriggers.performed += ctx => InputEventChannel.RaiseZoom(ctx.ReadValue<float>());
+
+        input.UI.TogglePause.performed += _ => TogglePause();
     }
 
     private void OnDisable()
     {
         input.Disable();
+    }
+
+    private bool isPaused = false;
+
+    private void TogglePause()
+    {
+        isPaused = !isPaused;
+        InputEventChannel.RaisePauseToggled(isPaused);
     }
 }
