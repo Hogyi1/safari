@@ -22,7 +22,7 @@ public class ItemUiShop : MonoBehaviour
     public void SetItemData(Item item)
     {
         itemData = item;
-        this.text.text = item.Name;
+        this.text.text = item.ItemName;
         itemImage.sprite = item.ImagePath;
         ItemButton.onClick.RemoveAllListeners(); 
         ItemButton.onClick.AddListener(() =>

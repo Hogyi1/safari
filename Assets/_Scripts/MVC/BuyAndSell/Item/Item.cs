@@ -13,7 +13,7 @@ public class Item : ScriptableObject
     [SerializeField] private Sprite imagePath;
 
     public int Id => id;
-    public string ItemName => name;
+    public string ItemName => itemName;
     public int Price => price;
     public Category Category => category;
     public int Count => count;

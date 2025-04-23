@@ -19,7 +19,7 @@ public class ItemDetailPanelShop : MonoBehaviour
 
     public void Show(Item item)
     {
-        itemNameText.text = item.Name;
+        itemNameText.text = item.ItemName;
         itemPriceText.text = $"{item.Price} Coins";
         itemCategoryText.text = Convert.ToString(item.Category);
         inInventory.text = Convert.ToString(item.Count);
