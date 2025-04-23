@@ -64,7 +64,7 @@ public class InventoryManager : MonoBehaviour
         inventoryView.UpdateInventoryUI(filtered);
     }
 
-    public void Place() {
+    public void PlaceItem() {
 
 
         //ide kell még a placingmanaggerbol hogy le lett e placelve és csak akkor hivni
@@ -81,7 +81,7 @@ public class InventoryManager : MonoBehaviour
         if (inventory.CanSellItem(inventory.currentItem))
         {
             inventory.DecreaseItemCountOrRemove(inventory.currentItem);
-            economyManager.AddMoney(inventory.currentItem.calculateSellingPrice());
+            economyManager.AddMoney(inventory.currentItem.CalculateSellingPrice());
             inventoryView.UpdateInventoryUI(inventory.items);
             inventoryView.DetailPanelUpdate(inventory.currentItem);
         }

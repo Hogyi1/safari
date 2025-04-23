@@ -17,11 +17,11 @@ public class ItemDetailPanelInventory : MonoBehaviour
 
     public void Show(Item item)
     {
-        itemNameText.text = item.namE;
+        itemNameText.text = item.Name;
         itemPriceText.text = $"{item.Price} Coins";
         itemCategoryText.text = Convert.ToString(item.Category);
         inInventory.text = Convert.ToString(item.Count);
-        sellingPrice.text = Convert.ToString(item.calculateSellingPrice());
+        sellingPrice.text = Convert.ToString(item.CalculateSellingPrice());
         gameObject.SetActive(true);
     }
 

@@ -6,7 +6,7 @@ public class Park : MonoBehaviour
     public int ID;
     public string Name;
 
-    public Difiiculty.DifficultyEnum difficulty;
+    public Difficulty.DifficultyEnum difficulty;
 
     public Inventory inventory;
    //managger osztályok

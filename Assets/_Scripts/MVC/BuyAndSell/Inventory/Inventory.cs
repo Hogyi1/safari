@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
+
 
 public class Inventory : MonoBehaviour {
 
@@ -32,11 +31,11 @@ public class Inventory : MonoBehaviour {
 
         if (existingItem != null)
         {
-            existingItem.increaseCount(1);
+            existingItem.IncreaseCount(1);
         }
         else
         {
-            item.increaseCount(1);
+            item.IncreaseCount(1);
             items.Add(item);
         }
 
@@ -57,7 +56,7 @@ public class Inventory : MonoBehaviour {
 
     public void DecreaseItemCountOrRemove(Item item)
     {
-        item.decreaseCount(1);
+        item.DecreaseCount(1);
         if (!CanSellItem(item))
         {
             RemoveItem(item);

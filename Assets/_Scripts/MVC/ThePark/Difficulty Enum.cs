@@ -1,5 +1,6 @@
 using UnityEngine;
-public static class Difiiculty {
+public static class Difficulty
+{
 
     public static int multiplier;
     public enum DifficultyEnum

@@ -3,10 +3,8 @@ using UnityEngine;
 public class SaveLoadManager : MonoBehaviour
 {
 
-
     public bool isSaved;
     public string saveFile;
-
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

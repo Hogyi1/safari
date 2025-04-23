@@ -76,8 +76,6 @@ public class ShopManager : MonoBehaviour
         shopView.GenerateShopItems(filtered);
     }
 
-    
-
    
 
     public void ShowItemDetails(Item item) {
