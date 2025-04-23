@@ -13,8 +13,7 @@ public class ItemDetailPanelInventory : MonoBehaviour
     public TMP_Text capacity;
     public TMP_Text inInventory;
     public TMP_Text sellingPrice;
-
-
+    
     public void Show(Item item)
     {
         itemNameText.text = item.ItemName;
@@ -24,8 +23,7 @@ public class ItemDetailPanelInventory : MonoBehaviour
         sellingPrice.text = Convert.ToString(item.CalculateSellingPrice());
         gameObject.SetActive(true);
     }
-
-
+    
     public void ShowPanel()
     {
         panelToShow.SetActive(true);
