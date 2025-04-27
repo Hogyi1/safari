@@ -3,6 +3,7 @@ using UnityEngine;
 public class MainMenuController : MonoBehaviour
 {
     [SerializeField] GameObject[] menus;
+    [SerializeField] private string gameSceneName = "Bemutato";
 
     private void Start()
     {
@@ -20,9 +21,14 @@ public class MainMenuController : MonoBehaviour
 
     public void mm_Continue()
     {
-        // Continue button behaviour...
-
-        Debug.Log("Continue button clicked.");
+        if (SceneHandler.Instance != null)
+        {
+            SceneHandler.Instance.LoadGameScene(gameSceneName);
+        }
+        else
+        {
+            Debug.LogWarning("SceneHandler.Instance is null. Can't load menu.");
+        }
     }
 
     public void mm_ExitToDesktop()
