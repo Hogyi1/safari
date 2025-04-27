@@ -76,4 +76,4 @@ crashlytics-build.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/unity
 .vsconfig
-/Assets/_Scripts/Controller/Building/PlacementState.cs
+/Assets/Assets/Fonts/Poppins
