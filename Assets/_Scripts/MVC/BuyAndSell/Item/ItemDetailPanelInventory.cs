@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class ItemDetailPanelInventory : MonoBehaviour
 {
-    public GameObject panelToShow;
     public TMP_Text itemNameText;
     public TMP_Text itemPriceText;
     public TMP_Text itemCategoryText;
@@ -16,21 +15,13 @@ public class ItemDetailPanelInventory : MonoBehaviour
     
     public void Show(Item item)
     {
-        itemNameText.text = item.ItemName;
-        itemPriceText.text = $"{item.Price} Coins";
-        itemCategoryText.text = Convert.ToString(item.Category);
-        inInventory.text = Convert.ToString(item.Count);
+        itemNameText.text = item.itemName;
+        itemPriceText.text = $"{item.price} Coins";
+        itemCategoryText.text = Convert.ToString(item.category);
+        inInventory.text = Convert.ToString(Inventory.Instance.GetItemCount(item));
         sellingPrice.text = Convert.ToString(item.CalculateSellingPrice());
         gameObject.SetActive(true);
     }
     
-    public void ShowPanel()
-    {
-        panelToShow.SetActive(true);
-    }
-
-
-
-
 
 }

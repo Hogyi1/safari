@@ -9,25 +9,21 @@ public class ItemUiShop : MonoBehaviour
     public Image itemImage;
     public Button ItemButton;
 
-    private Item itemData;
-    private ShopManager shopManager;
-
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        shopManager = ShopManager.Instance; 
     }
 
     public void SetItemData(Item item)
     {
-        itemData = item;
-        this.text.text = item.ItemName;
-        itemImage.sprite = item.ImagePath;
+      
+        this.text.text = item.itemName;
+        itemImage.sprite = item.imagePath;
         ItemButton.onClick.RemoveAllListeners(); 
         ItemButton.onClick.AddListener(() =>
         {
-            ShopManager.Instance.ShowItemDetails(itemData);
+            ShopManager.Instance.ShowItemDetails(item);
         });
     }
     
