@@ -5,12 +5,9 @@ using UnityEngine;
 public class Inventory : MonoBehaviour {
 
     //contains the purchesed items
-    public List<Item> items;
+    public static Inventory Instance;
+    public Dictionary<Item, int> items = new ();
     public Item currentItem;
-
-
-
-    public Inventory Instance;
 
 
     public void Awake()
@@ -27,49 +24,66 @@ public class Inventory : MonoBehaviour {
 
     public void AddItem(Item item)
     {
-        Item existingItem = items.Find(i => i == item);
 
-        if (existingItem != null)
+        if (items.TryGetValue(item, out int itemcount))
         {
-            existingItem.IncreaseCount(1);
+            items[item] +=  1;
         }
         else
         {
-            item.IncreaseCount(1);
-            items.Add(item);
+            items.Add(item, 1);
         }
-
         Debug.Log("item hozzáadva");
     }
 
 
-    private void RemoveItem(Item item)
+    public void RemoveItem(Item item)
     {
-       items.Remove(item);
+        if (items.TryGetValue(item, out int itemcount))
+        {
+            itemcount -= 1;
+            if (itemcount <= 0)
+            {
+                items.Remove(item); 
+            }
+            else
+            {
+                items[item] = itemcount; 
+            }
+        }
+
     }
     
-    
-    public void PalaceItem(Item item) {
-        DecreaseItemCountOrRemove(item);
-    }
-
-
+   
     public void DecreaseItemCountOrRemove(Item item)
     {
-        item.DecreaseCount(1);
         if (!CanSellItem(item))
         {
             RemoveItem(item);
         }
     }
 
-    public bool HasItem(Item item) { 
-       return items.Contains(item);
+    public bool HasItem(Item item) {
+        return items.ContainsKey(item) && items[item] > 0;
     }
+
 
     public bool CanSellItem(Item item) { 
-        return item.Count > 0;
+        return GetItemCount(item) > 0;
     }
 
 
+    public int GetItemCount(Item item) {
+        if (items.TryGetValue(item, out int itemcount))
+        {
+            return itemcount;
+        }
+        else
+        {
+            return 0;
+        }
+
+    }
+
+   
 }

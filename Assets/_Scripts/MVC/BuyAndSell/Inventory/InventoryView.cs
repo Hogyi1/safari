@@ -1,13 +1,14 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class InventoryView : MonoBehaviour
 {
 
-    public GameObject itemPrefab; // Az item UI prefab
-    public Transform inventoryContent; // Az a UI konténer, ahová az itemeket generáljuk
+    public GameObject itemPrefab; 
+    public Transform inventoryContent; 
     public ItemDetailPanelInventory detailPanel;
-    public InventoryView Instance;
+    public static InventoryView Instance;
 
 
     public void Awake()
@@ -32,12 +33,11 @@ public class InventoryView : MonoBehaviour
 
     }
 
-
-    public void UpdateInventoryUI(List<Item> items)
+    public void GenerateInventoryUI(Dictionary<Item,int> items)
     {
         ClearUP();
 
-        foreach (Item item in items)
+        foreach (Item item in items.Keys)
         {
             GameObject newItem = Instantiate(itemPrefab, inventoryContent);
             ItemUiInventory itemUI = newItem.GetComponent<ItemUiInventory>();
@@ -49,16 +49,7 @@ public class InventoryView : MonoBehaviour
     }
 
     public void DetailPanelUpdate(Item item) {
-
         detailPanel.Show(item);
-
     }
-
-
-
-
-
-
-
 
 }

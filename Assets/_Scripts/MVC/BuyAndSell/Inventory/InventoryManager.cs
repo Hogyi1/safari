@@ -5,17 +5,12 @@ public class InventoryManager : MonoBehaviour
 {
     public Inventory inventory;
     public InventoryView inventoryView;
-
     public static InventoryManager Instance;
-   
-   
     public EconomyManager economyManager;
 
-
-  
     void Start()
     {
-        inventoryView.UpdateInventoryUI(inventory.items);
+        inventoryView.GenerateInventoryUI(inventory.items);
     }
 
 
@@ -33,47 +28,41 @@ public class InventoryManager : MonoBehaviour
 
     private void OnEnable()
     {
-        inventoryView.UpdateInventoryUI(inventory.items);
+        inventoryView.GenerateInventoryUI(inventory.items);
     }
 
     
     public void FilterAll()
     {
-       inventoryView.UpdateInventoryUI(inventory.items);
+       inventoryView.GenerateInventoryUI(inventory.items);
     }
 
     public void FilterCategory(int categoryIndex)
     {
         inventoryView.ClearUP();
-        List<Item> filtered = new();
         //intet convertál categoryvá
         Category category = (Category)categoryIndex;
 
-
-
         // Csak a kiválasztott kategóriát rendereljük
-        foreach (Item item in inventory.items)
+        Dictionary<Item, int> filtered = new Dictionary<Item, int>();
+
+        foreach (KeyValuePair<Item, int> entry in inventory.items)
         {
-            if (item.Category == category)
+            if (entry.Key.category == category)
             {
-               filtered.Add(item);
+                filtered.Add(entry.Key, entry.Value);
             }
         }
-
-
-        inventoryView.UpdateInventoryUI(filtered);
+    
+        inventoryView.GenerateInventoryUI(filtered);
+    }
+    public void StartPlacing() { 
+        
     }
 
     public void PlaceItem() {
-
-
-        //ide kell még a placingmanaggerbol hogy le lett e placelve és csak akkor hivni
-        //az inventoryt el kell tunteni
-        if (true)
-        {
-            inventory.PalaceItem(inventory.currentItem);
-            inventoryView.UpdateInventoryUI(inventory.items);
-        }
+            inventory.RemoveItem(inventory.currentItem);
+            inventoryView.GenerateInventoryUI(inventory.items);
     }
 
     public void Sell() {
@@ -82,7 +71,7 @@ public class InventoryManager : MonoBehaviour
         {
             inventory.DecreaseItemCountOrRemove(inventory.currentItem);
             economyManager.AddMoney(inventory.currentItem.CalculateSellingPrice());
-            inventoryView.UpdateInventoryUI(inventory.items);
+            inventoryView.GenerateInventoryUI(inventory.items);
             inventoryView.DetailPanelUpdate(inventory.currentItem);
         }
         else
@@ -104,5 +93,4 @@ public class InventoryManager : MonoBehaviour
         inventory.AddItem(Item);
     }
 
-    
 }
