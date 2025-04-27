@@ -10702,6 +10702,7 @@ MonoBehaviour:
   - {fileID: 1224616201}
   - {fileID: 1165176799}
   - {fileID: 163719161}
+  gameSceneName: Bemutato
 --- !u!114 &1031841807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12415,10 +12416,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 232982335}
-        m_TargetAssemblyTypeName: SceneHandler, Assembly-CSharp
-        m_MethodName: LoadGameScene
-        m_Mode: 5
+      - m_Target: {fileID: 1031841806}
+        m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
+        m_MethodName: mm_Continue
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
