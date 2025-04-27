@@ -124,6 +124,14 @@ MonoBehaviour:
     m_Y: 0
     m_Width: 1023
     m_Height: 1023
+  - m_X: 410
+    m_Y: 252
+    m_Width: 613
+    m_Height: 771
+  - m_X: 410
+    m_Y: 247
+    m_Width: 526
+    m_Height: 776
   m_FontFeatureTable:
     m_MultipleSubstitutionRecords: []
     m_LigatureSubstitutionRecords: []
