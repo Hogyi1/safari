@@ -6,7 +6,7 @@ public class Inventory : MonoBehaviour {
 
     //contains the purchesed items
     public static Inventory Instance;
-    public Dictionary<Item, int> items = new ();
+    [SerializeField]public Dictionary<Item, int> items = new ();
     public Item currentItem;
 
 

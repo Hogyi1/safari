@@ -986,7 +986,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1167116393}
-  - {fileID: 1878980285}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &60887477
@@ -3545,7 +3544,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 639138099}
+      - m_Target: {fileID: 639138100}
         m_TargetAssemblyTypeName: InventoryManager, Assembly-CSharp
         m_MethodName: FilterCategory
         m_Mode: 3
@@ -4985,6 +4984,7 @@ GameObject:
   m_Component:
   - component: {fileID: 639138098}
   - component: {fileID: 639138099}
+  - component: {fileID: 639138100}
   m_Layer: 0
   m_Name: InventoryManagger
   m_TagString: Untagged
@@ -5019,6 +5019,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f4a5bfbf10bc6a43ada635ffe2bbd89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &639138100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 639138097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b70da13e4bd4702488a0bf2c2bbbe590, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventory: {fileID: 1167116392}
+  inventoryView: {fileID: 196580249}
+  economyManager: {fileID: 88633872}
 --- !u!1 &643959695
 GameObject:
   m_ObjectHideFlags: 0
@@ -5303,7 +5318,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cae31b95242e5a147a1abc4f2f3bf3da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelToShow: {fileID: 667940171}
   itemNameText: {fileID: 1485375882}
   itemPriceText: {fileID: 1392321174}
   itemCategoryText: {fileID: 240842957}
@@ -5756,9 +5770,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 639138099}
+      - m_Target: {fileID: 639138100}
         m_TargetAssemblyTypeName: InventoryManager, Assembly-CSharp
-        m_MethodName: UpdateInventoryUI
+        m_MethodName: FilterAll
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5898,6 +5912,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641c7fb43f6aafa4f8cbe5d5b6c70722, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buybutton: {fileID: 914688888}
   itemPrefab: {fileID: 1675532663936357472, guid: a7a846f0895fd034cb4dd0bd619c40d7, type: 3}
   shopContent: {fileID: 762307260}
   detailPanel: {fileID: 1591647297}
@@ -8404,7 +8419,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acf334f5978fb7840830b001b2d1ed5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  items: []
   currentItem: {fileID: 0}
 --- !u!4 &1167116393
 Transform:
@@ -11328,7 +11342,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 639138099}
+      - m_Target: {fileID: 639138100}
         m_TargetAssemblyTypeName: InventoryManager, Assembly-CSharp
         m_MethodName: FilterCategory
         m_Mode: 3
@@ -11957,7 +11971,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e308aeb63d04124bbf1816abcc2f8b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelToShow: {fileID: 1591647293}
+  buyButton: {fileID: 914688888}
   itemNameText: {fileID: 652644358}
   itemPriceText: {fileID: 1153422264}
   itemCategoryText: {fileID: 1814952866}
@@ -13966,7 +13980,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 639138099}
+      - m_Target: {fileID: 639138100}
         m_TargetAssemblyTypeName: InventoryManager, Assembly-CSharp
         m_MethodName: FilterCategory
         m_Mode: 3
@@ -14677,50 +14691,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1833255691}
   m_CullTransparentMesh: 1
---- !u!1 &1878980284
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1878980285}
-  - component: {fileID: 1878980286}
-  m_Layer: 0
-  m_Name: ShopModel
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1878980285
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1878980284}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 58078951}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1878980286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1878980284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ddc992bd901e5443a680dc1f1186feb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1881805348
 GameObject:
   m_ObjectHideFlags: 0
@@ -14940,7 +14910,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 639138099}
+      - m_Target: {fileID: 639138100}
         m_TargetAssemblyTypeName: InventoryManager, Assembly-CSharp
         m_MethodName: FilterCategory
         m_Mode: 3
@@ -15590,9 +15560,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shopView: {fileID: 750970375}
-  items: []
   currentItem: {fileID: 0}
-  asd: 0
 --- !u!1 &1946046450
 GameObject:
   m_ObjectHideFlags: 0
@@ -17053,7 +17021,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1930967803}
         m_TargetAssemblyTypeName: ShopManager, Assembly-CSharp
-        m_MethodName: GenerateShopItems
+        m_MethodName: FilterAll
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -17320,7 +17288,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 639138099}
+      - m_Target: {fileID: 639138100}
         m_TargetAssemblyTypeName: InventoryManager, Assembly-CSharp
         m_MethodName: FilterCategory
         m_Mode: 3
