@@ -1,27 +1,14 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShopView : MonoBehaviour
 {
-
-
-    public GameObject itemPrefab; // Az item UI prefab
-    public Transform shopContent; // Az a UI konténer, ahová az itemeket generáljuk
+    public Button buybutton;
+    public GameObject itemPrefab; 
+    public Transform shopContent; 
     public ItemDetailPanelShop detailPanel;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
 
     public void ClearUP()
     {
@@ -34,7 +21,7 @@ public class ShopView : MonoBehaviour
     }
 
 
-    public void GenerateShopItems(List<Item> items)
+    public void GenerateShopItems(HashSet<Item> items)
     {
         ClearUP();
         foreach (Item item in items)
@@ -53,6 +40,8 @@ public class ShopView : MonoBehaviour
         detailPanel.Show(item);
     }
 
+
+    
 
 
 

@@ -1,27 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ShopManager : MonoBehaviour
-{
-
-    public ShopModell shopModell;
+{   
     public ShopView shopView;
-
     public static ShopManager Instance;
-    public Inventory inventory;
-    public EconomyManager economyManager;
-    public InventoryManager inventoryManager;
-
-
-
-   
+    public HashSet<Item> items;
+    public Item currentItem;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        inventoryManager = GetComponent<InventoryManager>();
-        shopView.GenerateShopItems(shopModell.items);
+        LoadAllShopItem();
+        shopView.GenerateShopItems(items);
     }
 
     public void Awake()
@@ -37,51 +28,47 @@ public class ShopManager : MonoBehaviour
     public void PurchaseItem()
     {
         //mivel nincs más lehetõség vásárlásra ezért amikor rányom egy itemre csak akkor tudja megvenni
-        if (shopModell.currentItem != null)
+        if (currentItem != null)
         {
-            if (economyManager.HasEnoughMoney(shopModell.currentItem.Price))
-            {
-                inventory.AddItem(shopModell.currentItem);
-                economyManager.RemoveMoney(shopModell.currentItem.Price);
-                ShowItemDetails(shopModell.currentItem);
+                Inventory.Instance.AddItem(currentItem);
+                EconomyManager.Instance.RemoveMoney(currentItem.price);
+                ShowItemDetails(currentItem);
                 Debug.Log("megvette");
-            }
-            else
-            {
-                Debug.Log("nincs pénzed");
-            }
         }
         
     }
-
+   
     public void FilterAll()
     {
-        shopView.GenerateShopItems(shopModell.items); 
+        shopView.GenerateShopItems(items); 
     }
 
-    public void FilterCategory(int categoryIndex)   
+    public void FilterCategory(int index)   
     {
+        Category category = (Category)index;
         //intet convertál categoryvá
-        Category category = (Category)categoryIndex;
-        List<Item> filtered = new();
+        HashSet<Item> filtered = new();
         // Csak a kiválasztott kategóriát rendereljük
-        foreach (Item item in shopModell.items)
+        foreach (Item item in Inventory.Instance.items.Keys)
         {
-            if (item.Category == category)
+            if (item.category == category)
             {
                 filtered.Add(item);
-                
             }
         }
         shopView.GenerateShopItems(filtered);
     }
 
-   
-
+  
     public void ShowItemDetails(Item item) {
         shopView.ShowItemDetails(item);
-        shopModell.currentItem = item;
+        currentItem = item;
     }
 
+    private void LoadAllShopItem()
+    {
+        items = new HashSet<Item>(Resources.LoadAll<Item>("Items"));
+        Debug.Log($"Betöltve a shopba {items.Count} Item.");
+    }
 
 }
