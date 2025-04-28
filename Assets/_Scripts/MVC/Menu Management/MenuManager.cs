@@ -3,7 +3,8 @@ using UnityEngine;
 public class MenuManager : MonoBehaviour
 {
     [SerializeField] GameObject[] panels;
-
+    [SerializeField] GameObject[] actionBarPanels; 
+ 
     public void ShowMenu(GameObject menu)
     {
         menu.SetActive(true);
@@ -26,4 +27,18 @@ public class MenuManager : MonoBehaviour
         }
         activePanel.SetActive(true);
     }
+
+    /// <summary>
+    /// Disables all panels in panels list, then enables the selected one.
+    /// </summary>
+    /// <param name="activePanel"></param>
+    public void ActionBarNavigationClick(GameObject activePanel)
+    {
+        foreach (GameObject panel in actionBarPanels)
+        {
+            panel.SetActive(false);
+        }
+        activePanel.SetActive(true);
+    }
+
 }
