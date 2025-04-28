@@ -6,5 +6,6 @@ public enum EventType
     PLACE_BUILDING,
     UPGRADE_BUILDING,
     EARN_MONEY,
+    EXP_GAIN,
     // Add more if we need to
 }
