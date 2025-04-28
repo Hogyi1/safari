@@ -11,7 +11,7 @@ public class ShopManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        LoadAllShopItem();
+        items =  ItemManager.Instance.getItems();
         shopView.GenerateShopItems(items);
     }
 
@@ -46,7 +46,6 @@ public class ShopManager : MonoBehaviour
     public void FilterCategory(int index)   
     {
         Category category = (Category)index;
-        //intet convertál categoryvá
         HashSet<Item> filtered = new();
         // Csak a kiválasztott kategóriát rendereljük
         foreach (Item item in Inventory.Instance.items.Keys)
@@ -63,12 +62,6 @@ public class ShopManager : MonoBehaviour
     public void ShowItemDetails(Item item) {
         shopView.ShowItemDetails(item);
         currentItem = item;
-    }
-
-    private void LoadAllShopItem()
-    {
-        items = new HashSet<Item>(Resources.LoadAll<Item>("Items"));
-        Debug.Log($"Betöltve a shopba {items.Count} Item.");
     }
 
 }

@@ -23,15 +23,19 @@ public class ShopView : MonoBehaviour
 
     public void GenerateShopItems(HashSet<Item> items)
     {
+        HideDetailPanel();
         ClearUP();
         foreach (Item item in items)
         {
-            GameObject newItem = Instantiate(itemPrefab, shopContent);
-            ItemUiShop itemUI = newItem.GetComponent<ItemUiShop>();
-            if (itemUI != null)
-            {
-                itemUI.SetItemData(item);
+            if (item.state == LockState.UNLOCKED){
+                GameObject newItem = Instantiate(itemPrefab, shopContent);
+                ItemUiShop itemUI = newItem.GetComponent<ItemUiShop>();
+                if (itemUI != null)
+                {
+                    itemUI.SetItemData(item);
+                }
             }
+            
         }
     }
 
@@ -40,8 +44,11 @@ public class ShopView : MonoBehaviour
         detailPanel.Show(item);
     }
 
+    public void HideDetailPanel()
+    {
+        detailPanel.gameObject.SetActive(false);
+    }
 
-    
 
 
 
