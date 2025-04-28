@@ -69,6 +69,7 @@ public class TimeManager : MonoBehaviour
     public void ResumeTime()
     {
         Time.timeScale = timeMultiplier;
+        isPaused = false;
     }
 
     public void SpeedUpTime()

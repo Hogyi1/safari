@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -7,12 +8,6 @@ public class InventoryManager : MonoBehaviour
     public InventoryView inventoryView;
     public static InventoryManager Instance;
     public EconomyManager economyManager;
-
-    void Start()
-    {
-        inventoryView.GenerateInventoryUI(inventory.items);
-    }
-
 
     public void Awake()
     {
@@ -24,14 +19,19 @@ public class InventoryManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        inventoryView.GenerateInventoryUI(inventory.items);
     }
 
-    private void OnEnable()
+    void OnEnable()
+    {
+        inventoryView.GenerateInventoryUI(inventory.items);
+    }
+    void Start()
     {
         inventoryView.GenerateInventoryUI(inventory.items);
     }
 
-    
+
     public void FilterAll()
     {
        inventoryView.GenerateInventoryUI(inventory.items);
@@ -73,10 +73,14 @@ public class InventoryManager : MonoBehaviour
             economyManager.AddMoney(inventory.currentItem.CalculateSellingPrice());
             inventoryView.GenerateInventoryUI(inventory.items);
             inventoryView.DetailPanelUpdate(inventory.currentItem);
+            if (inventory.GetItemCount(inventory.currentItem) == 0)
+            {
+                inventoryView.HideDetailPanel();
+            }
         }
         else
         {
-            Debug.Log("sell error");
+            Debug.Log("Sellerror");
         }
 
        
@@ -93,4 +97,5 @@ public class InventoryManager : MonoBehaviour
         inventory.AddItem(Item);
     }
 
+ 
 }

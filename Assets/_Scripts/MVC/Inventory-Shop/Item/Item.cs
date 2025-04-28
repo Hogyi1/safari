@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 
 [CreateAssetMenu(fileName = "NewItem", menuName = "Inventory/Item")]
@@ -15,5 +16,6 @@ public class Item : ScriptableObject
     public int CalculateSellingPrice() {
         return (int)Mathf.Round(this.price * 0.5f);
     }
+
 
 }

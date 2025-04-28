@@ -61,6 +61,18 @@ public class Inventory : MonoBehaviour {
         {
             RemoveItem(item);
         }
+        else
+        {
+            if (items.ContainsKey(item))
+            {
+                items[item] -= 1;
+
+                if (items[item] <= 0)
+                {
+                    items.Remove(item); 
+                }
+            }
+        }
     }
 
     public bool HasItem(Item item) {

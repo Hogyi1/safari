@@ -23,6 +23,7 @@ public class InventoryView : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+
     public void ClearUP()
     {
 
@@ -35,6 +36,7 @@ public class InventoryView : MonoBehaviour
 
     public void GenerateInventoryUI(Dictionary<Item,int> items)
     {
+        HideDetailPanel();
         ClearUP();
 
         foreach (Item item in items.Keys)
@@ -50,6 +52,10 @@ public class InventoryView : MonoBehaviour
 
     public void DetailPanelUpdate(Item item) {
         detailPanel.Show(item);
+    }
+
+    public void HideDetailPanel() {
+        detailPanel.gameObject.SetActive(false);
     }
 
 }
