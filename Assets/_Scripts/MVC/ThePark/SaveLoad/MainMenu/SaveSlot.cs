@@ -1,38 +1,50 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class SaveSlot : MonoBehaviour
 {
     [Header("Profile")]
-    [SerializeField] private string profileId;
+    [SerializeField] private string profileId = "";
 
     [Header("Content")]
     [SerializeField] private GameObject noDataContent;
     [SerializeField] private GameObject hasDataContent;
+    [SerializeField] private TextMeshProUGUI parkName;
+    [SerializeField] private TextMeshProUGUI precentComplited;
 
-    [SerializeField] private TMP_Text parkName;
-    [SerializeField] private TMP_Text percentageComplateText;
+    private Button saveSlotButton;
 
-    public void SetData(GameData data) {
-        
-        if (data != null)
+    private void Awake()
+    {
+        saveSlotButton = this.GetComponent<Button>();
+    }
+
+    public void SetData(GameData data)
+    {
+        // there's no data for this profileId
+        if (data == null)
         {
             noDataContent.SetActive(true);
             hasDataContent.SetActive(false);
-        }else
+        }
+        // there is data for this profileId
+        else
         {
             noDataContent.SetActive(false);
             hasDataContent.SetActive(true);
 
-            //percentageComplateText.text = Challengecount;
-            //// parkName.text =  Park neve;
-
+           //itt kell beállítani a két szöveget
         }
-
-    }
-    public string GetProfileId() { 
-    return this.profileId;
     }
 
+    public string GetProfileId()
+    {
+        return this.profileId;
+    }
 
+    public void SetInteractable(bool interactable)
+    {
+        saveSlotButton.interactable = interactable;
+    }
 }

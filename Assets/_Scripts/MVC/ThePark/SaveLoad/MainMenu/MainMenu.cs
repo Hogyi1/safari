@@ -12,12 +12,12 @@ public class MainMenu : MonoBehaviour
     public void onNewGameClicked()
     {
         DisableMenuButtons();
-        DataPersistanceManager.Instance.NewGane();
+        DataPersistenceManager.Instance.NewGame();
     }
 
     private void Start()
     {
-        if (!DataPersistanceManager.Instance.HasGameData())
+        if (!DataPersistenceManager.Instance.HasGameData())
         {
             loadGameButton.interactable = false;
         }

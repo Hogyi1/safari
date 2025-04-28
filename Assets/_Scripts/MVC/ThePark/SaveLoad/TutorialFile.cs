@@ -24,12 +24,11 @@ public class TutorialFile : IDataPersistence
         this.exemple = data.exemple;
     }
 
-    public void SaveData(ref GameData data)
+    public void SaveData(GameData data)
     {
         //Assign the fields of the data object with the values you want to persist from your class.
          data.exempleint = this.exempleInt;
          data.exemple = this.exemple;
-         data.TutorialFile = this;
     }
     //and thats it
 

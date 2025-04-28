@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class MainMenuController : MonoBehaviour
 {
+
+    [Header("Menu Navigation")]
+    [SerializeField] private SaveSlotsMenu saveSlotsMenu;
     [SerializeField] GameObject[] menus;
     [SerializeField] private string gameSceneName = "Bemutato";
 
@@ -23,6 +26,8 @@ public class MainMenuController : MonoBehaviour
     {
         if (SceneHandler.Instance != null)
         {
+
+            DataPersistenceManager.Instance.SaveGame();
             SceneHandler.Instance.LoadGameScene(gameSceneName);
         }
         else
@@ -45,4 +50,16 @@ public class MainMenuController : MonoBehaviour
             menu.SetActive(false);
         }
     }
+
+    public void OnNewGameClicked()
+    {
+        DataPersistenceManager.Instance.NewGame();
+        saveSlotsMenu.ActivateMenu(false);
+    }
+
+    public void OnLoadGameClicked()
+    {
+        saveSlotsMenu.ActivateMenu(true);
+    }
+
 }
