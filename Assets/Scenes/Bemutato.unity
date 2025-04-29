@@ -11192,16 +11192,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0880d8327370aa94fbf6ee5ae817f76f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mony: {fileID: 1311541576}
+  money: {fileID: 1311541576}
   monyUpOrDownIcon: {fileID: 1908055688}
   visitorCount: {fileID: 703519132}
   visitorsUpOrDownIcon: {fileID: 2102383993}
   parkName: {fileID: 2133915773}
   animalCount: {fileID: 1685622394}
   animalUpOrDownIcon: {fileID: 1644392098}
-  inventory: {fileID: 0}
-  shop: {fileID: 0}
-  services: {fileID: 0}
+  inventory: {fileID: 1510363754}
+  shop: {fileID: 1980479233}
+  services: {fileID: 379898642}
   stopTime: {fileID: 162668197}
   startTime: {fileID: 1649370760}
   forwardTimeButton: {fileID: 1355017832}
