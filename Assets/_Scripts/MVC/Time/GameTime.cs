@@ -3,6 +3,21 @@ using UnityEngine;
 
 public class GameTime
 {
+    public enum Months{
+        Jan,
+        Feb,
+        Mar,
+        Apr,
+        May,
+        Jun,
+        Jul,
+        Aug,
+        Sep,
+        Oct,
+        Nov,
+        Dec
+    }
+
     public int month { get; private set; }
     public int totalDays { get; private set; }
     public int days { get; private set; }
@@ -79,6 +94,6 @@ public class GameTime
     // Kiíratás console biztos formában
     public override string ToString()
     {
-        return $"{days} | {hours}:{minutes}";
+        return $"{hours}h {(Months)(month / 12)}, Month {month}";
     }
 }

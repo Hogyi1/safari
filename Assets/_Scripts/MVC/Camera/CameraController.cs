@@ -48,7 +48,7 @@ public class CameraController : MonoBehaviour
     {
         Vector2 input = moveAction.action.ReadValue<Vector2>();
         Vector3 moveDir = view.transform.forward * input.y + view.transform.right * input.x;
-        view.Move(moveDir * model.moveSpeed * Time.deltaTime);
+        view.Move(moveDir * model.moveSpeed * Time.unscaledDeltaTime);
     }
 
     private void HandleEdgeScrolling()
@@ -61,7 +61,7 @@ public class CameraController : MonoBehaviour
         if (Mouse.current.position.ReadValue().y > Screen.height - model.edgeScrollSize) inputDir.z = 1f;
 
         Vector3 moveDir = view.transform.forward * inputDir.z + view.transform.right * inputDir.x;
-        view.Move(moveDir * model.moveSpeed * Time.deltaTime);
+        view.Move(moveDir * model.moveSpeed * Time.unscaledDeltaTime);
     }
 
     private void HandleRotation()
@@ -89,7 +89,7 @@ public class CameraController : MonoBehaviour
     private void HandleHeight()
     {
         float heightInput = heightAction.action.ReadValue<float>();
-        view.Move(new Vector3(0, heightInput * model.heightSpeed * Time.deltaTime, 0));
+        view.Move(new Vector3(0, heightInput * model.heightSpeed * Time.unscaledDeltaTime, 0));
     }
 
     private void HandleZoom()

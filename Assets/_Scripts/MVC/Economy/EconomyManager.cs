@@ -79,4 +79,12 @@ public class EconomyManager : MonoBehaviour
     {
         return (int)Mathf.Round(price * 0.5f);
     }
+
+    public Economy getEconomy() {
+
+        return this.Economy;
+    
+    }
+
+
 }

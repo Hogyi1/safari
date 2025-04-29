@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prize: 50
   eventType: 2
-  state: 1
+  state: 0
   description: Place 5 Trees
   goal: 5
   progress: 0
