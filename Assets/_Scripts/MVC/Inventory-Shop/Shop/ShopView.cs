@@ -27,15 +27,12 @@ public class ShopView : MonoBehaviour
         ClearUP();
         foreach (Item item in items)
         {
-            if (item.state == LockState.UNLOCKED){
                 GameObject newItem = Instantiate(itemPrefab, shopContent);
                 ItemUiShop itemUI = newItem.GetComponent<ItemUiShop>();
                 if (itemUI != null)
                 {
                     itemUI.SetItemData(item);
                 }
-            }
-            
         }
     }
 

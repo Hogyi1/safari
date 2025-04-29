@@ -46,12 +46,13 @@ public class ShopManager : MonoBehaviour
     public void FilterCategory(int index)   
     {
         Category category = (Category)index;
-        HashSet<Item> filtered = new();
-        // Csak a kiválasztott kategóriát rendereljük
-        foreach (Item item in Inventory.Instance.items.Keys)
+        
+        HashSet<Item> filtered = new HashSet<Item>();
+        foreach (Item item in items)
         {
             if (item.category == category)
             {
+                
                 filtered.Add(item);
             }
         }
