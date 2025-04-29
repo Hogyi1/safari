@@ -21,6 +21,8 @@ public class PlacementManager : MonoBehaviour
     [SerializeField] private Grid ActiveGrid;
     private Vector3Int LastDetectedPosition = Vector3Int.zero;
 
+    public event Action OnPlace;
+
     [SerializeField] IBuildingState BuildingState;
 
     [SerializeField] private PreviewSystem PreviewSystem;
@@ -108,7 +110,7 @@ public class PlacementManager : MonoBehaviour
 
     public IPlaceable PlaceStructure(BuildingData Data, Vector3 position, Structure newStructure)
     {
-
+        OnPlace?.Invoke();
         GameObject newStructureGO = Instantiate(Data.BuildingPrefab, position, Quaternion.identity);
         IPlaceable view = newStructureGO.GetComponent<IPlaceable>();
         view.Init(newStructure);
@@ -120,7 +122,7 @@ public class PlacementManager : MonoBehaviour
 
     public IPlaceable PlaceRoad(BuildingData Data, Vector3 position)
     {
-
+        OnPlace?.Invoke();
         GameObject newStructureGO = Instantiate(Data.BuildingPrefab, position, Quaternion.identity);
         IPlaceable view = newStructureGO.GetComponent<IPlaceable>();
         newStructureGO.transform.SetParent(RoadNavMesh.transform, true);

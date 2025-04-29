@@ -43,10 +43,10 @@ public class RoadManager : MonoBehaviour
     private void Start()
     {
         Entrance = new Node(0, new Vector2Int(6, 1));
-        Exit = new Node(1, new Vector2Int(14, 8));
+        Exit = new Node(1, new Vector2Int(15, 8));
 
         Nodes.Add(new Vector2Int(6, 1), Entrance);
-        Nodes.Add(new Vector2Int(14, 8), Exit);
+        Nodes.Add(new Vector2Int(15, 8), Exit);
     }
 
     public int PlaceRoad(BuildingData Data, Vector2Int NodePosition, Vector3 position)

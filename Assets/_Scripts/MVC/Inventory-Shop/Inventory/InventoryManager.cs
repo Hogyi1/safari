@@ -55,13 +55,22 @@ public class InventoryManager : MonoBehaviour
     
         inventoryView.GenerateInventoryUI(filtered);
     }
-    public void StartPlacing() { 
-        
+    public void StartPlacing()
+    {
+        PlacementManager.Instance.StartPlacingItem(inventory.currentItem.buildingId);
+        PlacementManager.Instance.OnPlace += PlaceItem;
+        inventoryView.gameObject.SetActive(false);
     }
+    public void PlaceItem()
+    {
+        inventory.RemoveItem(inventory.currentItem);
+        inventoryView.GenerateInventoryUI(inventory.items);
 
-    public void PlaceItem() {
-            inventory.RemoveItem(inventory.currentItem);
-            inventoryView.GenerateInventoryUI(inventory.items);
+        if (inventory.HasItem(inventory.currentItem))
+        {
+            PlacementManager.Instance.StopPlacement();
+        }
+        inventoryView.gameObject.SetActive(true);
     }
 
     public void Sell() {

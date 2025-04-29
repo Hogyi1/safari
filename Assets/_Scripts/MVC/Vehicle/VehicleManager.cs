@@ -124,7 +124,7 @@ public class VehicleManager : MonoBehaviour
     {
         // TODO
         // Majd itt meg kell valósítani a Map / ParkingManagert
-        return new Vector3(39f, 4.8f, 13.5f);
+        return new Vector3(39f, 1.05f, 8.0f);
     }
 
     // Keres egy utat amin elindítja az autót
