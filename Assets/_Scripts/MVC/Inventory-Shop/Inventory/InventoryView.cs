@@ -38,7 +38,6 @@ public class InventoryView : MonoBehaviour
     {
         HideDetailPanel();
         ClearUP();
-
         foreach (Item item in items.Keys)
         {
             GameObject newItem = Instantiate(itemPrefab, inventoryContent);

@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Cow
   m_EditorClassIdentifier: 
   id: 5
+  buildingId: 0
   itemName: Cow
   price: 10
   category: 2
-  state: 0
+  state: 1
   imagePath: {fileID: 0}

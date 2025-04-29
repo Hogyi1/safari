@@ -40,7 +40,6 @@ public class InventoryManager : MonoBehaviour
     public void FilterCategory(int categoryIndex)
     {
         inventoryView.ClearUP();
-        //intet convertál categoryvá
         Category category = (Category)categoryIndex;
 
         // Csak a kiválasztott kategóriát rendereljük
