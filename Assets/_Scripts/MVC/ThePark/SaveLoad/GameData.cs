@@ -8,6 +8,8 @@ public class GameData
     public long lastUpdated;
     public int exempleint;
     public SerializableDictionary<int, int> exemple;
+    public string Parkname;
+    public int difficulty;
 
     // the values defined in this constructor will be the default values
     // the game starts with when there's no data to load
@@ -16,6 +18,7 @@ public class GameData
         //This is where you need to add the data, according to how you want your class to be initialized
         this.exempleint = 0;
         this.exemple = new SerializableDictionary<int, int>();
+        difficulty = 0;
     }
 
     public int GetPercentageComplete()

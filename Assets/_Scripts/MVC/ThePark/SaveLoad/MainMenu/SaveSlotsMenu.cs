@@ -34,7 +34,6 @@ public class SaveSlotsMenu : MonoBehaviour
         // load the scene - which will in turn save the game because of OnSceneUnloaded() in the DataPersistenceManager
         if (SceneHandler.Instance != null)
         {
-
             DataPersistenceManager.Instance.SaveGame();
             SceneHandler.Instance.LoadGameScene(gameSceneName);
         }

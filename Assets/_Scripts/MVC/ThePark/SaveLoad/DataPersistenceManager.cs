@@ -167,4 +167,24 @@ public class DataPersistenceManager : MonoBehaviour
     {
         return dataHandler.LoadAllProfiles();
     }
+
+    public void DeleteProfileData(string profileId)
+    {
+        // delete the data for this profile id
+        dataHandler.Delete(profileId);
+        // initialize the selected profile id
+        InitializeSelectedProfileId();
+        // reload the game so that our data matches the newly selected profile id
+        LoadGame();
+    }
+    private void InitializeSelectedProfileId()
+    {
+        this.selectedProfileId = dataHandler.GetMostRecentlyUpdatedProfileId();
+        if (overrideSelectedProfileId)
+        {
+            this.selectedProfileId = testSelectedProfileId;
+            Debug.LogWarning("Overrode selected profile id with test id: " + testSelectedProfileId);
+        }
+    }
+
 }

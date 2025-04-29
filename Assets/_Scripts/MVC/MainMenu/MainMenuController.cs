@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -6,11 +8,14 @@ public class MainMenuController : MonoBehaviour
     [Header("Menu Navigation")]
     [SerializeField] private SaveSlotsMenu saveSlotsMenu;
     [SerializeField] GameObject[] menus;
+    [SerializeField] private Button continueGameButton;
+    [SerializeField] private Button loadGameButton;
     [SerializeField] private string gameSceneName = "Bemutato";
 
     private void Start()
     {
         mm_HideAllMenus();
+        DisableButtonsDependingOnData();
     }
 
     public void mm_NavigationBarClick(GameObject activeMenu)
@@ -51,9 +56,16 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
+    public void OnContinueGameClicked()
+    {
+        // save the game anytime before loading a new scene
+        DataPersistenceManager.Instance.SaveGame();
+        // load the next scene - which will in turn load the game because of 
+        // OnSceneLoaded() in the DataPersistenceManager
+        SceneManager.LoadSceneAsync("SampleScene");
+    }
     public void OnNewGameClicked()
     {
-        DataPersistenceManager.Instance.NewGame();
         saveSlotsMenu.ActivateMenu(false);
     }
 
@@ -62,4 +74,12 @@ public class MainMenuController : MonoBehaviour
         saveSlotsMenu.ActivateMenu(true);
     }
 
+    private void DisableButtonsDependingOnData()
+    {
+        if (!DataPersistenceManager.Instance.HasGameData())
+        {
+            continueGameButton.interactable = false;
+            loadGameButton.interactable = false;
+        }
+    }
 }

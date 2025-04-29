@@ -11,8 +11,8 @@ public class SaveSlot : MonoBehaviour
     [SerializeField] private GameObject noDataContent;
     [SerializeField] private GameObject hasDataContent;
     [SerializeField] private TextMeshProUGUI parkName;
-    [SerializeField] private TextMeshProUGUI precentComplited;
-
+    [SerializeField] private TextMeshProUGUI perecentComplited;
+    public bool hasData { get; private set; } = false;
     private Button saveSlotButton;
 
     private void Awake()
@@ -25,16 +25,22 @@ public class SaveSlot : MonoBehaviour
         // there's no data for this profileId
         if (data == null)
         {
+            hasData = false;
             noDataContent.SetActive(true);
             hasDataContent.SetActive(false);
         }
         // there is data for this profileId
         else
         {
+            hasData = true;
             noDataContent.SetActive(false);
             hasDataContent.SetActive(true);
 
-           //itt kell beállítani a két szöveget
+            //itt kell beállítani a két szöveget
+            parkName.text = "Park";
+            perecentComplited.text = data.exempleint.ToString();
+
+           
         }
     }
 

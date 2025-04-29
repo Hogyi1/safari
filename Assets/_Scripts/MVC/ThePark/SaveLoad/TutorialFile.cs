@@ -4,8 +4,11 @@ using UnityEngine;
 
 //First, we inherit from the class into an IDataPersistence
 [Serializable]
-public class TutorialFile : IDataPersistence
+public class TutorialFile : MonoBehaviour,IDataPersistence
 {
+
+
+    public static TutorialFile Instance;
     public int exempleInt;
     public SerializableDictionary<int,int> exemple = new SerializableDictionary<int,int>();
 
@@ -31,6 +34,13 @@ public class TutorialFile : IDataPersistence
          data.exemple = this.exemple;
     }
     //and thats it
+
+    public void addone() {
+        Debug.Log("added");
+    this.exempleInt++;
+    }
+
+   
 
 }
 
