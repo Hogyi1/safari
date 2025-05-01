@@ -10053,7 +10053,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &587058457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35455,8 +35455,8 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.42999998
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 0}
-  m_BuildHeightMesh: 0
+  m_NavMeshData: {fileID: 23800000, guid: 83bd446656199ee4caee73ab269a5de3, type: 2}
+  m_BuildHeightMesh: 1
 --- !u!1 &2121186585
 GameObject:
   m_ObjectHideFlags: 0
