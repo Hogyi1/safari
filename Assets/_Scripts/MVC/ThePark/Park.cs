@@ -1,29 +1,42 @@
 using UnityEngine;
 
-public class Park : MonoBehaviour
+[System.Serializable]
+public class Park : MonoBehaviour, IDataPersistence 
 {
-
-    public int ID;
-    public string Name;
-
-    public Difficulty.DifficultyEnum difficulty;
-
-    public Inventory inventory;
-   //managger osztályok
-
     
+    public int ID;
+    public static Park Instance;
+    public string ParkName;
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public DifficultyEnum difficulty;
+
+
+    public void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
         
     }
 
-    // Update is called once per frame
-    void Update()
+
+    public void LoadData(GameData data)
     {
-        
+      this.ParkName = data.parkData.parkName;
+      this.difficulty = data.parkData.difficulty;
+            
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.parkData.parkName = this.ParkName;
+        data.parkData.difficulty = this.difficulty;
     }
 
 }
