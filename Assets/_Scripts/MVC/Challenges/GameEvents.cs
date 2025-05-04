@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class GameEvents : MonoBehaviour, ISubject
@@ -28,6 +29,29 @@ public class GameEvents : MonoBehaviour, ISubject
     // Observer Lists
     private List<IChallengeObserver> challengeObservers = new();
     private List<ILevelObserver> levelObservers = new();
+
+    #region Alert Requests
+
+    /// <summary>
+    /// Fired when any part of the game wants to show an alert.
+    /// Params: (success, message, fadeIn, display, fadeOut)
+    /// </summary>
+    public event Action<bool, string, float, float, float> OnAlertRequested;
+
+    /// <summary>
+    /// Call this to queue up a new alert via AlertManager.
+    /// </summary>
+    public void RequestAlert(
+        bool success,
+        string message,
+        float fadeInTime = 0.3f,
+        float displayTime = 2f,
+        float fadeOutTime = 0.5f)
+    {
+        OnAlertRequested?.Invoke(success, message, fadeInTime, displayTime, fadeOutTime);
+    }
+
+    #endregion
 
     /// <summary>
     /// Ensures only one instance of GameEvents exists and persists across scenes.
