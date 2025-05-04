@@ -1,15 +1,23 @@
 using UnityEngine;
-public static class Difficulty
+
+public enum DifficultyEnum
 {
+    EASY,
+    NORMAL,
+    HARD
+}
 
-    public static int multiplier;
-    public enum DifficultyEnum
+public static class DifficultyExtensions
+{
+    // Szorzó visszaadása az adott nehézséghez
+    public static int GetMultiplier(this DifficultyEnum difficulty)
     {
-        EASY,
-        NORMAL,
-        HARD
+        return difficulty switch
+        {
+            DifficultyEnum.EASY => 1,
+            DifficultyEnum.NORMAL => 2,
+            DifficultyEnum.HARD => 3,
+            _ => 1
+        };
     }
-
-
-
 }

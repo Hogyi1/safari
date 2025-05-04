@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
-
     [Header("Menu Navigation")]
     [SerializeField] private SaveSlotsMenu saveSlotsMenu;
     [SerializeField] GameObject[] menus;
@@ -31,8 +30,7 @@ public class MainMenuController : MonoBehaviour
     {
         if (SceneHandler.Instance != null)
         {
-
-            DataPersistenceManager.Instance.SaveGame();
+            DataPersistenceManager.Instance.LoadGame();
             SceneHandler.Instance.LoadGameScene(gameSceneName);
         }
         else
@@ -56,14 +54,6 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
-    public void OnContinueGameClicked()
-    {
-        // save the game anytime before loading a new scene
-        DataPersistenceManager.Instance.SaveGame();
-        // load the next scene - which will in turn load the game because of 
-        // OnSceneLoaded() in the DataPersistenceManager
-        SceneManager.LoadSceneAsync("SampleScene");
-    }
     public void OnNewGameClicked()
     {
         saveSlotsMenu.ActivateMenu(false);
