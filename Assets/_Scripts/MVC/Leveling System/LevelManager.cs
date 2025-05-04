@@ -102,7 +102,15 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     private void LevelUp()
     {
         currentLevel++;
-        Debug.Log("Level up! Current level: " + currentLevel);
+
+        // Request an alert that tells the player they leveled up and shows the current level.
+        GameEvents.Instance.RequestAlert(
+            success: true,
+            message: "Level Up! You have reached level " + currentLevel.ToString() + "!",
+            fadeInTime: 0.25f,
+            displayTime: 2.5f,
+            fadeOutTime: 0.4f
+        );
         
         if ((currentLevel - 1) < levels.Count)
         {
