@@ -41,6 +41,8 @@ public class ActionBarManager : MonoBehaviour
 
     public void Start()
     {
+
+        parkName.text = Park.Instance.ParkName;
         // ide kell a datapersistancebol a parkname parkName.text = 
         stopTime.onClick.AddListener(() =>
         {
