@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Inventory : MonoBehaviour {
+public class Inventory : MonoBehaviour, IDataPersistence
+{
 
     //contains the purchesed items
     public static Inventory Instance;
@@ -97,5 +98,37 @@ public class Inventory : MonoBehaviour {
 
     }
 
-   
+    public void LoadData(GameData data)
+    {
+        items.Clear();
+
+        if (data.inventoryData == null || data.inventoryData.items == null)
+            return;
+        Debug.Log("asd");
+        foreach (var pair in data.inventoryData.items)
+        {
+            Item item = ItemHelper.Instance.GetItemById(pair.Key);
+            if (item != null)
+            {
+                items[item] = pair.Value;
+            }
+            else
+            {
+                Debug.LogWarning($"Item with ID {pair.Key} not found in ItemHelper.");
+            }
+        }
+
+        Debug.Log("Inventory betöltve.");
+    }
+    public void SaveData(GameData data)
+    {
+        data.inventoryData.items.Clear();
+
+        foreach (var pair in items)
+        {
+            data.inventoryData.items[pair.Key.id] = pair.Value;
+        }
+
+        Debug.Log("Inventory elmentve.");
+    }
 }
