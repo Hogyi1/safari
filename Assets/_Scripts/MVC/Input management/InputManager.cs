@@ -19,7 +19,7 @@ public class InputManager : MonoBehaviour
 
     public static InputManager Instance;
 
-    [SerializeField] private StructureViewHandler ViewHandler;
+    [SerializeField] private InteractableViewHandler ViewHandler;
 
     public void Awake()
     {
@@ -63,6 +63,10 @@ public class InputManager : MonoBehaviour
         else ViewHandler.gameObject.SetActive(true);
     }
 
+    public void DisableView()
+    {
+        ViewHandler.SetViewInactive();
+    }
 
     public bool IsPointerOverUI() => EventSystem.current.IsPointerOverGameObject();
 
@@ -79,7 +83,6 @@ public class InputManager : MonoBehaviour
             LastPosition = hit.point;
         }
         return LastPosition;
-
     }
 }
 

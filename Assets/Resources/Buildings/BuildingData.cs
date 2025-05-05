@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Unity.VisualScripting.Dependencies.Sqlite;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuildingData", menuName = "Scriptable Objects/BuildingData")]
 public class BuildingData : ScriptableObject

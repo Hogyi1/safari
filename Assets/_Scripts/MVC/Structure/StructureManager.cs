@@ -91,6 +91,7 @@ public class StructureManager : MonoBehaviour
         {
             PlacementManager.Instance.RemoveStructure(view);
             IInteractables.Remove(ID);
+            Destroy(view.GetGameObject());
         }
     }
 
@@ -98,6 +99,21 @@ public class StructureManager : MonoBehaviour
     public IPlaceable GetCorrespondingView(int ID)
     {
         return IInteractables[ID];
+    }
+
+    public Structure GetStructureByPosition(Vector3 position)
+    {
+        const float tolerance = 2.5f;
+        foreach (var structure in IInteractables)
+        {
+            var view = structure.Value;
+            Debug.Log(position + " Ezen poziciot akarom lecsekkolni");
+            if (Vector3.Distance(view.GetGameObject().transform.position, position) <= tolerance)
+            {
+                return view.GetStructure();
+            }
+        }
+        return null;
     }
 }
 
@@ -129,6 +145,7 @@ public interface IPlaceable
     public GameObject GetGameObject();
     public BuildingType GetBuildingType();
     public void Init(Structure structure);
+    public Structure GetStructure();
 }
 
 //Interfész IStageable

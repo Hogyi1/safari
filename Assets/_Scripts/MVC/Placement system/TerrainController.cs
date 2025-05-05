@@ -58,6 +58,8 @@ public class TerrainController : MonoBehaviour
 
         foreach (var tree in terrainData.treeInstances)
         {
+            var tree1 = terrainData.GetTreeInstance(0);
+            Debug.Log(tree1);
             Vector3 worldPosition = new Vector3(
                 tree.position.x * terrainData.size.x + terrainWorldPos.x,
                 tree.position.y * terrainData.size.y + terrainWorldPos.y,

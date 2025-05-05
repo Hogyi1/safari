@@ -74,5 +74,10 @@ public class StructureView : MonoBehaviour, IInteractable, IPlaceable
     {
         return MySelectable.GetBuildingType();
     }
+
+    public Structure GetStructure()
+    {
+        return MySelectable;
+    }
 }
 

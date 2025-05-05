@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using static UIComponent;
+using static StructureUIValues;
+using static UnityEditor.Experimental.GraphView.Port;
 
-public class Water : Structure, ISelectable
+public class Water : Structure, ISelectable, IWaterSource
 {
     private DietType dietType;
     public Water(BuildingData Data, int iD) : base(iD, Data.name, Data.icon, Data.type)
@@ -10,12 +11,29 @@ public class Water : Structure, ISelectable
         dietType = DietType.Water;
     }
 
-    public Dictionary<UIComponent, object> GetUIData()
+    public DietType GetDietType()
     {
-        return new Dictionary<UIComponent, object> {
+        return dietType;
+    }
+
+    public Dictionary<StructureUIValues, object> GetUIData()
+    {
+        return new Dictionary<StructureUIValues, object> {
             { Name_text, Name },
-            { UIComponent.ID, ID },
+            { StructureUIValues.ID, ID },
             { Sprite_icon, Icon },
         };
+    }
+
+    public bool IsContaminated()
+    {
+        // Későbbiekben jó lehet extra featurenek
+
+        return false;
+    }
+
+    public int Consume(int amount)
+    {
+        return amount;
     }
 }

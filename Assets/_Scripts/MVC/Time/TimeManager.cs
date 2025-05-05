@@ -14,17 +14,17 @@ public class TimeManager : MonoBehaviour
     // Megállítva?
     private bool isPaused;
     // Minden 15. perc eltelése a játékban / másodperc
-    private float secondsPer15GameMinute = 5.0f;
+    [SerializeField] private int secondsPer15GameMinute = 5;
+    // Minden év egy állatnak / másodperc
+    public int SecondsPerAnimalYear = 5;
     // Két random event közti várakozási idő
-    private int randomEventMinDelay = 1, randomEventMaxDelay = 5;
+    [SerializeField] private int randomEventMinDelay = 1, randomEventMaxDelay = 10;
 
     // Zárási idő
-    [SerializeField]
-    private int ClosingHour = 18;
+    [SerializeField] private int closingHour = 18;
 
     // Nyitási idő
-    [SerializeField]
-    private int OpeningHour = 8;
+    [SerializeField] private int openingHour = 8;
 
 
     public void Awake()
@@ -38,13 +38,15 @@ public class TimeManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         GlobalGameTime = new GameTime();
-        GlobalGameTime.AddHours(OpeningHour);
+        GlobalGameTime.AddHours(openingHour);
     }
 
     public void Start()
     {
         StartRandomEventLoop(randomEventMinDelay, randomEventMaxDelay);
         StartCoroutine(UpdateTime());
+        // Így minden InGame hét egy állat év ami kb 56 perc
+        if (SecondsPerAnimalYear == 0) SecondsPerAnimalYear = (60 * 24) / 15 * 5 * 7;
     }
 
     public IEnumerator UpdateTime()
@@ -56,7 +58,7 @@ public class TimeManager : MonoBehaviour
             if (!isPaused)
             {
                 GlobalGameTime.AddMinutes(15);
-                Debug.Log(GlobalGameTime.ToString());
+                // Debug.Log(GlobalGameTime.ToString());
             }
         }
     }
@@ -112,10 +114,10 @@ public class TimeManager : MonoBehaviour
     public RandomEvent GetRandomEvent()
     {
         float roll = UnityEngine.Random.Range(0f, 1f);
-        if (roll < 0.001f && GlobalGameTime.hours >= ClosingHour && GlobalGameTime.hours <= OpeningHour) return RandomEvent.Raid;
+        if (roll < 0.001f && GlobalGameTime.hours >= closingHour && GlobalGameTime.hours <= openingHour) return RandomEvent.Raid;
         if (roll < 0.01f) return RandomEvent.Breed_animal;
         if (roll < 0.1f) return RandomEvent.Regrow;
-        if (roll < 0.95f && GlobalGameTime.hours <= ClosingHour && GlobalGameTime.hours >= OpeningHour) return RandomEvent.Spawn_tourist;
+        if (roll < 0.95f && GlobalGameTime.hours <= closingHour && GlobalGameTime.hours >= openingHour) return RandomEvent.Spawn_tourist;
         return RandomEvent.None;
     }
 

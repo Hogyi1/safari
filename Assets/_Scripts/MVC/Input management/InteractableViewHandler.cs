@@ -2,13 +2,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class StructureViewHandler : MonoBehaviour
+public class InteractableViewHandler : MonoBehaviour
 {
     [SerializeField]
     private Camera SceneCamera;
 
-    [SerializeField]
-    private LayerMask SelectableLayermask;
+    [SerializeField] private LayerMask SelectableLayermask;
+    [SerializeField] private LayerMask RoadLayerMask;
 
     private IInteractable LastView;
     private IInteractable ActiveView;
@@ -73,7 +73,7 @@ public class StructureViewHandler : MonoBehaviour
         Ray ray = SceneCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 999f, SelectableLayermask))
+        if (Physics.Raycast(ray, out hit, 999f, SelectableLayermask | RoadLayerMask))
         {
             return hit.collider.GetComponentInParent<IInteractable>();
         }

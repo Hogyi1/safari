@@ -18,5 +18,5 @@ MonoBehaviour:
   Capacity: 10
   type: 0
   icon: {fileID: 21300000, guid: 97e5265ed1b1865448e683b042fbfbd0, type: 3}
-  diet: 0
+  diet: 1
   BuildingPrefab: {fileID: 1212690234365177027, guid: b2fe4e8931d5f924aa0cbae4fba896c4, type: 3}

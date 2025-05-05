@@ -28,6 +28,7 @@ public class WaterManager : MonoBehaviour, IStructureManager
 
         ActiveWaters.Add(Water);
 
+        Debug.Log("Water placed");
         return Water;
     }
 
