@@ -31,7 +31,7 @@ public class RandomEvents : MonoBehaviour, IRandomEventObservable
     // Értesítés kiküldése
     public void NotifyObservers(RandomEvent randomEvent)
     {
-        Debug.Log("Új Random Event érkezett továbbításra " + randomEvent.ToString());
+        // Debug.Log("Új Random Event érkezett továbbításra " + randomEvent.ToString());
 
         foreach (IRandomEventObserver observer in observers)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Properties;
 using UnityEngine;
-using static UIComponent;
+using static StructureUIValues;
 public class Vegetation : Structure, ISelectable, IFoodSource
 {
     private DietType Diet;
@@ -40,13 +40,19 @@ public class Vegetation : Structure, ISelectable, IFoodSource
     {
         return Diet;
     }
+    public int Consume(int amount)
+    {
+        int consumed = Mathf.Min(amount, Capacity);
+        Capacity -= consumed;
+        return consumed;
+    }
 
     // Minden ami a UI-hoz szükséges adat
-    public Dictionary<UIComponent, object> GetUIData()
+    public Dictionary<StructureUIValues, object> GetUIData()
     {
-        return new Dictionary<UIComponent, object> {
+        return new Dictionary<StructureUIValues, object> {
             { Name_text, Name },
-            { UIComponent.ID, ID },
+            { StructureUIValues.ID, ID },
             { Sprite_icon, Icon },
             { Value_slider, new Func<float>(() => GetCapacity()) },
             { MaxValue_slider, MaxCapacity}

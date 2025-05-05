@@ -66,6 +66,9 @@ public class RoadManager : MonoBehaviour
         Destroy(view);
 
         RemoveNode(ID);
+
+        PlacementManager.Instance.RemoveStructure(view);
+        Destroy(view.GetGameObject());
     }
     public List<Vector3> SearchForPath()
     {

@@ -1,50 +1,94 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static UIComponent;
-public class ButtonComponent : MonoBehaviour, IUIComponent
+using static StructureUIValues;
+public class ButtonComponent : MonoBehaviour, IStructureUIComponent
 {
-    [SerializeField] private Button refill, upgrade;
-    [SerializeField] private TextMeshProUGUI RefillText;
-    [SerializeField] private UIComponent refillKey = Refillprice_button;
-    [SerializeField] private UIComponent upgradeKey = Upgradeprice_button;
+    [SerializeField] private Button refillButton, upgradeButton;
+    [SerializeField] private TextMeshProUGUI refillText, upgradeText;
+    [SerializeField] private StructureUIValues refillKey = Refillprice_button;
+    [SerializeField] private StructureUIValues upgradeKey = Upgradeprice_button;
+
+    private Func<float> getRefillPrice;
+    private Func<float> getUpgradePrice;
     private int price;
 
     // Csakis a BuildingUI-hoz fog működni
-    public void TrySetup(Dictionary<UIComponent, object> data)
+    public void TrySetup(Dictionary<StructureUIValues, object> data)
     {
-        if (data.TryGetValue(refillKey, out var r))
+        // Refill
+        if (data.TryGetValue(refillKey, out var refillObj))
         {
-            price = (int)r;
-            RefillText.text = "Refill $" + r.ToString();
-            refill.gameObject.SetActive(true);
-            refill.onClick.RemoveAllListeners();
-            refill.onClick.AddListener(() => FeederManager.Instance.Refill((int)data[ID], price));
-            return;
-        }
-        else { refill.gameObject.SetActive(false); RefillText.gameObject.SetActive(false); }
+            // beállítjuk a getRefillPrice funkciót
+            if (refillObj is Func<float> refillFunc)
+                getRefillPrice = refillFunc;
+            else
+            {
+                float fixedPrice = Convert.ToSingle(refillObj);
+                getRefillPrice = () => fixedPrice;
+            }
 
-        if (data.TryGetValue(upgradeKey, out var u))
-        {
-            price = (int)u;
-            upgrade.gameObject.SetActive(true);
+            refillButton.gameObject.SetActive(true);
+            refillText.gameObject.SetActive(true);
+            refillButton.onClick.RemoveAllListeners();
+            refillButton.onClick.AddListener(() =>
+                FeederManager.Instance.Refill((int)data[ID], (int)getRefillPrice()));
         }
-        else { upgrade.gameObject.SetActive(false); }
+        else
+        {
+            refillButton.gameObject.SetActive(false);
+            refillText.gameObject.SetActive(false);
+            getRefillPrice = null;
+        }
+
+        // Upgrade
+        if (data.TryGetValue(upgradeKey, out var upgradeObj))
+        {
+            if (upgradeObj is Func<float> upgradeFunc)
+                getUpgradePrice = upgradeFunc;
+            else
+            {
+                float fixedPrice = Convert.ToSingle(upgradeObj);
+                getUpgradePrice = () => fixedPrice;
+            }
+
+            upgradeButton.gameObject.SetActive(true);
+            upgradeText.gameObject.SetActive(true);
+            upgradeButton.onClick.RemoveAllListeners();
+            upgradeButton.onClick.AddListener(() => { /*UpgradeManager ha készen van a vadőr és parkoló view*/ });
+
+
+        }
+        else
+        {
+            upgradeButton.gameObject.SetActive(false);
+            upgradeText.gameObject.SetActive(false);
+            getUpgradePrice = null;
+        }
     }
 
-    void Update()
+    private void Update()
     {
-        if (refill != null)
+        // Refill gomb frissítése
+        if (getRefillPrice != null)
         {
-            refill.enabled = EconomyManager.Instance.HasEnoughMoney(price);
+            float price = getRefillPrice();
+            bool canAfford = EconomyManager.Instance.HasEnoughMoney((int)price);
+            refillButton.enabled = canAfford && price != 0;
+            refillText.text = $"Refill ${price:0}";
         }
 
-        if (upgrade != null)
+        // Upgrade gomb frissítése
+        if (getUpgradePrice != null)
         {
-            upgrade.enabled = EconomyManager.Instance.HasEnoughMoney(price);
+            float price = getUpgradePrice();
+            bool canAfford = EconomyManager.Instance.HasEnoughMoney((int)price);
+            upgradeButton.enabled = canAfford && price != 0;
+            upgradeText.text = $"Upgrade ${price:0}";
         }
     }
 }

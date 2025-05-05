@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceable
 {
@@ -100,4 +98,8 @@ public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceab
         stageEffect.SetMaterialsOpacity(stage);
     }
 
+    public Structure GetStructure()
+    {
+        return MySelectable;
+    }
 }

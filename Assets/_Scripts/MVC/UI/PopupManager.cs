@@ -6,7 +6,8 @@ public class PopupManager : MonoBehaviour
 {
     public static PopupManager Instance;
 
-    [SerializeField] private BuildingPopup billboard;
+    [SerializeField] private BuildingPopup buildingBB;
+    [SerializeField] private AnimalPopup animalBB;
 
     public void Awake()
     {
@@ -20,15 +21,10 @@ public class PopupManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    void Start()
+    public void ActivateStructurePopup(Dictionary<StructureUIValues, object> Data, GameObject go)
     {
-        billboard.gameObject.SetActive(false);
-    }
-
-    public void ActivateStructurePopup(Dictionary<UIComponent, object> Data, GameObject go)
-    {
-        billboard.gameObject.SetActive(Data != null);
-        billboard.SetPopupData(Data);
+        buildingBB.gameObject.SetActive(Data != null);
+        buildingBB.SetPopupData(Data);
 
         Vector3 UIPos = Vector3.zero;
 
@@ -43,22 +39,32 @@ public class PopupManager : MonoBehaviour
             UIPos = new Vector3(bounds.center.x, bounds.max.y + 1f, bounds.center.z);
         }
 
-        billboard.transform.position = UIPos;
+        buildingBB.transform.position = UIPos;
     }
+
+    public void ActivateAnimalPopup(int ID)
+    {
+        Animal Data = AnimalManager.Instance.GetAnimal(ID);
+
+        animalBB.gameObject.SetActive(Data != null);
+        animalBB.SetPopupData(Data);
+    }
+
 
     public void HidePopup()
     {
-        billboard.gameObject.SetActive(false);
+        buildingBB.gameObject.SetActive(false);
+        animalBB.gameObject.SetActive(false);
     }
 }
 
 
-public interface IUIComponent
+public interface IStructureUIComponent
 {
-    public void TrySetup(Dictionary<UIComponent, object> data);
+    public void TrySetup(Dictionary<StructureUIValues, object> data);
 }
 
-public enum UIComponent
+public enum StructureUIValues
 {
     ID,
     Name_text,

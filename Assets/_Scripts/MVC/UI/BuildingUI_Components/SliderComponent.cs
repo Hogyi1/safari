@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UIComponent;
-public class SliderComponent : MonoBehaviour, IUIComponent
+using static StructureUIValues;
+public class SliderComponent : MonoBehaviour, IStructureUIComponent
 {
     [SerializeField] private Slider slider;
     [SerializeField] private TextMeshProUGUI ProgressText;
     [SerializeField] private GameObject parent;
-    private UIComponent maxKey = MaxValue_slider;
-    private UIComponent capKey = Value_slider;
+    private StructureUIValues maxKey = MaxValue_slider;
+    private StructureUIValues capKey = Value_slider;
 
     private Func<float> getCurrentValue;
     private float maxValue;
     // Megadjuk a komponensnek a megadott értékekeket
-    public void TrySetup(Dictionary<UIComponent, object> data)
+    public void TrySetup(Dictionary<StructureUIValues, object> data)
     {
         if (data.TryGetValue(capKey, out var cap) && data.TryGetValue(maxKey, out var maxcap))
         {

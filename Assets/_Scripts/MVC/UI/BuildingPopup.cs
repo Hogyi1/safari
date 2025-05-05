@@ -1,18 +1,15 @@
-using NUnit.Framework;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class BuildingPopup : MonoBehaviour
 {
     public Transform cam;
 
-    private List<IUIComponent> UIComponents = new();
+    private List<IStructureUIComponent> UIComponents = new();
 
     private Canvas canvas;
 
-    float InitialDistance = 10.44f;
+    private const float InitialDistance = 10.44f;
     private void Start()
     {
         ButtonComponent bc = GetComponent<ButtonComponent>();
@@ -22,9 +19,9 @@ public class BuildingPopup : MonoBehaviour
         BaseComponent bsc = GetComponent<BaseComponent>();
         UIComponents.Add(bsc);
 
-        gameObject.SetActive(false);
-
         canvas = GetComponentInChildren<Canvas>();
+
+        gameObject.SetActive(false);
     }
 
     void LateUpdate()
@@ -32,12 +29,18 @@ public class BuildingPopup : MonoBehaviour
         transform.LookAt(transform.position + cam.forward);
         float Distance = Vector3.Distance(canvas.transform.position, cam.transform.position);
         canvas.transform.localScale = Vector3.one * Mathf.Max(Distance / InitialDistance, 0.75f);
+
+        if (Distance >= 30 || Distance <= 2)
+        {
+            InputManager.Instance.DisableView();
+            gameObject.SetActive(false);
+        }
     }
 
-    public void SetPopupData(Dictionary<UIComponent, object> Data)
+    public void SetPopupData(Dictionary<StructureUIValues, object> Data)
     {
         if (Data == null) return;
-        foreach (IUIComponent component in UIComponents)
+        foreach (IStructureUIComponent component in UIComponents)
         {
             component.TrySetup(Data);
         }

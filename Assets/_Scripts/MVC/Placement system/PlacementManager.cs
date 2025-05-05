@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlacementManager : MonoBehaviour
 {
@@ -143,6 +141,10 @@ public class PlacementManager : MonoBehaviour
 
         MapData.RemoveObjectAt(GridPosition);
         TerrainController.RestoreTerrain(placeable.GetID());
+        if (placeable is RoadView road)
+        {
+            RoadNavMesh.BuildNavMesh();
+        }
         Destroy(placeable.GetGameObject());
     }
 

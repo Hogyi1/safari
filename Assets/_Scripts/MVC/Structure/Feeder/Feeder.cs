@@ -1,7 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UIComponent;
-public class Feeder : Structure, ISelectable, IRefillable
+using static StructureUIValues;
+public class Feeder : Structure, ISelectable, IRefillable, IFoodSource
 {
     private int Capacity;
     private int MaxCapacity;
@@ -11,19 +12,19 @@ public class Feeder : Structure, ISelectable, IRefillable
     {
         dietType = Data.diet;
         this.MaxCapacity = Data.Capacity;
-        this.Capacity = Data.Capacity;
+        this.Capacity = Data.Capacity / 2;
         this.RefillPrice = Data.Price;
     }
 
-    public Dictionary<UIComponent, object> GetUIData()
+    public Dictionary<StructureUIValues, object> GetUIData()
     {
-        return new Dictionary<UIComponent, object> {
+        return new Dictionary<StructureUIValues, object> {
             { Name_text, Name },
-            { UIComponent.ID, ID },
+            { StructureUIValues.ID, ID },
             { Sprite_icon, Icon },
-            { Value_slider, Capacity },
+            { Value_slider, new Func<float>(() => GetCapacity()) },
             { MaxValue_slider, MaxCapacity},
-            { Refillprice_button, CalculateRefillPrice() } };
+            { Refillprice_button, new Func<float>(() => CalculateRefillPrice()) } };
     }
 
     public void Refill()
@@ -38,5 +39,26 @@ public class Feeder : Structure, ISelectable, IRefillable
 
         int newPrice = (int)(RefillPrice * costMultiplier);
         return newPrice;
+    }
+
+    public DietType GetDietType()
+    {
+        return dietType;
+    }
+
+    public int GetCapacity()
+    {
+        return Capacity;
+    }
+
+    public int GetMaxCapacity()
+    {
+        return MaxCapacity;
+    }
+    public int Consume(int amount)
+    {
+        int consumed = Mathf.Min(amount, Capacity);
+        Capacity -= consumed;
+        return consumed;
     }
 }

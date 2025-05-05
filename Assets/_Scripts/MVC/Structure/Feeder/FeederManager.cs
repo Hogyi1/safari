@@ -49,7 +49,7 @@ public class FeederManager : MonoBehaviour, IStructureManager
     public void Refill(int ID, int Price)
     {
         if (EconomyManager.Instance.HasEnoughMoney(Price))
-            ActiveFeeders[ID].Refill();
+            ActiveFeeders.Find(t => t.GetID() == ID).Refill();
         else Debug.LogWarning("Nincs elegendő pénzed újratölteni!");
     }
 

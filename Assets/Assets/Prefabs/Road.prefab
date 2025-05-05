@@ -93,6 +93,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92e348a7e21f9344caf4e290c600d509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Icon: {fileID: 21300000, guid: 006757eaa250d164eabc9c04abb00ec7, type: 3}
+  fadeEffect: {fileID: -5221109196859027368}
 --- !u!1001 &121784979702192082
 PrefabInstance:
   m_ObjectHideFlags: 0
