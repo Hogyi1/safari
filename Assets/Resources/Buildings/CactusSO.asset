@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c7d65a98026d79408e66bf4e6eda1cc, type: 3}
   m_Name: CactusSO
   m_EditorClassIdentifier: 
-  BuildingID: 3
+  BuildingID: 4
   SpaceTaken: {x: 1, y: 1}
   Price: 0
   Capacity: 10
-  type: 0
-  icon: {fileID: 21300000, guid: 97e5265ed1b1865448e683b042fbfbd0, type: 3}
-  diet: 1
+  isFeeder: 0
+  isPlant: 1
+  type: 4
   BuildingPrefab: {fileID: 1212690234365177027, guid: b2fe4e8931d5f924aa0cbae4fba896c4, type: 3}

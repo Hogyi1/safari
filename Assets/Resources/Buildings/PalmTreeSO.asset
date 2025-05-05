@@ -16,7 +16,7 @@ MonoBehaviour:
   SpaceTaken: {x: 2, y: 2}
   Price: 0
   Capacity: 25
-  type: 0
-  icon: {fileID: 21300000, guid: 97e5265ed1b1865448e683b042fbfbd0, type: 3}
-  diet: 1
+  isFeeder: 0
+  isPlant: 1
+  type: 2
   BuildingPrefab: {fileID: 4768927122218511137, guid: 17e8a599b02e7cd46b6a4cbdbdf6051e, type: 3}

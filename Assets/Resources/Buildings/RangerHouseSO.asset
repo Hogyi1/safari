@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c7d65a98026d79408e66bf4e6eda1cc, type: 3}
   m_Name: RangerHouseSO
   m_EditorClassIdentifier: 
-  BuildingID: 5
+  BuildingID: 0
   SpaceTaken: {x: 8, y: 10}
-  Price: 1000
-  Capacity: 3
-  type: 3
-  icon: {fileID: 21300000, guid: 144f1d4546fb49f45a6b8449f1818698, type: 3}
-  diet: 3
+  Price: 0
+  Capacity: 6
+  isFeeder: 0
+  isPlant: 0
+  type: 0
   BuildingPrefab: {fileID: 6729789292189893960, guid: 72b0b5bd136230343a1e014aa656ec68, type: 3}
