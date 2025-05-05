@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c7d65a98026d79408e66bf4e6eda1cc, type: 3}
   m_Name: FeederSO
   m_EditorClassIdentifier: 
-  BuildingID: 4
+  BuildingID: 5
   SpaceTaken: {x: 2, y: 1}
   Price: 350
   Capacity: 100
-  type: 2
-  icon: {fileID: 21300000, guid: 97e5265ed1b1865448e683b042fbfbd0, type: 3}
-  diet: 0
+  isFeeder: 1
+  isPlant: 0
+  type: 3
   BuildingPrefab: {fileID: 6221993677471747854, guid: bf0b152245119ee42b45c45cfe38815c, type: 3}

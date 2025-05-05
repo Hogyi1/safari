@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c7d65a98026d79408e66bf4e6eda1cc, type: 3}
   m_Name: BlockTreeSO
   m_EditorClassIdentifier: 
-  BuildingID: 0
+  BuildingID: 6
   SpaceTaken: {x: 2, y: 2}
   Price: 0
   Capacity: 50
-  type: 0
-  icon: {fileID: 21300000, guid: 97e5265ed1b1865448e683b042fbfbd0, type: 3}
-  diet: 1
-  BuildingPrefab: {fileID: 8185793832496569501, guid: 3bcf6e78553a7f54c8bf39912b4124e3, type: 3}
+  isFeeder: 0
+  isPlant: 1
+  type: 5
+  BuildingPrefab: {fileID: 2959479090024167872, guid: 281e07b7c0ef76048b34ac62ff9c16cb, type: 3}
