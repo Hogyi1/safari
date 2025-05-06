@@ -13,6 +13,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
+  - _ALPHATEST_ON
   - _DISABLE_DECALS
   - _DISABLE_SSR_TRANSPARENT
   - _DOUBLESIDED_ON
@@ -49,7 +50,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_bfb8accc76d9413bad4df77aa898cfaf:
-        m_Texture: {fileID: 2800000, guid: 6553b681ac305bb449e2448b3e499ea1, type: 3}
+        m_Texture: {fileID: 2800000, guid: 30c74cc02a33ca243a2f565aac7c77d0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_ffdb7414286146bb8d61d59a32adb117:
@@ -90,11 +91,13 @@ Material:
     - Vector1_f94fa9db93f04c1b96a8e7801edfd291: 30
     - Vector1_fe92716405274a84a6424c2ae88909a1: 0.16
     - _AddPrecomputedVelocity: 0
+    - _AlphaClip: 0.5
     - _AlphaCutoffEnable: 1
     - _AlphaDstBlend: 0
     - _AlphaSrcBlend: 1
     - _AlphaToMask: 0
     - _AlphaToMaskInspectorValue: 0
+    - _Amount: 0
     - _BlendMode: 0
     - _CullMode: 0
     - _CullModeForward: 0
@@ -127,6 +130,7 @@ Material:
     - _StencilWriteMaskMV: 40
     - _SupportDecals: 0
     - _SurfaceType: 0
+    - _Tolerance: 0.25
     - _TransparentBackfaceEnable: 0
     - _TransparentCullMode: 2
     - _TransparentDepthPostpassEnable: 0
@@ -176,6 +180,7 @@ Material:
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TargetColor: {r: 0.43529418, g: 0.49803913, b: 0.18039218, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &3789630653323657756

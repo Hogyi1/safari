@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3c7d65a98026d79408e66bf4e6eda1cc, type: 3}
-  m_Name: PalmTreeSO
+  m_Name: Birch_Tree_SO
   m_EditorClassIdentifier: 
   BuildingID: 2
   SpaceTaken: {x: 2, y: 2}
+  Name: Small birch tree
   Price: 0
-  Capacity: 25
+  Capacity: 15
   type: 0
   icon: {fileID: 21300000, guid: 97e5265ed1b1865448e683b042fbfbd0, type: 3}
   diet: 1
-  BuildingPrefab: {fileID: 4768927122218511137, guid: 17e8a599b02e7cd46b6a4cbdbdf6051e, type: 3}
+  BuildingPrefab: {fileID: 3416579149820165379, guid: 5886ddf0a24707449a406575ac826430, type: 3}
