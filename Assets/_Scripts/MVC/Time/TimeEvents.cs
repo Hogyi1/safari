@@ -1,14 +1,24 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-// Time eventek megfigyelése
+/// <summary>
+/// Observable singleton for time-based events. Manages subscriptions and notifies on day, month, year transitions.
+/// </summary>
 public class TimeEvents : MonoBehaviour, ITimeEventObservable
 {
-    // A feliratkozott observerek
+    /// <summary>
+    /// List of subscribed time event observers.
+    /// </summary>
     private List<ITimeEventObserver> observers = new List<ITimeEventObserver>();
 
-    // Singleton pattern követése
+    /// <summary>
+    /// Singleton instance of TimeEvents.
+    /// </summary>
     public static TimeEvents Instance { get; private set; }
+
+    /// <summary>
+    /// Ensures single instance and persists across scenes.
+    /// </summary>
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -20,8 +30,10 @@ public class TimeEvents : MonoBehaviour, ITimeEventObservable
         DontDestroyOnLoad(gameObject);
     }
 
-
-    // Feliratkozás
+    /// <summary>
+    /// Subscribes an observer to time event notifications.
+    /// </summary>
+    /// <param name="observer">Observer to add.</param>
     public void AddObserver(ITimeEventObserver observer)
     {
         Debug.Log("Új Observer iratkozott fel a Time Event figyelésére " + observer);
@@ -29,7 +41,10 @@ public class TimeEvents : MonoBehaviour, ITimeEventObservable
         observers.Add(observer);
     }
 
-    // Értesítés kiküldése
+    /// <summary>
+    /// Notifies all observers of a time event.
+    /// </summary>
+    /// <param name="timeEvent">Time event that occurred.</param>
     public void NotifyObservers(TimeEvent timeEvent)
     {
         Debug.Log("Új Time Event érkezett továbbításra " + timeEvent.ToString());
@@ -40,7 +55,10 @@ public class TimeEvents : MonoBehaviour, ITimeEventObservable
         }
     }
 
-    // Leiratkozás
+    /// <summary>
+    /// Unsubscribes an observer from time event notifications.
+    /// </summary>
+    /// <param name="observer">Observer to remove.</param>
     public void RemoveObserver(ITimeEventObserver observer)
     {
         Debug.Log("Observer leiratkozott a Time Event figyeléséről " + observer);
@@ -50,10 +68,12 @@ public class TimeEvents : MonoBehaviour, ITimeEventObservable
 
 }
 
+/// <summary>
+/// Types of time events that occur when time advances.
+/// </summary>
 public enum TimeEvent
 {
     Day_passed,
     Month_passed,
     Year_passed
 }
-

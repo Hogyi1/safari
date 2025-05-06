@@ -8,18 +8,48 @@ using UnityEngine.UI;
 /// </summary>
 public class AnimalPopup : MonoBehaviour
 {
-    private Animal Data; // UI Data
+    /// <summary>
+    /// The animal data model displayed by this popup.
+    /// </summary>
+    private Animal Data;
 
+    /// <summary>
+    /// Text component showing the animal's type or name.
+    /// </summary>
     [SerializeField] private TMP_Text _name;
+
+    /// <summary>
+    /// Text component showing the animal's age.
+    /// </summary>
     [SerializeField] private TMP_Text info1;
+
+    /// <summary>
+    /// Text component showing the animal's current state.
+    /// </summary>
     [SerializeField] private TMP_Text info2;
+
+    /// <summary>
+    /// Text component showing the animal's diet.
+    /// </summary>
     [SerializeField] private TMP_Text info3;
+
+    /// <summary>
+    /// Button to set this animal as a target (e.g., for removal).
+    /// </summary>
     [SerializeField] private Button setTarget;
+
+    /// <summary>
+    /// Button to close the animal popup.
+    /// </summary>
     [SerializeField] private Button close;
+
+    /// <summary>
+    /// Image component representing the animal's health bar.
+    /// </summary>
     [SerializeField] private Image healthbar;
 
     /// <summary>
-    /// Disables the popup at start.
+    /// Disables the popup at start to ensure it's not visible by default.
     /// </summary>
     private void Start()
     {
@@ -27,8 +57,8 @@ public class AnimalPopup : MonoBehaviour
     }
 
     /// <summary>
-    /// Continuously updates the UI with the animal's state, age, and HP.
-    /// Automatically disables view if the animal is flagged for removal.
+    /// Updates the popup UI each frame with the animal's age, state, and HP.
+    /// Automatically hides if the animal is flagged for removal.
     /// </summary>
     void Update()
     {
@@ -46,7 +76,7 @@ public class AnimalPopup : MonoBehaviour
     }
 
     /// <summary>
-    /// Initializes the popup with animal-specific data and binds button actions.
+    /// Initializes the popup with the given animal's data and binds button actions.
     /// </summary>
     /// <param name="animal">The animal whose data should be shown.</param>
     public void SetPopupData(Animal animal)

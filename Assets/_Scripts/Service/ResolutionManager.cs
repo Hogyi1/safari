@@ -1,8 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Provides utilities for retrieving and selecting unique screen resolutions.
+/// </summary>
 public static class ResolutionManager
 {
+    /// <summary>
+    /// Returns a list of unique screen resolutions supported by the device.
+    /// </summary>
+    /// <returns>List of unique Resolution structs.</returns>
     public static List<Resolution> GetUniqueResolutions()
     {
         var all = Screen.resolutions;
@@ -21,6 +28,10 @@ public static class ResolutionManager
         return results;
     }
 
+    /// <summary>
+    /// Retrieves string options for each unique resolution (e.g., "1920x1080").
+    /// </summary>
+    /// <returns>List of resolution option strings.</returns>
     public static List<string> GetResolutionOptions()
     {
         var list = new List<string>();
@@ -31,6 +42,11 @@ public static class ResolutionManager
         return list;
     }
 
+    /// <summary>
+    /// Finds the index of a target resolution in the unique resolutions list.
+    /// </summary>
+    /// <param name="target">The resolution to locate.</param>
+    /// <returns>Index of the resolution, or 0 if not found.</returns>
     public static int FindResolutionIndex(Vector2Int target)
     {
         var resolutions = GetUniqueResolutions();
@@ -42,6 +58,11 @@ public static class ResolutionManager
         return 0;
     }
 
+    /// <summary>
+    /// Returns the Vector2Int representation of the resolution at the given index.
+    /// </summary>
+    /// <param name="index">Index into the unique resolutions list.</param>
+    /// <returns>Vector2Int with width and height.</returns>
     public static Vector2Int GetResolutionByIndex(int index)
     {
         var res = GetUniqueResolutions();

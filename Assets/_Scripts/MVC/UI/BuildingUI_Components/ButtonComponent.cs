@@ -6,24 +6,47 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using static StructureUIValues;
+
+/// <summary>
+/// Component providing refill and upgrade button functionality
+/// within a structure popup UI, displaying dynamic prices
+/// and handling button interactivity.
+/// </summary>
 public class ButtonComponent : MonoBehaviour, IStructureUIComponent
 {
+    /// <summary>
+    /// Button used to trigger action refill or upgrade action.
+    /// </summary>
     [SerializeField] private Button refillButton, upgradeButton;
+
+    /// <summary>
+    /// Text label for the refill and upgrade button showing its price.
+    /// </summary>
     [SerializeField] private TextMeshProUGUI refillText, upgradeText;
+
+    /// <summary>
+    /// Key used to retrieve refill price from popup data.
+    /// </summary>
     [SerializeField] private StructureUIValues refillKey = Refillprice_button;
+
+    /// <summary>
+    /// Key used to retrieve upgrade price from popup data.
+    /// </summary>
     [SerializeField] private StructureUIValues upgradeKey = Upgradeprice_button;
 
     private Func<float> getRefillPrice;
     private Func<float> getUpgradePrice;
-    private int price;
 
-    // Csakis a BuildingUI-hoz fog működni
+    /// <summary>
+    /// Configures button visibility, price retrieval functions,
+    /// and click listeners based on provided popup data.
+    /// </summary>
+    /// <param name="data">Dictionary mapping UI value keys to dynamic data.</param>
     public void TrySetup(Dictionary<StructureUIValues, object> data)
     {
-        // Refill
+        // Refill button setup
         if (data.TryGetValue(refillKey, out var refillObj))
         {
-            // beállítjuk a getRefillPrice funkciót
             if (refillObj is Func<float> refillFunc)
                 getRefillPrice = refillFunc;
             else
@@ -45,7 +68,7 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
             getRefillPrice = null;
         }
 
-        // Upgrade
+        // Upgrade button setup
         if (data.TryGetValue(upgradeKey, out var upgradeObj))
         {
             if (upgradeObj is Func<float> upgradeFunc)
@@ -59,7 +82,9 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
             upgradeButton.gameObject.SetActive(true);
             upgradeText.gameObject.SetActive(true);
             upgradeButton.onClick.RemoveAllListeners();
-            upgradeButton.onClick.AddListener(() => { /*UpgradeManager ha készen van a vadőr és parkoló view*/ });
+            upgradeButton.onClick.AddListener(() => {
+                // TODO: Implement upgrade action when manager is ready
+            });
 
 
         }
@@ -71,9 +96,13 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
         }
     }
 
+    /// <summary>
+    /// Updates button interactivity and price text each frame
+    /// based on current economy and dynamic price functions.
+    /// </summary>
     private void Update()
     {
-        // Refill gomb frissítése
+        // Refill button
         if (getRefillPrice != null)
         {
             float price = getRefillPrice();
@@ -82,7 +111,7 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
             refillText.text = $"Refill ${price:0}";
         }
 
-        // Upgrade gomb frissítése
+        // Upgrade button
         if (getUpgradePrice != null)
         {
             float price = getUpgradePrice();

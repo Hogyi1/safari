@@ -1,30 +1,49 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Represents in-game time, tracking minutes, hours, days, months, and total days passed.
+/// Provides methods to advance time and notifies observers on day, month, and year transitions.
+/// </summary>
 public class GameTime
 {
-    public enum Months{
-        Jan,
-        Feb,
-        Mar,
-        Apr,
-        May,
-        Jun,
-        Jul,
-        Aug,
-        Sep,
-        Oct,
-        Nov,
-        Dec
+    /// <summary>
+    /// Enumeration of calendar months.
+    /// </summary>
+    public enum Months
+    {
+        Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
     }
 
+    /// <summary>
+    /// Current month index (0-based).
+    /// </summary>
     public int month { get; private set; }
+
+    /// <summary>
+    /// Total days passed since game start.
+    /// </summary>
     public int totalDays { get; private set; }
+
+    /// <summary>
+    /// Day count within the current month (0-based).
+    /// </summary>
     public int days { get; private set; }
+
+    /// <summary>
+    /// Current hour within the day (0-23).
+    /// </summary>
     public int hours { get; private set; }
+
+    /// <summary>
+    /// Current minute within the hour (0-59).
+    /// </summary>
     public int minutes { get; private set; }
 
-    // Ha egy létező GameTime-ból szeretnénk létrehozni egy új időt
+    /// <summary>
+    /// Creates a new GameTime instance by copying another instance's values.
+    /// </summary>
+    /// <param name="gameTime">Existing GameTime to copy.</param>
     public GameTime(GameTime gameTime)
     {
         this.month = gameTime.month;
@@ -33,10 +52,16 @@ public class GameTime
         this.hours = gameTime.hours;
         this.minutes = gameTime.minutes;
     }
-    // Ha egy teljesen új időt akarunk létrehozni
+
+    /// <summary>
+    /// Initializes a new GameTime starting at zero.
+    /// </summary>
     public GameTime() { }
 
-    // Percek hozzáadása
+    /// <summary>
+    /// Advances the time by a specified number of minutes, rolling into hours as needed.
+    /// </summary>
+    /// <param name="min">Minutes to add.</param>
     public void AddMinutes(int min)
     {
         minutes += min;
@@ -49,7 +74,10 @@ public class GameTime
 
     }
 
-    // Órák hozzáadása
+    /// <summary>
+    /// Advances the time by a specified number of hours, rolling into days as needed.
+    /// </summary>
+    /// <param name="h">Hours to add.</param>
     public void AddHours(int h)
     {
         hours += h;
@@ -62,7 +90,10 @@ public class GameTime
 
     }
 
-    // Napok hozzáadása
+    /// <summary>
+    /// Advances the time by a specified number of days, rolling into months and notifying observers as needed.
+    /// </summary>
+    /// <param name="d">Days to add.</param>
     public void AddDays(int d)
     {
         totalDays += d;
@@ -77,7 +108,10 @@ public class GameTime
 
     }
 
-    // Hónapok hozzáadása
+    /// <summary>
+    /// Advances the time by a specified number of months, rolling into years and notifying observers.
+    /// </summary>
+    /// <param name="m">Months to add.</param>
     public void AddMonth(int m)
     {
         month += m;
@@ -91,7 +125,10 @@ public class GameTime
 
     }
 
-    // Kiíratás console biztos formában
+    /// <summary>
+    /// Returns a formatted string representation of the current time.
+    /// </summary>
+    /// <returns>String in format "{hours}h {(Months)(month / 12)}, Month {month}".</returns>
     public override string ToString()
     {
         return $"{hours}h {(Months)(month / 12)}, Month {month}";

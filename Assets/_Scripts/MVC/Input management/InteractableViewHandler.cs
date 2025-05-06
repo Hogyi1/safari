@@ -2,23 +2,48 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Detects hover and click interactions on scene objects and notifies interactable views.
+/// </summary>
 public class InteractableViewHandler : MonoBehaviour
 {
+    /// <summary>
+    /// Camera used to raycast from screen to world objects.
+    /// </summary>
     [SerializeField]
     private Camera SceneCamera;
 
+    /// <summary>
+    /// Layer mask for selectable interactable objects.
+    /// </summary>
     [SerializeField] private LayerMask SelectableLayermask;
+
+    /// <summary>
+    /// Layer mask for road objects, treated as interactable.
+    /// </summary>
     [SerializeField] private LayerMask RoadLayerMask;
 
+    /// <summary>
+    /// The last interactable object that was hovered.
+    /// </summary>
     private IInteractable LastView;
+
+    /// <summary>
+    /// The currently active interactable view after click.
+    /// </summary>
     private IInteractable ActiveView;
 
+    /// <summary>
+    /// Subscribes to click events on start.
+    /// </summary>
     void Start()
     {
         InputManager.Instance.OnClicked += HandleClick;
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Updates hover state each frame and invokes OnHover/OnExit accordingly.
+    /// </summary>
     void Update()
     {
         IInteractable hoveredObject = GetHoveredObjectScript();
@@ -42,7 +67,10 @@ public class InteractableViewHandler : MonoBehaviour
         }
 
     }
-    // Kezeli a kattintást, a View-t aktiválja
+
+    /// <summary>
+    /// Handles click events, activating or deactivating the interactable view.
+    /// </summary>
     private void HandleClick()
     {
         if (LastView != null)
@@ -55,15 +83,24 @@ public class InteractableViewHandler : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Ensures active view is cleared when handler is disabled.
+    /// </summary>
     private void OnDisable()
     {
         SetViewInactive();
     }
 
-    // UI felett van?
+    /// <summary>
+    /// Determines if the pointer is currently over a UI element.
+    /// </summary>
+    /// <returns>True if over UI; otherwise false.</returns>
     public bool IsPointerOverUI() => EventSystem.current.IsPointerOverGameObject();
 
-    // Visszaadja a lehoverelt objektum scriptjét
+    /// <summary>
+    /// Raycasts into the scene to find the IInteractable component under the cursor.
+    /// </summary>
+    /// <returns>The hovered IInteractable or null if none.</returns>
     public IInteractable GetHoveredObjectScript()
     {
         if (IsPointerOverUI())
@@ -81,7 +118,9 @@ public class InteractableViewHandler : MonoBehaviour
         return null;
     }
 
-    // Inaktívvá állítja a jelenlegi View-t
+    /// <summary>
+    /// Deactivates the currently active interactable view and hides its popup.
+    /// </summary>
     public void SetViewInactive()
     {
         if (!ActiveView.IsUnityNull())
@@ -92,7 +131,9 @@ public class InteractableViewHandler : MonoBehaviour
         }
     }
 
-    // Aktiválja a jelenlegi View-t és a popupot is
+    /// <summary>
+    /// Activates the last hovered view, canceling any previous active view.
+    /// </summary>
     private void SetViewActive()
     {
         if (!LastView.IsUnityNull())
