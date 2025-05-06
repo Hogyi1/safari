@@ -19,6 +19,10 @@ public class CameraModel : MonoBehaviour
 
     [HideInInspector] public Vector3 followOffset;
 
+    /// <summary>
+    /// Update only the Y component of the follow-offset, preserving X and Z.
+    /// </summary>
+    /// <param name="y">New vertical offset value (clamped by controller).</param>
     public void SetFollowOffsetY(float y)
     {
         followOffset = new Vector3(followOffset.x, y, followOffset.z);

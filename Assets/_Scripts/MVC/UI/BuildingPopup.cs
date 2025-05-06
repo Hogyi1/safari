@@ -3,20 +3,44 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// Manages a world-space popup UI for buildings, handling initialization, orientation,
+/// scaling, and smooth fade/scale animations.
+/// </summary>
 public class BuildingPopup : MonoBehaviour
 {
-    public Transform cam; // Scene camera to adjust in world space
-
-    private List<IStructureUIComponent> UIComponents = new(); // List of components to be actived
-    private Canvas canvas; // Component to manipulate the scale of the UI
-    private CanvasGroup canvasGroup; // Component to manipulate the transparency of the UI
-
-    private Coroutine currentRoutine; // Keep track of the current coroutine
-
-    private const float InitialDistance = 10.44f; // The distance between the camera and the UI that is comfortable to use at
+    /// <summary>
+    /// Reference to the scene camera transform for orienting and scaling the popup.
+    /// </summary>
+    public Transform cam;
 
     /// <summary>
-    /// Initializes components and disables the popup on start.
+    /// List of UI components within the popup that implement IStructureUIComponent.
+    /// </summary>
+    private List<IStructureUIComponent> UIComponents = new();
+
+    /// <summary>
+    /// Canvas component for controlling the popup's scale.
+    /// </summary>
+    private Canvas canvas;
+
+    /// <summary>
+    /// CanvasGroup component for controlling the popup's transparency and interactivity.
+    /// </summary>
+    private CanvasGroup canvasGroup;
+
+    /// <summary>
+    /// Currently running coroutine for fade/scale animations.
+    /// </summary>
+    private Coroutine currentRoutine;
+
+    /// <summary>
+    /// Default comfortable distance between camera and UI before scaling.
+    /// </summary>
+    private const float InitialDistance = 10.44f;
+
+    /// <summary>
+    /// Initializes UI components, canvas, and canvas group, then hides the popup.
     /// </summary>
     private void Start()
     {
@@ -37,8 +61,8 @@ public class BuildingPopup : MonoBehaviour
     }
 
     /// <summary>
-    /// Orients the popup to face the camera and updates scale based on distance. 
-    /// Automatically hides it if too far or too close.
+    /// Orients the popup to face the camera, adjusts scale based on distance,
+    /// and hides the popup if outside visible range.
     /// </summary>
     void LateUpdate()
     {
@@ -67,7 +91,7 @@ public class BuildingPopup : MonoBehaviour
     }
 
     /// <summary>
-    /// Displays the popup with a smooth fade and scale-in animation.
+    /// Shows the popup with a smooth fade-in and scale-up animation.
     /// </summary>
     public void Show()
     {
@@ -79,7 +103,7 @@ public class BuildingPopup : MonoBehaviour
     }
 
     /// <summary>
-    /// Hides the popup with a smooth fade and scale-out animation.
+    /// Hides the popup with a smooth fade-out and scale-down animation.
     /// </summary>
     public void Hide()
     {
@@ -90,9 +114,9 @@ public class BuildingPopup : MonoBehaviour
     }
 
     /// <summary>
-    /// Coroutine to animate fading and scaling of the popup when showing or hiding.
+    /// Coroutine for animating the popup's fade and scale transitions.
     /// </summary>
-    /// <param name="show">True to show, false to hide.</param>
+    /// <param name="show">True to animate showing; false to animate hiding.</param>
     private IEnumerator FadeScaleRoutine(bool show)
     {
         float duration = 0.25f;
