@@ -23,10 +23,7 @@ public class BaseComponent : MonoBehaviour, IStructureUIComponent
         if (data.TryGetValue(idKey, out var id))
         {
             remove.onClick.RemoveAllListeners();
-            if ((string)name != "Road")
-                remove.onClick.AddListener(() => { StructureManager.Instance.RemoveStructure((int)id); PopupManager.Instance.HidePopup(); });
-            else
-                remove.onClick.AddListener(() => { RoadManager.Instance.RemoveRoad((int)id); PopupManager.Instance.HidePopup(); });
+            remove.onClick.AddListener(() => { StructureManager.Instance.RemoveStructure((int)id); PopupManager.Instance.HidePopup(); });
         }
 
         if (data.TryGetValue(iconKey, out var icon))
