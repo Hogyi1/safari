@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class StructureManager : MonoBehaviour
 {
@@ -12,6 +10,7 @@ public class StructureManager : MonoBehaviour
     [SerializeField] private VegetationManager vegetationManager;
     [SerializeField] private FeederManager feederManager;
     [SerializeField] private WaterManager waterManager;
+    [SerializeField] private RoadManager roadManager;
 
     [SerializeField] private List<Structure> activeSelectables = new List<Structure>();
     public Dictionary<int, IPlaceable> IInteractables = new Dictionary<int, IPlaceable>();
@@ -37,7 +36,6 @@ public class StructureManager : MonoBehaviour
 
     // Visszaadja a megfelelő managert az egyes típusokhoz
     // Ha nem talált megfelelő managert null-t ad vissza
-    // A **ROADMANAGER** és a **FACILITYMANAGEREK** külön managerek
     public IStructureManager GetManager(BuildingType type)
     {
         return type switch
@@ -45,6 +43,7 @@ public class StructureManager : MonoBehaviour
             BuildingType.Vegetation => vegetationManager,
             BuildingType.Water => waterManager,
             BuildingType.Feeder => feederManager,
+            BuildingType.Road => roadManager,
             _ => null
         };
     }
@@ -53,14 +52,14 @@ public class StructureManager : MonoBehaviour
     // Szól a megfelelő managernek, hogy készítsen el egy ISelectable-t
     // Szól a PlacementManagernek, hogy rakja le a megadott építményt a megfelelő pozícióra.
     // Visszatérési értéke a generált ID amit, később a MapData tárol el
-    public int CreateStructure(BuildingData Data, Vector3 position)
+    public int CreateStructure(BuildingData Data, Vector3 position, Vector2Int gridPosition)
     {
         IStructureManager manager = GetManager(Data.type);
-        if (manager == null) throw new Exception("Nem található a következő manager: " + Data.type + "Manager");
+        if (manager.IsUnityNull()) throw new Exception("Nem található a következő manager: " + Data.type + "Manager");
 
         int ID = IDGenerator.GenerateID();
 
-        Structure newStructure = manager.AddStructure(Data, ID);
+        Structure newStructure = manager.AddStructure(Data, ID, gridPosition);
         activeSelectables.Add(newStructure);
 
         IPlaceable view = PlacementManager.Instance.PlaceStructure(Data, position, newStructure);
@@ -95,12 +94,27 @@ public class StructureManager : MonoBehaviour
         }
     }
 
+    public bool RegisterStructures(BuildingData Data, int ID, IPlaceable view)
+    {
+        IStructureManager manager = GetManager(Data.type);
+        if (manager.IsUnityNull()) return false;
+
+        Structure newStructure = manager.AddStructure(Data, ID, Vector2Int.zero); // Nem jó az utakhoz
+        activeSelectables.Add(newStructure);
+        view.Init(newStructure);
+
+        manager.SetView(view, ID);
+        IInteractables[ID] = view;
+        return true;
+    }
+
     // Visszaadja a megfelelő view-t a másik managernek, így csak egy helyen kell tárolni
     public IPlaceable GetCorrespondingView(int ID)
     {
         return IInteractables[ID];
     }
 
+    // Egy poziciohoz megkeressük a legközelebbi építményt
     public Structure GetStructureByPosition(Vector3 position)
     {
         const float tolerance = 2.5f;
@@ -121,7 +135,7 @@ public class StructureManager : MonoBehaviour
 // Minden épülettel foglalkozó Manager megvalósítja
 public interface IStructureManager
 {
-    public Structure AddStructure(BuildingData Data, int ID);
+    public Structure AddStructure(BuildingData Data, int ID, Vector2Int gridPosition);
     public void RemoveStructure(int ID);
     public void SetView(IPlaceable view, int ID);
 }
@@ -146,6 +160,7 @@ public interface IPlaceable
     public BuildingType GetBuildingType();
     public void Init(Structure structure);
     public Structure GetStructure();
+    public BuildingData GetData();
 }
 
 //Interfész IStageable

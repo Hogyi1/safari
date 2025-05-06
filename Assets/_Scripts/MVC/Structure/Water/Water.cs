@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using static StructureUIValues;
-using static UnityEditor.Experimental.GraphView.Port;
 
 public class Water : Structure, ISelectable, IWaterSource
 {
     private DietType dietType;
-    public Water(BuildingData Data, int iD) : base(iD, Data.name, Data.icon, Data.type)
+    public Water(BuildingData Data, int iD) : base(iD, Data.Name, Data.icon, Data.type)
     {
         dietType = DietType.Water;
     }

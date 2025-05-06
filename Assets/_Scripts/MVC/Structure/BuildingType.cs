@@ -7,4 +7,5 @@ public enum BuildingType
     Water,
     Feeder,
     Road,
+    Facility
 }
