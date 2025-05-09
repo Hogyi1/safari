@@ -31315,6 +31315,7 @@ GameObject:
   - component: {fileID: 1920214044}
   - component: {fileID: 1920214043}
   - component: {fileID: 1920214045}
+  - component: {fileID: 1920214046}
   m_Layer: 0
   m_Name: Service List
   m_TagString: Untagged
@@ -31359,6 +31360,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1d762f6eeb3b3342b43bd89bc9a4da3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1920214046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920214042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09065233c48f1e34aafa765dfa7ffb66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1921607598
