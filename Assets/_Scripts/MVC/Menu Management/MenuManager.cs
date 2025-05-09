@@ -2,6 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Manages show/hide operations for UI panels in the side menu and action bar.
+/// Integrates with UIStackService to track currently open UI panels.
 /// </summary>
 public class MenuManager : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class MenuManager : MonoBehaviour
     /// <param name="menu">The menu GameObject to show.</param>
     public void ShowMenu(GameObject menu)
     {
-        menu.SetActive(true);
+        UIStackService.Push(menu);
     }
 
     /// <summary>
@@ -30,7 +31,14 @@ public class MenuManager : MonoBehaviour
     /// <param name="menu">The menu GameObject to hide.</param>
     public void HideMenu(GameObject menu)
     {
-        menu.SetActive(false);
+        if (UIStackService.Peek() == menu)
+        {
+            UIStackService.Pop();
+        }
+        else
+        {
+            menu.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -41,9 +49,12 @@ public class MenuManager : MonoBehaviour
     {
         foreach (GameObject panel in panels)
         {
-            panel.SetActive(false);
+            if (UIStackService.Peek() == panel)
+                UIStackService.Pop();
+            else
+                panel.SetActive(false);
         }
-        activePanel.SetActive(true);
+        UIStackService.Push(activePanel);
     }
 
     /// <summary>
@@ -54,9 +65,11 @@ public class MenuManager : MonoBehaviour
     {
         foreach (GameObject panel in actionBarPanels)
         {
-            panel.SetActive(false);
+            if (UIStackService.Peek() == panel)
+                UIStackService.Pop();
+            else
+                panel.SetActive(false);
         }
-        activePanel.SetActive(true);
+        UIStackService.Push(activePanel);
     }
-
 }

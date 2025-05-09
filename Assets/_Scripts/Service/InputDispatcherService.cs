@@ -34,7 +34,10 @@ public class InputDispatcherService : MonoBehaviour
         input.CameraControls.ZoomScroll.performed += ctx => InputEventChannel.RaiseZoom(ctx.ReadValue<float>());
         input.CameraControls.ZoomTriggers.performed += ctx => InputEventChannel.RaiseZoom(ctx.ReadValue<float>());
 
-        input.UI.TogglePause.performed += _ => TogglePause();
+        input.UI.Cancel.performed += _ => HandleCancel();
+        input.UI.TogglePause.performed += _ => HandleExplicitPause();
+
+        InputEventChannel.OnPauseToggled += SyncPauseState;
     }
 
     /// <summary>
@@ -42,16 +45,69 @@ public class InputDispatcherService : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
+        input.UI.Cancel.performed -= _ => HandleCancel();
+        input.UI.TogglePause.performed -= _ => HandleExplicitPause();
+
+        InputEventChannel.OnPauseToggled -= SyncPauseState;
+
         input.Disable();
     }
 
     /// <summary>
-    /// Tracks the current paused state of the game.
+    /// Processes the Cancel input: 
+    /// if the pause menu is the topmost UI, it un-pauses the game; 
+    /// otherwise, it closes the top UI panel if one is open, 
+    /// or opens the pause menu if none are.
     /// </summary>
     private bool isPaused = false;
 
     /// <summary>
-    /// Toggles the paused state and raises the pause toggled event.
+    /// Always keep our internal pause flag in line with whatever just happened.
+    /// </summary>
+    private void SyncPauseState(bool paused)
+    {
+        isPaused = paused;
+    }
+
+    /// <summary>
+    /// Processes the Cancel input: 
+    /// if the pause menu is currently on top of the UI stack, it toggles the game's pause state; 
+    /// otherwise, it closes the topmost UI panel if one is open,
+    /// or opens the pause menu if no panels are open.
+    /// </summary>
+    private void HandleCancel()
+    {
+        var top = UIStackService.Peek();
+
+        if (top != null
+            && PauseController.Instance != null
+            && top == PauseController.Instance.PauseMenuUI)
+        {
+            TogglePause();
+            return;
+        }
+
+        if (UIStackService.IsUIOpen())
+        {
+            UIStackService.Pop();
+        }
+        else
+        {
+            TogglePause();
+        }
+    }
+
+    /// <summary>
+    /// Always toggles pause; mapped only to gamepad Start/Menu.
+    /// </summary>
+    private void HandleExplicitPause()
+    {
+        if (InputDeviceDetector.LastUsedDevice == InputDeviceDetector.InputDeviceType.Gamepad)
+            TogglePause();
+    }
+
+    /// <summary>
+    /// Flip pause state and broadcast.
     /// </summary>
     private void TogglePause()
     {

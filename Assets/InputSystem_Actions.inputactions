@@ -501,7 +501,7 @@
                     "name": "Cancel",
                     "type": "Button",
                     "id": "0f677fdb-2c65-4100-8adf-48dff2f2f89b",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -857,17 +857,6 @@
                 },
                 {
                     "name": "",
-                    "id": "b06c2d9b-c94b-4eed-a134-2b89ef957a5a",
-                    "path": "*/{Cancel}",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR",
-                    "action": "Cancel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "94d32b34-b0e4-402c-bc3d-386f1c6a5b59",
                     "path": "<Mouse>/position",
                     "interactions": "",
@@ -1022,8 +1011,8 @@
                 },
                 {
                     "name": "",
-                    "id": "2dab6070-0337-49e6-9793-629e379393d9",
-                    "path": "<Keyboard>/escape",
+                    "id": "ffeabb6a-8bb6-4a08-ba6d-1098ccc730cc",
+                    "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -1033,12 +1022,23 @@
                 },
                 {
                     "name": "",
-                    "id": "ffeabb6a-8bb6-4a08-ba6d-1098ccc730cc",
-                    "path": "<Gamepad>/start",
+                    "id": "09926e78-092d-4b93-b9f2-4caa05c54807",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "TogglePause",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a225e7e-9210-492d-b128-4dee1adc7874",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
