@@ -1,16 +1,37 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// Represents the visual component of a Vehicle, handling navigation and animation.
+/// </summary>
 public class VehicleView : MonoBehaviour
 {
+    /// <summary>
+    /// Reference to the vehicle model driving this view.
+    /// </summary>
     private Vehicle vehicle;
+
+    /// <summary>
+    /// NavMeshAgent used for pathfinding and movement control.
+    /// </summary>
     private NavMeshAgent agent;
+
+    /// <summary>
+    /// Animator component controlling vehicle animations.
+    /// </summary>
     private Animator animator;
+
+    /// <summary>
+    /// NavMeshObstacle used when the agent is disabled to block navigation.
+    /// </summary>
     private NavMeshObstacle obstacle;
-    // Inicializálás
+
+    /// <summary>
+    /// Initializes the VehicleView with its model and component references,
+    /// disabling the NavMeshAgent until movement begins.
+    /// </summary>
+    /// <param name="vehicle">The Vehicle model associated with this view.</param>
     public void Init(Vehicle vehicle)
     {
         this.vehicle = vehicle;
@@ -22,19 +43,27 @@ public class VehicleView : MonoBehaviour
         obstacle.enabled = true;
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Called once per frame. Reserved for future animation updates.
+    /// </summary>
     private void Update()
     {
-
+        // Intentionally left blank; animations can be driven here.
     }
 
-    // Visszaadja, hogy hol van a jármű ajtaja
+    /// <summary>
+    /// Returns the world position of the vehicle's door, used for passenger boarding.
+    /// </summary>
+    /// <returns>World-space position of the door.</returns>
     public Vector3 GetDoorPosition()
     {
         return this.gameObject.transform.GetChild(1).position;
     }
 
-    // Beállítja az agent úticélját
+    /// <summary>
+    /// Moves the vehicle to a specified destination by enabling the agent.
+    /// </summary>
+    /// <param name="Position">Target position in world space.</param>
     public void MoveTo(Vector3 Position)
     {
         obstacle.enabled = false;
@@ -43,7 +72,10 @@ public class VehicleView : MonoBehaviour
         StartCoroutine(WaitForArrival());
     }
 
-    // Elindítja az útvonalkövetést
+    /// <summary>
+    /// Begins following a series of waypoints sequentially.
+    /// </summary>
+    /// <param name="Waypoints">Array of world-space positions to traverse.</param>
     public void MoveOnRoute(Vector3[] Waypoints)
     {
         obstacle.enabled = false;
@@ -52,22 +84,23 @@ public class VehicleView : MonoBehaviour
             StartCoroutine(FollowWaypoints(Waypoints));
     }
 
-    // Követi a megadott útvonalat
+    /// <summary>
+    /// Coroutine that navigates through each waypoint in order,
+    /// and marks the vehicle as Finished upon completion.
+    /// </summary>
+    /// <param name="waypoints">List of positions to visit.</param>
+    /// <returns>IEnumerator for coroutine execution.</returns>
     private IEnumerator FollowWaypoints(Vector3[] waypoints)
     {
         for (int i = 0; i < waypoints.Length; i++)
         {
             Vector3 tp = waypoints[i];
-            Debug.Log(agent.SetDestination(tp));
 
             // Wait until the agent reaches the waypoint
             while (agent.pathPending || agent.remainingDistance > 0.5f)
             {
-                Debug.Log($"Current Distance to waypoint {i}: {agent.remainingDistance}");
                 yield return null;
             }
-
-            Debug.Log($"Reached waypoint {i}");
         }
 
         vehicle.State = VehicleState.Finished;
@@ -75,6 +108,10 @@ public class VehicleView : MonoBehaviour
         obstacle.enabled = true;
     }
 
+    /// <summary>
+    /// Coroutine that waits until the vehicle has arrived at its destination,
+    /// then updates its state to Empty if it was Busy.
+    /// </summary>
     private IEnumerator WaitForArrival()
     {
         while (agent.pathPending || agent.remainingDistance > 0.5f)

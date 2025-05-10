@@ -8,17 +8,19 @@ using UnityEngine;
 
 public class StructureView : MonoBehaviour, IInteractable, IPlaceable
 {
-    public Structure MySelectable;
+    [SerializeField] private BuildingData data;
 
+    public Structure MySelectable;
     private bool isActive;
 
     // Fade effekt komponens, ami elhalványítja ha rávisszük az egeret
     private FadeEffect fadeEffect;
 
-    // Lekéri a komponenseket
     private void Awake()
     {
         fadeEffect = GetComponent<FadeEffect>();
+        if (fadeEffect.IsUnityNull())
+            gameObject.AddComponent<FadeEffect>();
     }
 
     // Inicializálja a view-t a kapcsolódó modell adattal
@@ -73,6 +75,16 @@ public class StructureView : MonoBehaviour, IInteractable, IPlaceable
     public BuildingType GetBuildingType()
     {
         return MySelectable.GetBuildingType();
+    }
+
+    public Structure GetStructure()
+    {
+        return MySelectable;
+    }
+
+    public BuildingData GetData()
+    {
+        return data;
     }
 }
 

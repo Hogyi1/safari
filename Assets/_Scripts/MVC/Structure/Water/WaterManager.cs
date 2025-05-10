@@ -21,28 +21,26 @@ public class WaterManager : MonoBehaviour, IStructureManager
 
     // Létrehozza a megadott Model réteget és eltárolja
     // Visszaadja a Model-t, hogy a fő manager tudjon vele foglalkozni
-    public Structure AddStructure(BuildingData Data, int ID)
+    public Structure AddStructure(BuildingData Data, int ID, Vector2Int gridPosition)
     {
-        Water Water = new Water(Data, ID);
-        if (Water == null) throw new Exception("Nem sikerült léterhozni a következőt: Water");
+        Water water = new Water(Data, ID);
+        if (water == null) throw new Exception("Nem sikerült léterhozni a következőt: Water");
 
-        ActiveWaters.Add(Water);
+        ActiveWaters.Add(water);
 
-        return Water;
+        Debug.Log("Water placed");
+        return water;
     }
 
     // Törli a saját referenciáját
     public void RemoveStructure(int ID)
     {
-        Water Water = ActiveWaters.Find(t => t.GetID() == ID);
-        if (Water == null) return;
+        Water water = ActiveWaters.Find(t => t.GetID() == ID);
+        if (water == null) return;
 
-        ActiveWaters.Remove(Water);
+        ActiveWaters.Remove(water);
     }
 
     // Beállítja a megfelelő modellhez a nézetet
-    public void SetView(IPlaceable view, int ID)
-    {
-        return;
-    }
+    public void SetView(IPlaceable view, int ID) { }
 }

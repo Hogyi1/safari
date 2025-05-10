@@ -8,6 +8,7 @@ public class VegetationManager : MonoBehaviour, IStructureManager, IRandomEventO
     private List<Vegetation> ActiveVegetations = new List<Vegetation>();
     private Dictionary<int, VegetationView> ActiveViews = new Dictionary<int, VegetationView>();
 
+    public int Count;
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -24,9 +25,14 @@ public class VegetationManager : MonoBehaviour, IStructureManager, IRandomEventO
         RandomEvents.Instance.AddObserver(this);
     }
 
+    void Update()
+    {
+        Count = ActiveVegetations.Count;
+    }
+
     // Létrehozza a megadott Model réteget és eltárolja
     // Visszaadja a Model-t, hogy a fő manager tudjon vele foglalkozni
-    public Structure AddStructure(BuildingData Data, int ID)
+    public Structure AddStructure(BuildingData Data, int ID, Vector2Int gridPosition)
     {
         Vegetation Vegetation = new Vegetation(Data, ID);
         if (Vegetation == null) throw new Exception("Nem sikerült léterhozni a következőt: Vegetation");
@@ -51,7 +57,7 @@ public class VegetationManager : MonoBehaviour, IStructureManager, IRandomEventO
     {
         foreach (Vegetation Vegetation in ActiveVegetations)
         {
-            int RandomAmount = UnityEngine.Random.Range(0, Vegetation.GetMaxCapacity());
+            int RandomAmount = UnityEngine.Random.Range(0, Vegetation.GetMaxCapacity() / 3);
 
             Vegetation.Regrow(RandomAmount);
         }

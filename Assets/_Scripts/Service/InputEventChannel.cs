@@ -1,29 +1,40 @@
-/*
-    >> USAGE <<
-
-    Subscribe to an event where you prefer:
-    InputEventChannel.OnClick += MethodName;
-
-    then
-
-    Unsubscribe from an event where you prefer:
-    InputEventChannel.OnClick -= MethodName;
-*/
-
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Static channel providing input events for movement, look, clicks, zoom, camera controls,
+/// UI toggle, and pause toggling.
+/// </summary>
 public static class InputEventChannel
 {
+    /// <summary>Invoked when movement input is received.</summary>
     public static event Action<Vector2> OnMove;
+
+    /// <summary>Invoked when look input is received.</summary>
     public static event Action<Vector2> OnLook;
+
+    /// <summary>Invoked when a primary click occurs.</summary>
     public static event Action OnClick;
+
+    /// <summary>Invoked when a right-click occurs.</summary>
     public static event Action OnRightClick;
+
+    /// <summary>Invoked when zoom input is received.</summary>
     public static event Action<float> OnZoom;
+
+    /// <summary>Invoked for camera move input.</summary>
     public static event Action<Vector2> OnCameraMove;
+
+    /// <summary>Invoked for camera rotate input.</summary>
     public static event Action<Vector2> OnCameraRotate;
+
+    /// <summary>Invoked for camera height input.</summary>
     public static event Action<float> OnCameraHeight;
+
+    /// <summary>Invoked when UI mode is toggled on or off.</summary>
     public static event Action<bool> OnToggleUIMode;
+
+    /// <summary>Invoked when pause state is toggled.</summary>
     public static event Action<bool> OnPauseToggled;
 
     internal static void RaiseMove(Vector2 dir) => OnMove?.Invoke(dir);

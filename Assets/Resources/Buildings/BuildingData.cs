@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Unity.VisualScripting.Dependencies.Sqlite;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuildingData", menuName = "Scriptable Objects/BuildingData")]
 public class BuildingData : ScriptableObject
@@ -14,6 +12,7 @@ public class BuildingData : ScriptableObject
     [Tooltip("Szemből nézve, szélesség, mélység/hosszúság")]
     public Vector2Int SpaceTaken;
 
+    public string Name;
 
     /// <summary>
     /// Building specifikus adatok

@@ -14,11 +14,11 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
     private List<Tourist> activeTourists = new List<Tourist>();
     private Dictionary<int, TouristView> touristViews = new Dictionary<int, TouristView>();
 
-    [SerializeField]
     private TouristFactory factory;
 
     // Az átlag kedv
     private float OverallMood = 0f;
+
 
     public void Awake()
     {
@@ -32,10 +32,9 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
         DontDestroyOnLoad(gameObject);
     }
 
-
-
     public void Start()
     {
+        factory = GetComponentInChildren<TouristFactory>();
         RandomEvents.Instance.AddObserver(this);
     }
 
@@ -67,7 +66,6 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
         if (touristViews.TryGetValue(touristID, out TouristView view))
         {
             touristViews.Remove(touristID);
-            Destroy(view.gameObject);
             Destroy(view);
         }
     }

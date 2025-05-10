@@ -2,21 +2,36 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>
+/// Controls the main menu panels and game navigation actions such as continue and exit.
+/// </summary>
 public class MainMenuController : MonoBehaviour
 {
     [Header("Menu Navigation")]
     [SerializeField] private SaveSlotsMenu saveSlotsMenu;
+    /// <summary>
+    /// Array of menu GameObjects to toggle on navigation.
+    /// </summary>
     [SerializeField] GameObject[] menus;
     [SerializeField] private Button continueGameButton;
     [SerializeField] private Button loadGameButton;
     [SerializeField] private string gameSceneName = "Bemutato";
 
+
+
+    /// <summary>
+    /// Hides all menu panels on start.
+    /// </summary>
     private void Start()
     {
         mm_HideAllMenus();
         DisableButtonsDependingOnData();
     }
 
+    /// <summary>
+    /// Activates the selected menu and deactivates all others.
+    /// </summary>
+    /// <param name="activeMenu">The menu GameObject to show.</param>
     public void mm_NavigationBarClick(GameObject activeMenu)
     {
         foreach (GameObject menu in menus)
@@ -26,6 +41,9 @@ public class MainMenuController : MonoBehaviour
         activeMenu.SetActive(true);  
     }
 
+    /// <summary>
+    /// Continues the game by loading the specified game scene.
+    /// </summary>
     public void mm_Continue()
     {
         if (SceneHandler.Instance != null)
@@ -39,6 +57,9 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Exits the application and logs the closure.
+    /// </summary>
     public void mm_ExitToDesktop()
     {
         Application.Quit();
@@ -46,6 +67,9 @@ public class MainMenuController : MonoBehaviour
         Debug.Log("Application closed.");
     }
 
+    /// <summary>
+    /// Hides all registered menu panels.
+    /// </summary>
     public void mm_HideAllMenus()
     {
         foreach (GameObject menu in menus)

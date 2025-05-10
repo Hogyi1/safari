@@ -43,7 +43,7 @@ public interface ISelectable
 {
     public BuildingType GetBuildingType();
     public int GetID();
-    public Dictionary<UIComponent, object> GetUIData();
+    public Dictionary<StructureUIValues, object> GetUIData();
 }
 
 //Interfész IRefillable
@@ -68,4 +68,13 @@ public interface IFoodSource
     public DietType GetDietType();
     public int GetCapacity();
     public int GetMaxCapacity();
+    public int Consume(int amount);
+}
+
+public interface IWaterSource
+{
+    public DietType GetDietType();
+    public bool IsContaminated();
+    public int Consume(int amount);
+
 }

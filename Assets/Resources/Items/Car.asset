@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Car
   m_EditorClassIdentifier: 
   id: 0
+  buildingId: 3
   itemName: Car
   price: 100
   category: 3

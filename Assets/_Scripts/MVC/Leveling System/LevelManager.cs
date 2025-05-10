@@ -1,14 +1,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manages player leveling by tracking experience, handling level-up logic,
+/// and unlocking content based on completed levels.
+/// Implements ILevelObserver to respond to experience gain events.
+/// </summary>
 public class LevelManager : MonoBehaviour, ILevelObserver
 {
+    /// <summary>
+    /// Singleton instance of the LevelManager for global access.
+    /// </summary>
     public static LevelManager Instance { get; private set; }
 
+    /// <summary>
+    /// List of all level configurations, including required experience and unlock data.
+    /// </summary>
     [SerializeField] private List<LevelData> levels = new();
+
+    /// <summary>
+    /// The player's current level, starting at 1.
+    /// </summary>
     [SerializeField] private int currentLevel = 1;
+
+    /// <summary>
+    /// Current accumulated experience towards the next level.
+    /// </summary>
     [SerializeField] private int currentExp = 0;
+
+    /// <summary>
+    /// Experience required to advance from the current level to the next.
+    /// </summary>
     private int requiredExp;
+
+    /// <summary>
+    /// Normalized progress (0.0 to 1.0) towards completing the current level.
+    /// </summary>
     private float progress;
 
     /// <summary>
@@ -27,8 +54,8 @@ public class LevelManager : MonoBehaviour, ILevelObserver
 
 
     /// <summary>
-    /// Initializes the required experience for the current
-    /// level and registers this manager as a level observer.
+    /// Initializes the required experience for the starting level
+    /// and registers this manager as a level observer.
     /// </summary>
     private void Start()
     {
@@ -41,7 +68,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     }
 
     /// <summary>
-    /// Removes this manager from the list of level observers when destroyed.
+    /// Unregisters this manager from level events when destroyed.
     /// </summary>
     private void OnDestroy()
     {
@@ -52,10 +79,10 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     }
 
     /// <summary>
-    /// Receives event notifications and processes experience gain events.
+    /// Called when a game event occurs; processes experience gain events.
     /// </summary>
     /// <param name="eventType">Type of the event received.</param>
-    /// <param name="amount">Amount associated with the event (e.g., experience points).</param>
+    /// <param name="amount">Amount of experience associated with the event.</param>
     public void OnNotify(EventType eventType, int amount)
     {
         if (eventType == EventType.EXP_GAIN)
@@ -65,7 +92,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     }
 
     /// <summary>
-    /// Adds experience points and checks if the player should level up.
+    /// Adds experience points, updates progress, and checks for level-up.
     /// </summary>
     /// <param name="amount">Amount of experience to add.</param>
     public void AddExp(int amount)
@@ -96,13 +123,21 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     }
 
     /// <summary>
-    /// Handles the logic for leveling up, resetting experience, 
-    /// unlocking new content, and updating required experience.
+    /// Handles leveling up: increments level, triggers alerts, resets experience,
+    /// updates required experience, and unlocks new content.
     /// </summary>
     private void LevelUp()
     {
         currentLevel++;
-        Debug.Log("Level up! Current level: " + currentLevel);
+
+        // Request an alert that tells the player they leveled up and shows the current level.
+        GameEvents.Instance.RequestAlert(
+            success: true,
+            message: "Level Up! You have reached level " + currentLevel.ToString() + "!",
+            fadeInTime: 0.25f,
+            displayTime: 2.5f,
+            fadeOutTime: 0.4f
+        );
         
         if ((currentLevel - 1) < levels.Count)
         {
@@ -120,7 +155,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     /// <summary>
     /// Unlocks challenges and items associated with a given level.
     /// </summary>
-    /// <param name="level">The LevelData containing the content to unlock.</param>
+    /// <param name="level">LevelData containing descriptions of content to unlock.</param>
     private void UnlockContent(LevelData level)
     {
         // Unlock Challenges
@@ -132,7 +167,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver
         // Unlock Items
         foreach (var itemId in level.unlockItemIds)
         {
-            //ItemManager.Instance.UnlockItem(itemId); <-- Remove comment when branch contains ItemManager
+            // ItemManager.Instance.UnlockItem(itemId); // Enable when ItemManager is implemented
         }
     }
 }

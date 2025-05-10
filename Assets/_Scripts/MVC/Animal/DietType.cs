@@ -7,3 +7,4 @@ public enum DietType
     Water,
     None
 }
+

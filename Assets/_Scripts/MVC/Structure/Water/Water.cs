@@ -1,21 +1,37 @@
-using System.Collections.Generic;
-using UnityEngine;
-using static UIComponent;
+﻿using System.Collections.Generic;
+using static StructureUIValues;
 
-public class Water : Structure, ISelectable
+public class Water : Structure, ISelectable, IWaterSource
 {
     private DietType dietType;
-    public Water(BuildingData Data, int iD) : base(iD, Data.name, Data.icon, Data.type)
+    public Water(BuildingData Data, int iD) : base(iD, Data.Name, Data.icon, Data.type)
     {
         dietType = DietType.Water;
     }
 
-    public Dictionary<UIComponent, object> GetUIData()
+    public DietType GetDietType()
     {
-        return new Dictionary<UIComponent, object> {
+        return dietType;
+    }
+
+    public Dictionary<StructureUIValues, object> GetUIData()
+    {
+        return new Dictionary<StructureUIValues, object> {
             { Name_text, Name },
-            { UIComponent.ID, ID },
+            { StructureUIValues.ID, ID },
             { Sprite_icon, Icon },
         };
+    }
+
+    public bool IsContaminated()
+    {
+        // Későbbiekben jó lehet extra featurenek
+
+        return false;
+    }
+
+    public int Consume(int amount)
+    {
+        return amount;
     }
 }

@@ -3,23 +3,63 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
+/// <summary>
+/// View component for displaying and managing UI elements
+/// that allow the user to adjust game settings.
+/// </summary>
 public class GameSettingsView : MonoBehaviour
 {
     [Header("Graphics")]
+    /// <summary>
+    /// Dropdown for selecting graphics quality.
+    /// </summary>
     public TMP_Dropdown qualityDropdown;
+
+    /// <summary>
+    /// Dropdown for toggling lens flare on/off.
+    /// </summary>
     public TMP_Dropdown lensFlareDropdown;
+
+    /// <summary>
+    /// Dropdown for selecting frame rate limit.
+    /// </summary>
     public TMP_Dropdown framerateDropdown;
 
     [Header("Display")]
+    /// <summary>
+    /// Dropdown for selecting the window mode.
+    /// </summary>
     public TMP_Dropdown windowModeDropdown;
+
+    /// <summary>
+    /// Dropdown for selecting the screen resolution.
+    /// </summary>
     public TMP_Dropdown resolutionDropdown;
 
     [Header("Audio")]
+    /// <summary>
+    /// Slider for adjusting master volume.
+    /// </summary>
     public Slider masterSlider;
+
+    /// <summary>
+    /// Slider for adjusting music volume.
+    /// </summary>
     public Slider musicSlider;
+
+    /// <summary>
+    /// Slider for adjusting sound effects volume.
+    /// </summary>
     public Slider sfxSlider;
+
+    /// <summary>
+    /// Slider for adjusting ambient audio volume.
+    /// </summary>
     public Slider ambientSlider;
 
+    /// <summary>
+    /// Populates all dropdowns with options and loads initial UI values on start.
+    /// </summary>
     void Start()
     {
         PopulateDropdowns();
@@ -37,6 +77,9 @@ public class GameSettingsView : MonoBehaviour
         ambientSlider.onValueChanged.AddListener(value => GameSettingsController.Instance.SetVolume("Ambient", value));
     }
 
+    /// <summary>
+    /// Fills each dropdown with the appropriate list of options.
+    /// </summary>
     void PopulateDropdowns()
     {
         resolutionDropdown.ClearOptions();
@@ -55,6 +98,9 @@ public class GameSettingsView : MonoBehaviour
         windowModeDropdown.AddOptions(new List<string> { "Windowed", "Borderless", "Fullscreen" });
     }
 
+    /// <summary>
+    /// Loads current settings values into UI controls to reflect saved preferences.
+    /// </summary>
     void LoadValuesToUI()
     {
         var settings = GameSettingsController.Instance.CurrentSettings;

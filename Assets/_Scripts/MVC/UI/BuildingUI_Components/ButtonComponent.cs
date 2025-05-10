@@ -1,50 +1,123 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static UIComponent;
-public class ButtonComponent : MonoBehaviour, IUIComponent
+using static StructureUIValues;
+
+/// <summary>
+/// Component providing refill and upgrade button functionality
+/// within a structure popup UI, displaying dynamic prices
+/// and handling button interactivity.
+/// </summary>
+public class ButtonComponent : MonoBehaviour, IStructureUIComponent
 {
-    [SerializeField] private Button refill, upgrade;
-    [SerializeField] private TextMeshProUGUI RefillText;
-    [SerializeField] private UIComponent refillKey = Refillprice_button;
-    [SerializeField] private UIComponent upgradeKey = Upgradeprice_button;
-    private int price;
+    /// <summary>
+    /// Button used to trigger action refill or upgrade action.
+    /// </summary>
+    [SerializeField] private Button refillButton, upgradeButton;
 
-    // Csakis a BuildingUI-hoz fog működni
-    public void TrySetup(Dictionary<UIComponent, object> data)
+    /// <summary>
+    /// Text label for the refill and upgrade button showing its price.
+    /// </summary>
+    [SerializeField] private TextMeshProUGUI refillText, upgradeText;
+
+    /// <summary>
+    /// Key used to retrieve refill price from popup data.
+    /// </summary>
+    [SerializeField] private StructureUIValues refillKey = Refillprice_button;
+
+    /// <summary>
+    /// Key used to retrieve upgrade price from popup data.
+    /// </summary>
+    [SerializeField] private StructureUIValues upgradeKey = Upgradeprice_button;
+
+    private Func<float> getRefillPrice;
+    private Func<float> getUpgradePrice;
+
+    /// <summary>
+    /// Configures button visibility, price retrieval functions,
+    /// and click listeners based on provided popup data.
+    /// </summary>
+    /// <param name="data">Dictionary mapping UI value keys to dynamic data.</param>
+    public void TrySetup(Dictionary<StructureUIValues, object> data)
     {
-        if (data.TryGetValue(refillKey, out var r))
+        // Refill button setup
+        if (data.TryGetValue(refillKey, out var refillObj))
         {
-            price = (int)r;
-            RefillText.text = "Refill $" + r.ToString();
-            refill.gameObject.SetActive(true);
-            refill.onClick.RemoveAllListeners();
-            refill.onClick.AddListener(() => FeederManager.Instance.Refill((int)data[ID], price));
-            return;
-        }
-        else { refill.gameObject.SetActive(false); RefillText.gameObject.SetActive(false); }
+            if (refillObj is Func<float> refillFunc)
+                getRefillPrice = refillFunc;
+            else
+            {
+                float fixedPrice = Convert.ToSingle(refillObj);
+                getRefillPrice = () => fixedPrice;
+            }
 
-        if (data.TryGetValue(upgradeKey, out var u))
-        {
-            price = (int)u;
-            upgrade.gameObject.SetActive(true);
+            refillButton.gameObject.SetActive(true);
+            refillText.gameObject.SetActive(true);
+            refillButton.onClick.RemoveAllListeners();
+            refillButton.onClick.AddListener(() =>
+                FeederManager.Instance.Refill((int)data[ID], (int)getRefillPrice()));
         }
-        else { upgrade.gameObject.SetActive(false); }
+        else
+        {
+            refillButton.gameObject.SetActive(false);
+            refillText.gameObject.SetActive(false);
+            getRefillPrice = null;
+        }
+
+        // Upgrade button setup
+        if (data.TryGetValue(upgradeKey, out var upgradeObj))
+        {
+            if (upgradeObj is Func<float> upgradeFunc)
+                getUpgradePrice = upgradeFunc;
+            else
+            {
+                float fixedPrice = Convert.ToSingle(upgradeObj);
+                getUpgradePrice = () => fixedPrice;
+            }
+
+            upgradeButton.gameObject.SetActive(true);
+            upgradeText.gameObject.SetActive(true);
+            upgradeButton.onClick.RemoveAllListeners();
+            upgradeButton.onClick.AddListener(() => {
+                // TODO: Implement upgrade action when manager is ready
+            });
+
+
+        }
+        else
+        {
+            upgradeButton.gameObject.SetActive(false);
+            upgradeText.gameObject.SetActive(false);
+            getUpgradePrice = null;
+        }
     }
 
-    void Update()
+    /// <summary>
+    /// Updates button interactivity and price text each frame
+    /// based on current economy and dynamic price functions.
+    /// </summary>
+    private void Update()
     {
-        if (refill != null)
+        // Refill button
+        if (getRefillPrice != null)
         {
-            refill.enabled = EconomyManager.Instance.HasEnoughMoney(price);
+            float price = getRefillPrice();
+            bool canAfford = EconomyManager.Instance.HasEnoughMoney((int)price);
+            refillButton.enabled = canAfford && price != 0;
+            refillText.text = $"Refill ${price:0}";
         }
 
-        if (upgrade != null)
+        // Upgrade button
+        if (getUpgradePrice != null)
         {
-            upgrade.enabled = EconomyManager.Instance.HasEnoughMoney(price);
+            float price = getUpgradePrice();
+            bool canAfford = EconomyManager.Instance.HasEnoughMoney((int)price);
+            upgradeButton.enabled = canAfford && price != 0;
+            upgradeText.text = $"Upgrade ${price:0}";
         }
     }
 }

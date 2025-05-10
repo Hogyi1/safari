@@ -10,12 +10,25 @@
 
 using UnityEngine;
 
+/// <summary>
+/// Controller responsible for applying, saving, and loading game settings.
+/// Implements a simple persistence mechanism via PlayerPrefs.
+/// </summary>
 public class GameSettingsController : MonoBehaviour
 {
+    /// <summary>
+    /// Singleton instance for global access to game settings operations.
+    /// </summary>
     public static GameSettingsController Instance;
 
+    /// <summary>
+    /// Current settings data used by the game.
+    /// </summary>
     public GameSettingsModel CurrentSettings = new GameSettingsModel();
 
+    /// <summary>
+    /// Ensures only one instance exists and loads saved settings on awake.
+    /// </summary>
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -29,6 +42,9 @@ public class GameSettingsController : MonoBehaviour
         LoadSettings();
     }
 
+    /// <summary>
+    /// Applies graphical quality, frame rate, and lens flare settings.
+    /// </summary>
     public void ApplyGraphicsSettings()
     {
         QualitySettings.SetQualityLevel((int)CurrentSettings.Quality);
@@ -36,6 +52,9 @@ public class GameSettingsController : MonoBehaviour
         RenderSettings.fog = CurrentSettings.LensFlare;
     }
 
+    /// <summary>
+    /// Applies display settings including resolution and window mode.
+    /// </summary>
     public void ApplyDisplaySettings()
     {
         FullScreenMode mode = FullScreenMode.FullScreenWindow;
@@ -48,6 +67,10 @@ public class GameSettingsController : MonoBehaviour
         Screen.SetResolution(CurrentSettings.Resolution.x, CurrentSettings.Resolution.y, mode);
     }
 
+    /// <summary>
+    /// Changes the graphics quality and persists the change.
+    /// </summary>
+    /// <param name="quality">New graphics quality level.</param>
     public void SetGraphicsQuality(GameSettingsModel.GraphicsQuality quality)
     {
         CurrentSettings.Quality = quality;
@@ -55,6 +78,10 @@ public class GameSettingsController : MonoBehaviour
         SaveSettings();
     }
 
+    /// <summary>
+    /// Toggles lens flare on or off and saves the updated setting.
+    /// </summary>
+    /// <param name="enabled">Whether lens flare should be enabled.</param>
     public void SetLensFlare(bool enabled)
     {
         CurrentSettings.LensFlare = enabled;
@@ -62,6 +89,10 @@ public class GameSettingsController : MonoBehaviour
         SaveSettings();
     }
 
+    /// <summary>
+    /// Sets the frame rate limit based on dropdown index and persists it.
+    /// </summary>
+    /// <param name="index">Index of the selected frame rate option.</param>
     public void SetFramerateFromDropdown(int index)
     {
         GameSettingsModel.FrameRate setting = GameSettingsModel.FrameRate.FPS60;
@@ -77,6 +108,10 @@ public class GameSettingsController : MonoBehaviour
         SaveSettings();
     }
 
+    /// <summary>
+    /// Updates the window mode and persists the change.
+    /// </summary>
+    /// <param name="mode">Desired window mode.</param>
     public void SetWindowMode(GameSettingsModel.WindowMode mode)
     {
         CurrentSettings.Mode = mode;
@@ -84,12 +119,20 @@ public class GameSettingsController : MonoBehaviour
         SaveSettings();
     }
 
+    /// <summary>
+    /// Sets resolution based on a dropdown index and applies the change.
+    /// </summary>
+    /// <param name="index">Index of the chosen resolution.</param>
     public void SetResolutionByDropdownIndex(int index)
     {
         Vector2Int res = ResolutionManager.GetResolutionByIndex(index);
         SetResolution(res);
     }
 
+    /// <summary>
+    /// Directly assigns a resolution, applies it, and saves settings.
+    /// </summary>
+    /// <param name="resolution">Vector2Int containing width and height.</param>
     public void SetResolution(Vector2Int resolution)
     {
         CurrentSettings.Resolution = resolution;
@@ -97,6 +140,11 @@ public class GameSettingsController : MonoBehaviour
         SaveSettings();
     }
 
+    /// <summary>
+    /// Updates a specified audio volume slider and persists the change.
+    /// </summary>
+    /// <param name="type">Volume type (Master, Music, SFX, Ambient).</param>
+    /// <param name="value">New volume level (0.0 to 1.0).</param>
     public void SetVolume(string type, float value)
     {
         switch (type)
@@ -110,6 +158,9 @@ public class GameSettingsController : MonoBehaviour
     }
 
     // Implement permanent saving solution here...
+    /// <summary>
+    /// Saves current settings to PlayerPrefs as JSON.
+    /// </summary>
     public void SaveSettings()
     {
         string json = JsonUtility.ToJson(CurrentSettings);
@@ -117,6 +168,9 @@ public class GameSettingsController : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    /// <summary>
+    /// Loads settings from PlayerPrefs, or applies defaults if none exist.
+    /// </summary>
     public void LoadSettings()
     {
         if (PlayerPrefs.HasKey("GameSettings"))

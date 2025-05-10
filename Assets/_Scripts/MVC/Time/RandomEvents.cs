@@ -1,14 +1,24 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-// Random eventek megfigyelése
+/// <summary>
+/// Observable singleton for random game events. Manages observer subscriptions and notifications.
+/// </summary>
 public class RandomEvents : MonoBehaviour, IRandomEventObservable
 {
-    // A feliratkozott observerek
+    /// <summary>
+    /// List of subscribed random event observers.
+    /// </summary>
     private List<IRandomEventObserver> observers = new List<IRandomEventObserver>();
 
-    // Singleton pattern követése
+    /// <summary>
+    /// Singleton instance of RandomEvents.
+    /// </summary>
     public static RandomEvents Instance { get; private set; }
+
+    /// <summary>
+    /// Ensures single instance and persists across scenes.
+    /// </summary>
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -20,7 +30,10 @@ public class RandomEvents : MonoBehaviour, IRandomEventObservable
         DontDestroyOnLoad(gameObject);
     }
 
-    // Feliratkozás
+    /// <summary>
+    /// Subscribes an observer to random event notifications.
+    /// </summary>
+    /// <param name="observer">Observer to add.</param>
     public void AddObserver(IRandomEventObserver observer)
     {
         Debug.Log("Új Observer iratkozott fel a Random Event figyelésére " + observer);
@@ -28,10 +41,13 @@ public class RandomEvents : MonoBehaviour, IRandomEventObservable
         observers.Add(observer);
     }
 
-    // Értesítés kiküldése
+    /// <summary>
+    /// Notifies all observers of a random event.
+    /// </summary>
+    /// <param name="randomEvent">Random event that occurred.</param>
     public void NotifyObservers(RandomEvent randomEvent)
     {
-        Debug.Log("Új Random Event érkezett továbbításra " + randomEvent.ToString());
+        // Debug.Log("Új Random Event érkezett továbbításra " + randomEvent.ToString());
 
         foreach (IRandomEventObserver observer in observers)
         {
@@ -39,7 +55,10 @@ public class RandomEvents : MonoBehaviour, IRandomEventObservable
         }
     }
 
-    // Leiratkozás
+    /// <summary>
+    /// Unsubscribes an observer from random event notifications.
+    /// </summary>
+    /// <param name="observer">Observer to remove.</param>
     public void RemoveObserver(IRandomEventObserver observer)
     {
         Debug.Log("Observer leiratkozott a Random Event figyeléséről " + observer);
@@ -48,6 +67,9 @@ public class RandomEvents : MonoBehaviour, IRandomEventObservable
     }
 }
 
+/// <summary>
+/// Types of random events that can occur in the game.
+/// </summary>
 public enum RandomEvent
 {
     Spawn_tourist,

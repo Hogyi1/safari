@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UIElements;
 using System;
-using System.Linq;
 
 public class TerrainController : MonoBehaviour
 {
-    public Terrain terrain;
+    [SerializeField] private Terrain terrain;
 
     [SerializeField]
     private float restoreSpeed = 5f;
@@ -42,6 +40,9 @@ public class TerrainController : MonoBehaviour
 
     private void Start()
     {
+        // Terrain
+        terrain = Terrain.activeTerrain;
+
         // Terrain és Structure adatainak beállítása
         terrainData = terrain.terrainData;
 
@@ -53,21 +54,6 @@ public class TerrainController : MonoBehaviour
 
         // Resolution 513
         res = terrainData.heightmapResolution;
-
-        List<Vector3> treePositions = new();
-
-        foreach (var tree in terrainData.treeInstances)
-        {
-            Vector3 worldPosition = new Vector3(
-                tree.position.x * terrainData.size.x + terrainWorldPos.x,
-                tree.position.y * terrainData.size.y + terrainWorldPos.y,
-                tree.position.z * terrainData.size.z + terrainWorldPos.z
-            );
-
-            treePositions.Add(worldPosition);
-        }
-
-        PlacementManager.Instance.SetTreePositions(treePositions);
     }
 
     public void AdjustTerrainToStructure(GameObject Structure, int StructureIndex, bool saveOriginal)
@@ -168,7 +154,14 @@ public class TerrainController : MonoBehaviour
         int width = Mathf.CeilToInt((offsetWidth / terrainSize.x) * res); // - X
         int depth = Mathf.CeilToInt((offsetDepth / terrainSize.z) * res); // - Z
 
-        float[,] currentHeightMap = terrainData.GetHeights(xStart, zStart, width, depth);
+        float[,] currentHeightMap = new float[width, depth];
+
+        try
+        {
+            currentHeightMap = terrainData.GetHeights(xStart, zStart, width, depth);
+        }
+        catch (Exception e) { Debug.LogWarning("Can't access terrain heights"); return; }
+
         float[,] newHeights = new float[depth, width];
 
         // Legtávolabbi távolság a pontok és a ház között
@@ -278,7 +271,6 @@ public class TerrainController : MonoBehaviour
         }
 
         StartCoroutine(SmoothRestore(RestoreKey.x, RestoreKey.y, heightMap));
-        Debug.Log("A domborzat visszaállítása.");
     }
 
     private IEnumerator SmoothRestore(int xStart, int zStart, float[,] originalHeightMap)
@@ -322,7 +314,6 @@ public class TerrainController : MonoBehaviour
 
                     // Most átírtam tehát visszaviszi az eredetire
                     // float interpolation = Structure != null ? progress : 0f;
-
                     newHeights[z, x] = Mathf.Lerp(currentHeights[z, x], originalHeightMap[z, x], progress);
                 }
             }
