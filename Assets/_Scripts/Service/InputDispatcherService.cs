@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem.UI;
 
 /// <summary>
 /// Dispatches input actions from the generated InputSystem_Actions asset
@@ -27,6 +28,7 @@ public class InputDispatcherService : MonoBehaviour
     {
         input.Player.Look.performed += ctx => InputEventChannel.RaiseLook(ctx.ReadValue<Vector2>());
         input.UI.RightClick.performed += _ => InputEventChannel.RaiseRightClick();
+        input.Global.OnClick.canceled += _ => InputEventChannel.RaiseClick();
 
         input.CameraControls.Move.performed += ctx => InputEventChannel.RaiseCameraMove(ctx.ReadValue<Vector2>());
         input.CameraControls.Rotate.performed += ctx => InputEventChannel.RaiseCameraRotate(ctx.ReadValue<Vector2>());
@@ -81,10 +83,14 @@ public class InputDispatcherService : MonoBehaviour
 
         if (top != null
             && PauseController.Instance != null
-            && top == PauseController.Instance.PauseMenuUI)
+            && top == PauseController.Instance.PauseMenuUI && InputManager.Instance.state == State.NormalMode)
         {
             TogglePause();
             return;
+        }
+        else
+        {
+            InputManager.Instance.SetState(State.NormalMode);
         }
 
         if (UIStackService.IsUIOpen())

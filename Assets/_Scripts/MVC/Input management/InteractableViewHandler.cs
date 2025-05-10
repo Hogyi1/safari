@@ -38,7 +38,7 @@ public class InteractableViewHandler : MonoBehaviour
     /// </summary>
     void Start()
     {
-        InputManager.Instance.OnClicked += HandleClick;
+        InputEventChannel.OnClick += HandleClick;
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ public class InteractableViewHandler : MonoBehaviour
         if (IsPointerOverUI())
             return null;
 
-        Vector3 mousePos = Input.mousePosition;
+        Vector3 mousePos = InputManager.Instance.GetUDCPosition();
         Ray ray = SceneCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
 

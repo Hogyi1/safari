@@ -16,7 +16,7 @@ public class VirtualCursorView : MonoBehaviour
     /// <summary>
     /// Component providing low-level virtual mouse input state.
     /// </summary>
-    private VirtualMouseInput virtualMouseInput;
+    public VirtualMouseInput virtualMouseInput;
 
     /// <summary>
     /// Initializes the reference to the VirtualMouseInput component on this GameObject.
