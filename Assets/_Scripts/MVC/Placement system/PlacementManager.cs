@@ -68,6 +68,12 @@ public class PlacementManager : MonoBehaviour
         }
     }
 
+    public Vector2Int GetRoadCellByPosition(Vector3 pos)
+    {
+        Vector3Int cell3D = roadGrid.WorldToCell(pos);
+        return new Vector2Int(cell3D.x, cell3D.z);
+    }
+
     public void StartPlacingItem(int StructureID)
     {
         InputManager.Instance.SetState(State.PlacementMode);
@@ -173,20 +179,23 @@ public class PlacementManager : MonoBehaviour
     private void LoadPreplacedStructures()
     {
         GameObject preplacedParent = GameObject.Find("PreplacedStructures");
-        Debug.Log(preplacedParent.IsUnityNull());
         bool success = true;
         foreach (IPlaceable placeable in preplacedParent.GetComponentsInChildren<IPlaceable>())
         {
             BuildingData data = placeable.GetData();
             int iD = IDGenerator.GenerateID();
 
+            // Ha ut akkor a roadgridrol a middle-től az 1x1-re valtas
+
             Vector3 worldPosition = placeable.GetGameObject().transform.position;
             Vector3Int gridPosition = normalGrid.WorldToCell(worldPosition);
-            Vector2Int mapPosition = new Vector2Int(gridPosition.x, gridPosition.z); // Csak azért, hogyha később az utakat is betöltjük
+            Vector3Int roadPosition = roadGrid.WorldToCell(worldPosition);
+            Vector2Int mapPosition = new Vector2Int(gridPosition.x, gridPosition.z);
+            Vector2Int nodePosition = new Vector2Int(roadPosition.x, roadPosition.z); // Csak azért, hogyha később az utakat is betöltjük
 
             MapData.AddObjectAt(mapPosition, data.SpaceTaken, data.BuildingID, iD);
 
-            success = StructureManager.Instance.RegisterStructures(data, iD, placeable) && success;
+            success = StructureManager.Instance.RegisterStructures(data, iD, placeable, nodePosition) && success;
         }
 
         string msg = success

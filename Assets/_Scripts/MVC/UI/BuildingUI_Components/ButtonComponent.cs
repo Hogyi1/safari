@@ -16,10 +16,13 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
     private Func<float> getRefillPrice;
     private Func<float> getUpgradePrice;
     private int price;
+    private int ID;
 
     // Csakis a BuildingUI-hoz fog működni
     public void TrySetup(Dictionary<StructureUIValues, object> data)
     {
+        ID = (int)data[StructureUIValues.ID];
+
         // Refill
         if (data.TryGetValue(refillKey, out var refillObj))
         {
@@ -36,7 +39,7 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
             refillText.gameObject.SetActive(true);
             refillButton.onClick.RemoveAllListeners();
             refillButton.onClick.AddListener(() =>
-                FeederManager.Instance.Refill((int)data[ID], (int)getRefillPrice()));
+                FeederManager.Instance.Refill(ID, (int)getRefillPrice()));
         }
         else
         {
@@ -59,7 +62,7 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
             upgradeButton.gameObject.SetActive(true);
             upgradeText.gameObject.SetActive(true);
             upgradeButton.onClick.RemoveAllListeners();
-            upgradeButton.onClick.AddListener(() => { /*UpgradeManager ha készen van a vadőr és parkoló view*/ });
+            upgradeButton.onClick.AddListener(() => { FacilityManager.Instance.HandleUpgrade(ID, (int)getUpgradePrice()); });
 
 
         }
@@ -87,8 +90,9 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
         {
             float price = getUpgradePrice();
             bool canAfford = EconomyManager.Instance.HasEnoughMoney((int)price);
-            upgradeButton.enabled = canAfford && price != 0;
-            upgradeText.text = $"Upgrade ${price:0}";
+            bool canUpgrade = !FacilityManager.Instance.AtMaxLevel(ID);
+            upgradeButton.enabled = canAfford && price != 0 && canUpgrade;
+            upgradeText.text = canUpgrade ? $"Upgrade ${price:0}" : "Max level";
         }
     }
 }

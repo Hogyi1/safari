@@ -8,7 +8,7 @@ public class VehicleData : ScriptableObject
     public int capacity;
 
     [SerializeField]
-    public int price;
+    public int VehicleID;
 
     [SerializeField]
     public float speed = 5;

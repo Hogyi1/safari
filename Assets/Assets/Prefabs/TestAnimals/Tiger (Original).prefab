@@ -267,7 +267,7 @@ NavMeshAgent:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2194514249963069068}
   m_Enabled: 1
-  m_AgentTypeID: 0
+  m_AgentTypeID: 1479372276
   m_Radius: 0.5
   m_Speed: 2
   m_Acceleration: 8
@@ -293,6 +293,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3916d9383f560304495936b4ce8bc8c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Agent: {fileID: 0}
+  Animator: {fileID: 0}
   smoothingTime: 0.1
   moving: 0.5
 --- !u!114 &2144438859877040920

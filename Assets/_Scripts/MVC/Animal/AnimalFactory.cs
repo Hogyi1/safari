@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -14,6 +15,7 @@ public class AnimalFactory : MonoBehaviour
 {
     // Az állat adatbázis (ScriptableObject-ből betöltve)
     private List<AnimalData> animalDatabase = new List<AnimalData>();
+    [SerializeField] private GameObject AnimalParent;
 
     /// <summary>
     /// Inicializáláskor betölti az összes állatadatot a Resources/Animals mappából.
@@ -35,13 +37,14 @@ public class AnimalFactory : MonoBehaviour
     public Animal CreateAnimal(AnimalType Type, Vector3 position, int ID, int Age)
     {
         AnimalData data = FindAnimalData(Type);
-
+        Debug.Log(data.IsUnityNull() + "Vajon null?");
         if (data == null) return null;
 
-        GameObject go = Instantiate(data.AnimalPrefab, position, Quaternion.identity);
+        GameObject instance = Instantiate(data.AnimalPrefab, position, Quaternion.identity);
+        instance.transform.SetParent(AnimalParent.transform, true);
 
-        AnimalStateMachine sm = go.GetComponent<AnimalStateMachine>();
-        AnimalView view = go.GetComponent<AnimalView>();
+        AnimalStateMachine sm = instance.GetComponent<AnimalStateMachine>();
+        AnimalView view = instance.GetComponent<AnimalView>();
         AnimalModel model = new AnimalModel(data, ID, Age);
 
         return new Animal(ID, model, view, sm);

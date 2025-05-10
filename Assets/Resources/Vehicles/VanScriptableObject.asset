@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: VanScriptableObject
   m_EditorClassIdentifier: 
   capacity: 6
-  price: 4000
+  VehicleID: 1
   speed: 4
   spacetaken: 2
   type: 2

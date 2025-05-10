@@ -81,8 +81,8 @@ public class PopupManager : MonoBehaviour
     /// </summary>
     public void HidePopup()
     {
-        buildingBB.Hide();
-        animalUI.gameObject.SetActive(false);
+        if (buildingBB.isActiveAndEnabled) buildingBB.Hide();
+        if (animalUI.isActiveAndEnabled) animalUI.gameObject.SetActive(false);
     }
 }
 
@@ -106,5 +106,6 @@ public enum StructureUIValues
     Upgradeprice_button, // Upgrade Price
     Value_slider, // Slider's current value
     MaxValue_slider, // Slider's max value
-    Sprite_icon // The Icon of the structure
+    Sprite_icon, // The Icon of the structure
+    Level // The current level of the structure
 }

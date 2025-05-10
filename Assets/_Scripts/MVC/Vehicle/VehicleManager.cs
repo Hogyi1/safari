@@ -1,28 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor;
+using System.Linq;
 using UnityEngine;
+using static VehicleState;
 
-public class VehicleManager : MonoBehaviour
+/// <summary>
+/// Controls the lifecycle and routing of vehicles, assigns tourists to vehicles,
+/// and manages tour start and finish in an MVC architecture.
+/// </summary>
+[RequireComponent(typeof(VehicleFactory))]
+public class VehicleManager : MonoBehaviour, IUpgradeable
 {
-    // Az összes ScriptableObject amit használunk
-    [SerializeField]
-    public static List<VehicleData> vehicleDatabase = new List<VehicleData>();
-
-    // A lerakott autók listája
-    private List<Vehicle> activeVehicles = new List<Vehicle>();
-    private Dictionary<int, VehicleView> vehicleViews = new Dictionary<int, VehicleView>();
-
-    // Mennyit várhat egy jármű Real time másodpercben
-    [SerializeField]
-    private readonly float MAX_WAITING_TIME = 15f;
-
-    // Ennyi autó lehet egyszerre
-    public int capacity = 5;
-    // Singleton pattern
+    /// <summary>
+    /// Singleton instance of the VehicleManager.
+    /// </summary>
     public static VehicleManager Instance { get; private set; }
-    public void Awake()
+
+    [SerializeField] private VehicleFactory factory;
+
+    [Tooltip("Which manager type is mine")]
+    [SerializeField] private ManagerType myType = ManagerType.Vehicle;
+    [Tooltip("The position, where the vehicles should return to")]
+    [SerializeField] private GameObject garage;
+    [Tooltip("Maximum waiting time per vehicle in seconds")]
+    [SerializeField] private const float maxWaitingTime = 15f;
+    [Tooltip("The amount of an upgrade session")]
+    [SerializeField] private const int upgradeAmount = 2;
+
+
+    private List<Vehicle> activeVehicles = new List<Vehicle>();
+    private int capacity = 5;
+    private void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -34,162 +42,218 @@ public class VehicleManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    void Start()
+    private void Start()
     {
-        LoadAllVehicles();
-        SpawnVehicle(VehicleType.Jeep);
+        RoadManager.Instance.OnRoadRemoved += HandleRedirect;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        float delta = Time.deltaTime;
+
         foreach (var vehicle in activeVehicles)
         {
-            float delta = Time.deltaTime;
-
-            switch (vehicle.GetState())
+            switch (vehicle.Model.State)
             {
-                case VehicleState.On_tour:
-                    // Ez nem biztos, hogy a leghatékonyabb, lehetséges, hogy a Touristok maguk néznék az autót, hogy éppen hol van
-                    vehicle.UpdateTouristPosition(vehicleViews[vehicle.GetID()].transform.position);
+                case Full:
+                    StartTour(vehicle.ID);
                     break;
-                case VehicleState.Full:
-                    StartTour(vehicle.GetID());
+                case Finished:
+                    FinishTour(vehicle.ID);
                     break;
-                case VehicleState.Finished:
-                    FinishTour(vehicle.GetID());
+                case Waiting:
+                    vehicle.Model.AddWaitingTime(delta);
+                    if (vehicle.Model.WaitingTime >= maxWaitingTime) StartTour(vehicle.ID);
                     break;
-                case VehicleState.Waiting:
-                    vehicle.AddWaitingTime(delta);
-                    if (vehicle.WaitingTime >= MAX_WAITING_TIME) StartTour(vehicle.GetID());
+                default:
                     break;
             }
         }
     }
-    // Létrehoz egy új autót
-    public void SpawnVehicle(VehicleType Type)
-    {
-        var selectedData = vehicleDatabase.Find(t => t.type == Type);
-        Vehicle newVehicle = new Vehicle(IDGenerator.GenerateID(), selectedData);
-        activeVehicles.Add(newVehicle);
-        GameObject newVehicleGO = Instantiate(selectedData.vehiclePrefab, AssignVehicleToParkingSpot(), Quaternion.identity);
-        VehicleView view = newVehicleGO.GetComponent<VehicleView>();
-        view.Init(newVehicle);
-        vehicleViews[newVehicle.GetID()] = view;
-        Debug.Log($"Új jármű ID: {newVehicle.GetID()}");
 
+    /// <summary>
+    /// Spawns a new vehicle at a parking spot and registers it.
+    /// </summary>
+    /// <param name="vehicleTypeIndex">Index to select vehicle data from factory.</param>
+    public void SpawnVehicle(int vehicleTypeIndex)
+    {
+        int id = IDGenerator.GenerateID();
+
+        Vehicle newVehicle = factory.CreateVehicle(id, vehicleTypeIndex);
+        if (newVehicle != null)
+            activeVehicles.Add(newVehicle);
     }
 
-    // Eltávolítja az autót
-    public void RemoveVehicle(int vehicleID)
+    /// <summary>
+    /// Removes a vehicle by ID, destroying its view GameObject if present.
+    /// </summary>
+    /// <param name="id">Unique identifier of the vehicle to remove.</param>
+    public void RemoveVehicle(int id)
     {
-        Vehicle vehicle = activeVehicles.Find(t => t.GetID() == vehicleID);
+        var toRemove = activeVehicles.Find(v => v.ID == id);
+
+        if (toRemove != null)
+        {
+            activeVehicles.Remove(toRemove);
+
+            if (toRemove.View != null)
+                Destroy(toRemove.View.gameObject);
+        }
+    }
+
+    /// <summary>
+    /// Attempts to assign a tourist to an available vehicle.
+    /// Returns the door position if successful, otherwise zero vector.
+    /// </summary>
+    /// <param name="tourist">Tourist to assign.</param>
+    /// <returns>Door position of the assigned vehicle or Vector3.zero.</returns>
+    public int AssignTouristToVehicle(int touristID)
+    {
+        if (!RoadManager.Instance.HasRoute)
+            return -1;
+
+        var available = activeVehicles
+            .Where(v => v.Model.State == Empty || v.Model.State == Waiting)
+            .ToList();
+
+        foreach (var vehicle in available)
+        {
+            if (vehicle.Model.AddPassenger(touristID))
+                return vehicle.ID;
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Determines the parking spot position for spawning vehicles.
+    /// </summary>
+    public Vector3 GetParkingSpot()
+    {
+        Vector3 pos;
+        try
+        {
+            pos = garage.transform.Find("Garage").position;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("Nincsen beállítva Garage az alap beállításokat fogom használni");
+            pos = garage.GetComponent<Renderer>().bounds.center;
+        }
+        return pos;
+    }
+
+    /// <summary>
+    /// Finds a random route via the RoadManager.
+    /// </summary>
+    private List<Vector3> FindRoute()
+    {
+        return RoadManager.Instance.SearchForRandomPath();
+    }
+
+    /// <summary>
+    /// Checks if all passengers of a vehicle have arrived by querying TouristManager.
+    /// </summary>
+    private bool AllPassengersArrived(Vehicle vehicle)
+    {
+        return !vehicle.Model.AssignedTouristIDs
+            .Any(id => TouristManager.Instance.GetTouristState(id) == TouristState.Walking);
+    }
+
+    /// <summary>
+    /// Starts the tour for a vehicle if all passengers have arrived.
+    /// </summary>
+    /// <param name="id">Vehicle ID to start tour.</param>
+    private void StartTour(int id)
+    {
+        var vehicle = activeVehicles.Find(v => v.ID == id);
+
+        if (vehicle != null && AllPassengersArrived(vehicle))
+        {
+            vehicle.Model.State = On_tour;
+            vehicle.Model.AssignedTouristIDs
+                .ForEach(tid => TouristManager.Instance.SetTouristState(tid, TouristState.On_tour));
+
+            vehicle.View.gameObject.SetActive(true);
+            vehicle.View.MoveOnRoute(FindRoute(), Finished);
+        }
+    }
+
+    /// <summary>
+    /// Finishes the tour for a vehicle, resets passenger states, and returns it to parking.
+    /// </summary>
+    /// <param name="id">Vehicle ID to finish tour.</param>
+    private void FinishTour(int id)
+    {
+        var vehicle = activeVehicles.Find(v => v.ID == id);
+
         if (vehicle != null)
         {
-            activeVehicles.Remove(vehicle);
-        }
+            vehicle.Model.AssignedTouristIDs
+                .ForEach(tid => TouristManager.Instance.SetTouristState(tid, TouristState.Finished));
 
-        if (vehicleViews.TryGetValue(vehicleID, out VehicleView view))
+            List<Vector3> backRoute = RoadManager.Instance.FindNewPath(vehicle.View.transform.position, false);
+            if (backRoute.Count == 0) vehicle.View.ResetVehicle();
+            else vehicle.View.MoveOnRoute(backRoute, Empty);
+
+            vehicle.Model.State = Busy;
+            vehicle.Model.ClearPassengers();
+        }
+    }
+
+    public void SetVehicleState(int iD, VehicleState newState)
+    {
+        activeVehicles.Find(t => t.ID == iD).Model.State = newState;
+    }
+
+    private void HandleRedirect()
+    {
+        Debug.Log("Redirecting rn");
+        var vehiclesOnTour = activeVehicles.FindAll(t => t.Model.State == On_tour || t.Model.State == Busy);
+
+        foreach (var vehicle in vehiclesOnTour)
         {
-            vehicleViews.Remove(vehicleID);
-            Destroy(view.gameObject);
-            Destroy(view);
+            bool toExit = vehicle.Model.State == On_tour;
+            Debug.Log("ToExit? " + toExit);
+            List<Vector3> newPath = RoadManager.Instance.FindNewPath(vehicle.View.transform.position, toExit);
+            vehicle.View.StopAllCoroutines();
+            Debug.Log("current state " + vehicle.Model.State);
+            Debug.Log("do i have a path " + (newPath.Count != 0));
+
+            if (newPath.Count == 0 && toExit) vehicle.Model.State = Finished;
+            else if (newPath.Count == 0 && !toExit) vehicle.View.ResetVehicle();
+            else if (toExit) vehicle.View.MoveOnRoute(newPath, Finished);
+            else vehicle.View.MoveOnRoute(newPath, Empty);
         }
     }
 
-    /* 
-     * Megpróbálja hozzáadni a túristát az egyik még varakozó autóhoz, 
-     * ha sikeres akkor visszaadja az autó helyzetét, ha sikertelen akkor null-t
-     * @param Tourist tourist - A hozzáadandó túrista
-     */
-    public Vector3? AssignTouristToVehicle(Tourist tourist)
+    public List<AnimalType> GetAnimalsInSight(int vehicleID)
     {
-        if (FindRoute().IsUnityNull()) return null;
-        var filteredVehicles = activeVehicles.FindAll(t => t.GetState() != VehicleState.On_tour && t.GetState() != VehicleState.Finished && t.GetState() != VehicleState.Busy);
-
-        foreach (var vehicle in filteredVehicles)
-        {
-            if (vehicle.AddPassenger(tourist))
-            {
-                var view = vehicleViews[vehicle.GetID()];
-                return view.GetDoorPosition();
-            }
-        }
-
-        return null;
+        return activeVehicles.Find(t => t.ID == vehicleID).View.animalsInView;
     }
 
-    // Megadja hova térjen vissza az autó miután végzett
-    public Vector3 AssignVehicleToParkingSpot()
+    public Vector3 GetGaragePosition(int ID)
     {
-        // TODO
-        // Majd itt meg kell valósítani a Map / ParkingManagert
-        return new Vector3(39f, 1.05f, 8.0f);
+        return FacilityManager.Instance.GetInteractingPosition(myType);
     }
 
-    // Keres egy utat amin elindítja az autót
-    public Vector3[] FindRoute()
+    public void LevelUp()
     {
-        List<Vector3> path = RoadManager.Instance.SearchForPath();
-        if (path.Count == 0) return null;
-        return path.ToArray();
+        capacity += upgradeAmount;
     }
 
-    // Elindítja a túrát
-    public void StartTour(int ID)
+    public void LevelDown()
     {
-        var vehicle = activeVehicles.Find(t => t.GetID() == ID);
-        var view = vehicleViews[vehicle.GetID()];
-        if (vehicle != null && view != null && vehicle.AllPassengersArrived())
-        {
-            vehicle.State = VehicleState.On_tour;
-
-            vehicle.SetTouristState(TouristState.On_tour);
-
-            var WayPoints = FindRoute();
-
-            view.MoveOnRoute(WayPoints);
-
-        }
-
-        Debug.Log("Túra elindítva a következő járműnek: " + ID);
+        capacity -= upgradeAmount;
     }
 
-    // Befejezi a túrát
-    public void FinishTour(int ID)
-    {
-        var vehicle = activeVehicles.Find(t => t.GetID() == ID);
-        var view = vehicleViews[vehicle.GetID()];
-        if (vehicle != null && view != null)
-        {
-            vehicle.SetTouristState(TouristState.Finished);
-
-            vehicle.State = VehicleState.Busy;
-
-            view.MoveTo(AssignVehicleToParkingSpot());
-
-            vehicle.ClearPassengers();
-
-        }
-
-        Debug.Log("Túra befejezve a következő járműnek: " + ID);
-
-    }
-
-    // Ha fejlesztem / építek egy új parkolót / eladom akkor -1
-    public void UpdateCapacity(int amount)
-    {
-        capacity += amount;
-    }
-
-    // Betölti a Resource folderból az összes VehicleData ScriptableObjectet
-    private void LoadAllVehicles()
-    {
-        vehicleDatabase = new List<VehicleData>(Resources.LoadAll<VehicleData>("Vehicles"));
-        Debug.Log($"Betöltve {vehicleDatabase.Count} jármű.");
-    }
+    public int MaxCapacity => capacity;
+    public int Capacity => activeVehicles.Count;
 }
 
+/// <summary>
+/// Enumerates possible states of a vehicle's lifecycle.
+/// </summary>
 public enum VehicleState
 {
     Empty,

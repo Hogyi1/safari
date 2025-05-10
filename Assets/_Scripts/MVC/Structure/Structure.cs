@@ -54,12 +54,6 @@ public interface IRefillable
     public int CalculateRefillPrice();
 }
 
-//Interfész IUpgradeable
-//Minden, aminek fejleszthető funkciója van megvalósítja pl: Vadőrház
-public interface IUpgradeable
-{
-    public void Upgrade();
-}
 
 //Interfész IFoodSource
 //Minden, ami ehető pl: Feeder vagy Növény megvalósítja

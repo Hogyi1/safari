@@ -2,15 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine.Playables;
+using Unity.VisualScripting;
 
 public class TerrainController : MonoBehaviour
 {
     [SerializeField] private Terrain terrain;
 
-    [SerializeField]
-    private float restoreSpeed = 5f;
-    [SerializeField]
-    private float blendingArea = 1f;
+    [SerializeField] private float restoreSpeed = 5f;
+    [SerializeField] private float blendingArea = 1f;
 
 
     public GameObject CurrentObject;
@@ -330,6 +330,7 @@ public class TerrainController : MonoBehaviour
         // A körülötte lévő épületeket újra építjük
         foreach (GameObject go in restore)
         {
+            if (!go.GetComponent<FacilityView>().IsUnityNull()) continue;
             int ID = go.GetComponent<IPlaceable>().GetID();
 
             bool isRoad = go.GetComponent<IPlaceable>().GetBuildingType() == BuildingType.Road;

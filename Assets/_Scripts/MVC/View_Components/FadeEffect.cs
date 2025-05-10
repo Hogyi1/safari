@@ -40,7 +40,7 @@ public class FadeEffect : MonoBehaviour
 
             foreach (var mat in materials)
             {
-
+                if (mat.HasProperty("_NotFadeable")) continue;
 
                 if (!HasShader)
                 {

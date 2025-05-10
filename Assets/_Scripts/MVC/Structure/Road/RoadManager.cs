@@ -8,14 +8,19 @@ public class RoadManager : MonoBehaviour, IStructureManager
 {
     // https://en.wikipedia.org/wiki/A*_search_algorithm
 #warning Ezeket mindenképpen be kell állítani, ha meg van, hogy a Griden hol helyezkedik a ki és bejárat
-    private Node Entrance;
-    private Node Exit;
+    [SerializeField] private GameObject firstCell;
+    [SerializeField] private GameObject lastCell;
 
     public static RoadManager Instance;
+
+    public bool HasRoute = false;
+    public event Action OnRoadRemoved;
 
     private Dictionary<Vector2Int, Node> Nodes = new Dictionary<Vector2Int, Node>();
     public List<Road> ActiveRoads = new List<Road>();
 
+    private Node StartingNode;
+    private Node DestinationNode;
     // Irányok amerre kapcsolódhat két út, ha akarjuk akkor az oldal irányt is belerakhatjuk
     private static readonly List<Vector2Int> directions = new()
     {
@@ -39,11 +44,11 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
     private void Start()
     {
-        Entrance = new Node(0, new Vector2Int(6, 1));
-        Exit = new Node(1, new Vector2Int(15, 8));
+        Vector2Int garagePos = PlacementManager.Instance.GetRoadCellByPosition(firstCell.transform.position);
+        Vector2Int exitPos = PlacementManager.Instance.GetRoadCellByPosition(lastCell.transform.position);
 
-        Nodes.Add(new Vector2Int(6, 1), Entrance);
-        Nodes.Add(new Vector2Int(15, 8), Exit);
+        StartingNode = AddNode(garagePos, 0);
+        DestinationNode = AddNode(exitPos, 1);
     }
 
     // Létrehozza a megadott Model réteget és eltárolja
@@ -55,6 +60,7 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
         ActiveRoads.Add(road);
         AddNode(NodePosition, ID);
+        HasRoute = SearchForPath();
 
         return road;
     }
@@ -67,18 +73,38 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
         ActiveRoads.Remove(road);
         RemoveNode(ID);
+
+        HasRoute = SearchForPath();
+        OnRoadRemoved?.Invoke();
     }
 
     // Beállítja a megfelelő modellhez a nézetet
     public void SetView(IPlaceable view, int ID) { }
 
-    public List<Vector3> SearchForPath()
+    public List<Vector3> SearchForRandomPath()
     {
-        List<Node> nodes = RandomDFS(Entrance, Exit);
+        List<Node> nodes = RandomDFS(StartingNode, DestinationNode);
 
         if (nodes.Count == 0) { Debug.Log("Nincsen út"); return new(); }
 
         return GetRoadPositions(nodes);
+    }
+
+    public List<Vector3> FindNewPath(Vector3 from, bool toExit)
+    {
+        Node fromNode = Nodes[PlacementManager.Instance.GetRoadCellByPosition(from)];
+        Node dest = toExit ? DestinationNode : StartingNode;
+        List<Node> nodes = AStar(fromNode, dest);
+
+        if (nodes.Count == 0) { Debug.Log("Nincsen út"); return new(); }
+
+        return GetRoadPositions(nodes);
+    }
+
+    public bool SearchForPath()
+    {
+        List<Node> nodes = AStar(StartingNode, DestinationNode);
+        return nodes.Count > 0;
     }
 
     // NodeID alapján visszakeressük a View-kat
@@ -89,7 +115,7 @@ public class RoadManager : MonoBehaviour, IStructureManager
         foreach (var node in nodes)
         {
             if (node.NodeID == 0 || node.NodeID == 1) continue;
-            positions.Add(StructureManager.Instance.GetCorrespondingView(node.NodeID).GetGameObject().transform.position);
+            positions.Add(StructureManager.Instance.GetCorrespondingView(node.NodeID).GetGameObject().transform.Find("Middle").position);
         }
 
         return positions;
@@ -215,9 +241,9 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
     // Hozzáadjuk a Dictionarybe a Node-ot, 
     // majd beállítjuk a szomszédjait illetve önmagát
-    private void AddNode(Vector2Int position, int ID)
+    private Node AddNode(Vector2Int position, int ID)
     {
-        if (Nodes.ContainsKey(position)) { Debug.LogWarning(" A pozíció foglalt: " + position); return; }
+        if (Nodes.ContainsKey(position)) { Debug.LogWarning(" A pozíció foglalt: " + position); return null; }
 
         Node newNode = new Node(ID, position);
 
@@ -231,6 +257,8 @@ public class RoadManager : MonoBehaviour, IStructureManager
         }
 
         newNode.AddNeighbours(Neighbours);
+
+        return newNode;
     }
 
     // A Dictionaryből kiszedjük a Node-ot és a 
