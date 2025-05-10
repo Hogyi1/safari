@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[System.Serializable]
 public class Park : MonoBehaviour, IDataPersistence 
 {
     
