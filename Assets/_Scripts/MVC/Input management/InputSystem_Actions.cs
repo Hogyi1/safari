@@ -113,7 +113,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Attack"",
                     ""type"": ""Button"",
                     ""id"": ""6c2ab1b8-8984-453a-af3d-a3c78ae1679a"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -140,7 +140,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Jump"",
                     ""type"": ""Button"",
                     ""id"": ""f1ba0d36-48eb-4cd5-b651-1c94a6531f70"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -356,7 +356,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": """",
                     ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -998,39 +998,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""178f2d35-c5cf-4a79-bbf5-9ca1b2f2a889"",
-                    ""path"": ""<Pen>/tip"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Click"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f6846c76-5fa3-4e64-b53d-38d97bf696eb"",
-                    ""path"": ""<Touchscreen>/touch*/press"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Touch"",
-                    ""action"": ""Click"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""2226747e-ad79-482c-bdea-aeea6d016d05"",
-                    ""path"": ""<XRController>/trigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""XR"",
-                    ""action"": ""Click"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""53fcf6bc-e541-472d-b190-c470917bdfa6"",
                     ""path"": ""<VirtualMouse>/leftButton"",
                     ""interactions"": """",
@@ -1360,6 +1327,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OnClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""f15cbdde-57fa-4431-a5eb-c2097b8e82ca"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=1)"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1371,6 +1347,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ToggleUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7b1f5338-3249-469c-a892-872a41b9c785"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""OnClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2d9ca6a7-011a-4c02-8801-8b41d2d81f56"",
+                    ""path"": ""<VirtualMouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""OnClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1474,6 +1472,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         // Global
         m_Global = asset.FindActionMap("Global", throwIfNotFound: true);
         m_Global_ToggleUI = m_Global.FindAction("ToggleUI", throwIfNotFound: true);
+        m_Global_OnClick = m_Global.FindAction("OnClick", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -2088,6 +2087,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Global;
     private List<IGlobalActions> m_GlobalActionsCallbackInterfaces = new List<IGlobalActions>();
     private readonly InputAction m_Global_ToggleUI;
+    private readonly InputAction m_Global_OnClick;
     /// <summary>
     /// Provides access to input actions defined in input action map "Global".
     /// </summary>
@@ -2103,6 +2103,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Global/ToggleUI".
         /// </summary>
         public InputAction @ToggleUI => m_Wrapper.m_Global_ToggleUI;
+        /// <summary>
+        /// Provides access to the underlying input action "Global/OnClick".
+        /// </summary>
+        public InputAction @OnClick => m_Wrapper.m_Global_OnClick;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2132,6 +2136,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @ToggleUI.started += instance.OnToggleUI;
             @ToggleUI.performed += instance.OnToggleUI;
             @ToggleUI.canceled += instance.OnToggleUI;
+            @OnClick.started += instance.OnOnClick;
+            @OnClick.performed += instance.OnOnClick;
+            @OnClick.canceled += instance.OnOnClick;
         }
 
         /// <summary>
@@ -2146,6 +2153,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @ToggleUI.started -= instance.OnToggleUI;
             @ToggleUI.performed -= instance.OnToggleUI;
             @ToggleUI.canceled -= instance.OnToggleUI;
+            @OnClick.started -= instance.OnOnClick;
+            @OnClick.performed -= instance.OnOnClick;
+            @OnClick.canceled -= instance.OnOnClick;
         }
 
         /// <summary>
@@ -2457,5 +2467,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToggleUI(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OnClick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOnClick(InputAction.CallbackContext context);
     }
 }

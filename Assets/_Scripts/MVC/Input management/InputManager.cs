@@ -21,6 +21,8 @@ public class InputManager : MonoBehaviour
     [SerializeField]
     private LayerMask PlacementLayermask;
 
+    private VirtualCursorView vcv;
+
     /// <summary>
     /// Last valid world position clicked for placement.
     /// </summary>
@@ -29,7 +31,7 @@ public class InputManager : MonoBehaviour
     /// <summary>
     /// Events invoked when the actions occur.
     /// </summary>
-    public event Action OnClicked, OnExit, Left, Right;
+    public event Action StopPlacement;
 
     /// <summary>
     /// Current input state mode (placement or normal).
@@ -59,6 +61,8 @@ public class InputManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        vcv = new VirtualCursorView();
     }
 
     /// <summary>
@@ -67,24 +71,14 @@ public class InputManager : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            OnClicked?.Invoke();
-        }
+    }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            OnExit?.Invoke();
-        }
+    public Vector3 GetUDCPosition()
+    {
+        if (InputDeviceDetector.LastUsedDevice == InputDeviceDetector.InputDeviceType.Gamepad)
+            return vcv.virtualMouseInput.virtualMouse.position.value;
+        return Input.mousePosition;
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            Left?.Invoke();
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            Right?.Invoke();
-        }
     }
 
     /// <summary>
@@ -95,7 +89,11 @@ public class InputManager : MonoBehaviour
     {
         this.state = state;
         if (state == State.PlacementMode) ViewHandler.gameObject.SetActive(false);
-        else ViewHandler.gameObject.SetActive(true);
+        else
+        {
+            StopPlacement?.Invoke();
+            ViewHandler.gameObject.SetActive(true);
+        }
     }
 
     /// <summary>
@@ -121,7 +119,7 @@ public class InputManager : MonoBehaviour
         if (IsPointerOverUI())
             return Vector3.zero;
 
-        Vector3 mousePos = Input.mousePosition;
+        Vector3 mousePos = GetUDCPosition();
         Ray ray = SceneCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 100, PlacementLayermask))
