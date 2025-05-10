@@ -6,6 +6,11 @@ using UnityEngine;
 public class PauseController : MonoBehaviour
 {
     /// <summary>
+    /// Singleton instance of the PauseController.
+    /// </summary>
+    public static PauseController Instance { get; private set; }
+
+    /// <summary>
     /// The UI GameObject representing the pause menu panel.
     /// </summary>
     [SerializeField] private GameObject pauseMenuUI;
@@ -14,6 +19,16 @@ public class PauseController : MonoBehaviour
     /// The name of the main menu scene to load when exiting to main menu.
     /// </summary>
     [SerializeField] private string mainMenuSceneName = "MainMenu";
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     /// <summary>
     /// Subscribes to pause toggle events when this component is enabled.
@@ -38,7 +53,16 @@ public class PauseController : MonoBehaviour
     /// <param name="isPaused">True if the game is paused; false otherwise.</param>
     private void HandlePauseToggle(bool isPaused)
     {
-        pauseMenuUI.SetActive(isPaused);
+        if (isPaused)
+        {
+            // deactivate everything else, then show pause
+            UIStackService.Clear();
+            UIStackService.Push(pauseMenuUI);
+        }
+        else
+        {
+            UIStackService.Pop();
+        }
         Time.timeScale = isPaused ? 0 : 1;
     }
 
@@ -86,4 +110,9 @@ public class PauseController : MonoBehaviour
     {
         Debug.Log("SaveGame clicked (not implemented).");
     }
+
+    /// <summary>
+    /// Public getter of PauseMenuUI
+    /// </summary>
+    public GameObject PauseMenuUI => pauseMenuUI;
 }

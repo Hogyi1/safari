@@ -71,8 +71,8 @@ public class PlacementManager : MonoBehaviour
     public void StartPlacingItem(int StructureID)
     {
         InputManager.Instance.SetState(State.PlacementMode);
-        InputManager.Instance.OnClicked += TryPlacement;
-        InputManager.Instance.OnExit += StopPlacement;
+        InputEventChannel.OnClick += TryPlacement;
+        InputManager.Instance.StopPlacement += StopPlacement;
 
         StopPlacement();
 
@@ -101,8 +101,8 @@ public class PlacementManager : MonoBehaviour
         BuildingState = null;
 
         InputManager.Instance.SetState(State.NormalMode);
-        InputManager.Instance.OnClicked -= TryPlacement;
-        InputManager.Instance.OnExit -= StopPlacement;
+        InputEventChannel.OnClick -= TryPlacement;
+        InputManager.Instance.StopPlacement -= StopPlacement;
     }
 
     public void TryPlacement()
