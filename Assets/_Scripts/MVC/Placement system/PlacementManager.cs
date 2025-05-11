@@ -15,7 +15,7 @@ public class PlacementManager : MonoBehaviour
     // Ezen alapul a teljes térkép rendszer nem ér elbaszni
     public MapData MapData;
     // Minden építési SO
-    private List<BuildingData> BuildingDatabase = new List<BuildingData>();
+    private List<BuildingData> buildingDatabase = new List<BuildingData>();
 
     [SerializeField] private NavMeshSurface roadNavMesh;
     [SerializeField] private NavMeshSurface terrainNavMesh;
@@ -62,7 +62,7 @@ public class PlacementManager : MonoBehaviour
 
     void Update()
     {
-        if (InputManager.Instance.state != State.PlacementMode) return;
+        if (InputManager.Instance.State != InputState.PlacementMode) return;
         Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
         Vector3Int gridPosition = activeGrid.WorldToCell(mousePosition);
 
@@ -81,13 +81,13 @@ public class PlacementManager : MonoBehaviour
 
     public void StartPlacingItem(int StructureID)
     {
-        InputManager.Instance.SetState(State.PlacementMode);
+        InputManager.Instance.SetState(InputState.PlacementMode);
         InputEventChannel.OnClick += TryPlacement;
         InputManager.Instance.StopPlacement += StopPlacement;
 
         StopPlacement();
 
-        BuildingData Data = BuildingDatabase.FirstOrDefault(t => t.BuildingID == StructureID);
+        BuildingData Data = buildingDatabase.FirstOrDefault(t => t.BuildingID == StructureID);
 
         if (Data.IsUnityNull()) return;
         switch (Data.type)
@@ -111,7 +111,7 @@ public class PlacementManager : MonoBehaviour
         BuildingState.EndState();
         BuildingState = null;
 
-        InputManager.Instance.SetState(State.NormalMode);
+        InputManager.Instance.SetState(InputState.NormalMode);
         InputEventChannel.OnClick -= TryPlacement;
         InputManager.Instance.StopPlacement -= StopPlacement;
     }
@@ -178,8 +178,8 @@ public class PlacementManager : MonoBehaviour
     // Betölti a Resource folderból az összes StructureData ScriptableObjectet
     private void LoadAllStructures()
     {
-        BuildingDatabase = new List<BuildingData>(Resources.LoadAll<BuildingData>("Buildings"));
-        Debug.Log($"Betöltve {BuildingDatabase.Count} épület.");
+        buildingDatabase = new List<BuildingData>(Resources.LoadAll<BuildingData>("Buildings"));
+        Debug.Log($"Betöltve {buildingDatabase.Count} épület.");
     }
 
     private void LoadPreplacedStructures()

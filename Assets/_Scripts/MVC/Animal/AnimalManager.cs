@@ -1,5 +1,4 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,10 +12,9 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
     private List<Animal> ActiveAnimals = new List<Animal>();
 
     // Factory
-    private AnimalFactory factory;
-
-    // Csak a lerakáshoz kell
-    private AnimalType animalType;
+    [SerializeField] private AnimalFactory factory;
+    [SerializeField] private AnimalPreviewSystem previewSystem;
+    private IBuildingState BuildingState;
 
     public void Awake()
     {
@@ -33,6 +31,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
     private void Start()
     {
         factory = GetComponent<AnimalFactory>();
+        StopPlacement();
         RandomEvents.Instance.AddObserver(this);
     }
 
@@ -52,27 +51,43 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
 
     }
 
-    public void StartPlacingAnimal(int animalType)
+    public void StartPlacingAnimal(int animalID)
     {
-        this.animalType = (AnimalType)animalType;
-        InputEventChannel.OnClick += HandleClick;
+        InputManager.Instance.SetState(InputState.AnimalPlacementMode);
+        InputEventChannel.OnClick += TryPlacement;
+        InputManager.Instance.StopPlacement += StopPlacement;
+
+        StopPlacement();
+
+        AnimalType type = factory.GetAnimalTypeByID(animalID);
+        BuildingState = new AnimalPlacementState(type, previewSystem);
     }
 
-    private void HandleClick()
+    private void TryPlacement()
     {
-        Vector3 pos = InputManager.Instance.GetSelectedMapPosition();
+        if (InputManager.Instance.IsPointerOverUI()) return;
 
-        if (animalType != AnimalType.None)
-            SpawnAnimal(animalType, pos, 5);
+        Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
 
-        InputEventChannel.OnClick -= HandleClick;
+        BuildingState.OnAction(mousePosition);
+    }
+
+    public void StopPlacement()
+    {
+        if (BuildingState == null) return;
+        BuildingState.EndState();
+        BuildingState = null;
+
+        InputManager.Instance.SetState(InputState.NormalMode);
+        InputEventChannel.OnClick -= TryPlacement;
+        InputManager.Instance.StopPlacement -= StopPlacement;
     }
 
     // Létrehozzuk illetve eltávolítjuk
-    public void SpawnAnimal(AnimalType type, Vector3 SpawningLocation, int Age)
+    public void SpawnAnimal(AnimalType animalType, Vector3 SpawningLocation, int Age)
     {
         int ID = IDGenerator.GenerateID();
-        Animal newAnimal = factory.CreateAnimal(type, SpawningLocation, ID, Age);
+        Animal newAnimal = factory.CreateAnimal(animalType, SpawningLocation, ID, Age);
 
         if (newAnimal != null)
             ActiveAnimals.Add(newAnimal);

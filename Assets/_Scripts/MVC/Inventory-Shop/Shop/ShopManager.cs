@@ -8,7 +8,7 @@ public class ShopManager : MonoBehaviour
     public HashSet<Item> items;
     public Item currentItem;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     void Start()
     {
         items =  ItemManager.Instance.getItems();
@@ -28,12 +28,26 @@ public class ShopManager : MonoBehaviour
     public void PurchaseItem()
     {
         //mivel nincs más lehetõség vásárlásra ezért amikor rányom egy itemre csak akkor tudja megvenni
+
+        //refactor kell az összekötéshez
         if (currentItem != null)
         {
-                Inventory.Instance.AddItem(currentItem);
-                EconomyManager.Instance.RemoveMoney(currentItem.price);
-                ShowItemDetails(currentItem);
-                Debug.Log("megvette");
+            switch (currentItem.category)    
+            {
+                case Category.SERVICE:
+
+                    break;
+                case Category.CARS:
+                    
+                    break;
+                default:
+                    InventoryManager.Instance.inventory.AddItem(currentItem);
+                    EconomyManager.Instance.RemoveMoney(currentItem.price);
+                    ShowItemDetails(currentItem);
+                    Debug.Log("megvette");
+                    break;
+            }
+           
         }
         
     }

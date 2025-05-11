@@ -10,6 +10,7 @@ public class AnimalData : ScriptableObject
     public DietType Diet;
     public AnimalType Type;
     public float Speed;
+    public int animalID;
 
     /// <summary>
     /// Megjelenítendő objektum

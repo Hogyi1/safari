@@ -12,7 +12,7 @@ public class ItemUiInventory : MonoBehaviour
     
     public void SetItemData(Item item)
     {
-        this.Count.text = "Owned: " + Convert.ToString(Inventory.Instance.GetItemCount(item));
+        this.Count.text = "Owned: " + Convert.ToString(InventoryManager.Instance.inventory.GetItemCount(item));
         this.itemImage.sprite = item.imagePath;
         ItemButton.onClick.RemoveAllListeners(); 
         ItemButton.onClick.AddListener(() =>

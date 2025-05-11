@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopView : MonoBehaviour
+public class ServiceView : MonoBehaviour
 {
     public Button buybutton;
-    public GameObject itemPrefab; 
-    public Transform shopContent; 
+    public GameObject itemPrefab;
+    public Transform shopContent;
     public ItemDetailPanelShop detailPanel;
 
     public void ClearUP()
@@ -20,18 +20,18 @@ public class ShopView : MonoBehaviour
     }
 
 
-    public void GenerateShopItems(HashSet<Item> items)
+    public void GenerateServiceItems(HashSet<Item> items)
     {
         HideDetailPanel();
         ClearUP();
         foreach (Item item in items)
         {
-                GameObject newItem = Instantiate(itemPrefab, shopContent);
-                ItemUiShop itemUI = newItem.GetComponent<ItemUiShop>();
-                if (itemUI != null)
-                {
-                    itemUI.SetItemData(item);
-                }
+            GameObject newItem = Instantiate(itemPrefab, shopContent);
+            ItemUiService itemUI = newItem.GetComponent<ItemUiService>();
+            if (itemUI != null)
+            {
+                itemUI.SetItemData(item);
+            }
         }
     }
 
@@ -45,7 +45,6 @@ public class ShopView : MonoBehaviour
         detailPanel.gameObject.SetActive(false);
     }
 
-
-
-
 }
+
+

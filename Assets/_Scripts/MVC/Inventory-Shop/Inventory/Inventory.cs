@@ -2,26 +2,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Inventory : MonoBehaviour {
+public class Inventory {
 
     //contains the purchesed items
-    public static Inventory Instance;
-    [SerializeField]public Dictionary<Item, int> items = new ();
+    [SerializeField]public Dictionary<Item, int> items;
     public Item currentItem;
 
 
-    public void Awake()
+    public Inventory()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        items = new Dictionary<Item, int>();
     }
 
+    //a saveing miatt kell
+    public Inventory(Dictionary<Item, int> items) { 
+        this.items = items;
+    }
     public void AddItem(Item item)
     {
 
@@ -53,8 +49,7 @@ public class Inventory : MonoBehaviour {
         }
 
     }
-    
-   
+
     public void DecreaseItemCountOrRemove(Item item)
     {
         if (!CanSellItem(item))
@@ -79,11 +74,9 @@ public class Inventory : MonoBehaviour {
         return items.ContainsKey(item) && items[item] > 0;
     }
 
-
     public bool CanSellItem(Item item) { 
         return GetItemCount(item) > 0;
     }
-
 
     public int GetItemCount(Item item) {
         if (items.TryGetValue(item, out int itemcount))
@@ -96,6 +89,4 @@ public class Inventory : MonoBehaviour {
         }
 
     }
-
-   
 }

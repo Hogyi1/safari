@@ -16,4 +16,5 @@ MonoBehaviour:
   Diet: 1
   Type: 3
   Speed: 1
+  animalID: 1
   AnimalPrefab: {fileID: 7794872704550605394, guid: fbd80a6f5bda93446b4a66744798ea91, type: 3}

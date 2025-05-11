@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -16,9 +15,13 @@ public class InventoryManager : MonoBehaviour
             Destroy(this);
             return;
         }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        if (inventory == null)
+        {
+            inventory = new Inventory();
+
+        }
         inventoryView.GenerateInventoryUI(inventory.items);
     }
 
@@ -28,6 +31,10 @@ public class InventoryManager : MonoBehaviour
     }
     void Start()
     {
+        if (inventory == null){
+            inventory = new Inventory();
+
+        }
         inventoryView.GenerateInventoryUI(inventory.items);
     }
 
@@ -90,8 +97,6 @@ public class InventoryManager : MonoBehaviour
         {
             Debug.Log("Sellerror");
         }
-
-       
     }
 
     public void ShowItemDetails(Item item)
