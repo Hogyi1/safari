@@ -129,5 +129,7 @@ public enum StructureUIValues
     MaxValue_slider,
 
     /// <summary>Icon sprite for the structure</summary>
-    Sprite_icon
+    Sprite_icon,
+
+    Level
 }

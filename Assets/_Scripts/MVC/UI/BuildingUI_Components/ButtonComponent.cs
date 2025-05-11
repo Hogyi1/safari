@@ -36,11 +36,8 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
 
     private Func<float> getRefillPrice;
     private Func<float> getUpgradePrice;
-<<<<<<< HEAD
     private int price;
     private int ID;
-=======
->>>>>>> 923712d8f96365157209ba049298a2f508440c16
 
     /// <summary>
     /// Configures button visibility, price retrieval functions,
