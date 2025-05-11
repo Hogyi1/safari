@@ -228,21 +228,49 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
         }
     }
 
+<<<<<<< HEAD
     public List<AnimalType> GetAnimalsInSight(int vehicleID)
+=======
+    /// <summary>
+    /// Assigns a tourist to the first available vehicle and returns its door position.
+    /// </summary>
+    /// <param name="tourist">Tourist to assign.</param>
+    /// <returns>Door position for pickup, or null if none available.</returns>
+    public Vector3? AssignTouristToVehicle(Tourist tourist)
+>>>>>>> 923712d8f96365157209ba049298a2f508440c16
     {
         return activeVehicles.Find(t => t.ID == vehicleID).View.animalsInView;
     }
 
+<<<<<<< HEAD
     public Vector3 GetGaragePosition(int ID)
     {
         return FacilityManager.Instance.GetInteractingPosition(myType);
     }
 
     public void LevelUp()
+=======
+    /// <summary>
+    /// Returns a parking spot position for vehicles when idle.
+    /// </summary>
+    /// <returns>World position of the parking spot.</returns>
+    public Vector3 AssignVehicleToParkingSpot()
+    {
+        // TODO: Implement the Map/ParkingManager here later
+        return new Vector3(39f, 1.05f, 8.0f);
+    }
+
+    /// <summary>
+    /// Finds a path through the scene using RoadManager.
+    /// </summary>
+    /// <returns>Array of waypoint positions, or null if none found.</returns>
+    public Vector3[] FindRoute()
+>>>>>>> 923712d8f96365157209ba049298a2f508440c16
     {
         capacity += upgradeAmount;
     }
 
+<<<<<<< HEAD
     public void LevelDown()
     {
         capacity -= upgradeAmount;
@@ -254,13 +282,88 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
 
 /// <summary>
 /// Enumerates possible states of a vehicle's lifecycle.
+=======
+    /// <summary>
+    /// Starts the tour for a vehicle if all passengers have boarded.
+    /// </summary>
+    /// <param name="ID">ID of the vehicle starting its tour.</param>
+    public void StartTour(int ID)
+    {
+        var vehicle = activeVehicles.Find(t => t.GetID() == ID);
+        var view = vehicleViews[vehicle.GetID()];
+        if (vehicle != null && view != null && vehicle.AllPassengersArrived())
+        {
+            vehicle.State = VehicleState.On_tour;
+
+            vehicle.SetTouristState(TouristState.On_tour);
+
+            var WayPoints = FindRoute();
+
+            view.MoveOnRoute(WayPoints);
+
+        }
+    }
+
+    /// <summary>
+    /// Completes the tour, returns vehicle to parking, and clears its passengers.
+    /// </summary>
+    /// <param name="ID">ID of the vehicle finishing its tour.</param>
+    public void FinishTour(int ID)
+    {
+        var vehicle = activeVehicles.Find(t => t.GetID() == ID);
+        var view = vehicleViews[vehicle.GetID()];
+        if (vehicle != null && view != null)
+        {
+            vehicle.SetTouristState(TouristState.Finished);
+
+            vehicle.State = VehicleState.Busy;
+
+            view.MoveTo(AssignVehicleToParkingSpot());
+
+            vehicle.ClearPassengers();
+
+        }
+    }
+
+    /// <summary>
+    /// Adjusts the maximum vehicle capacity by a specified amount.
+    /// </summary>
+    /// <param name="amount">Change in capacity (positive or negative).</param>
+    public void UpdateCapacity(int amount)
+    {
+        capacity += amount;
+    }
+
+    /// <summary>
+    /// Loads all VehicleData ScriptableObjects from the Resources/Vehicles folder.
+    /// </summary>
+    private void LoadAllVehicles()
+    {
+        vehicleDatabase = new List<VehicleData>(Resources.LoadAll<VehicleData>("Vehicles"));
+    }
+}
+
+/// <summary>
+/// Enumeration of possible states a vehicle can be in during its lifecycle.
+>>>>>>> 923712d8f96365157209ba049298a2f508440c16
 /// </summary>
 public enum VehicleState
 {
+    /// <summary>No passengers and idle.</summary>
     Empty,
+
+    /// <summary>Waiting for more passengers.</summary>
     Waiting,
+
+    /// <summary>Full and ready to depart.</summary>
     Full,
+
+    /// <summary>Currently on tour with passengers.</summary>
     On_tour,
+
+    /// <summary>Tour completed and returning.</summary>
     Finished,
+
+    /// <summary>Busy after finishing tour awaiting clearance.</summary>
     Busy
 }

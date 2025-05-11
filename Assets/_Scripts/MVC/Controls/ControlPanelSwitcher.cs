@@ -1,12 +1,19 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Switches control panel UI based on the last used input device (mouse/keyboard, Xbox, PlayStation).
+/// </summary>
 public class ControlPanelSwitcher : MonoBehaviour
 {
+    /// <summary>UI panel displayed for mouse and keyboard input.</summary>
     public GameObject mouseKeyboardPanel;
+    /// <summary>UI panel displayed for Xbox controller input.</summary>
     public GameObject xboxPanel;
+    /// <summary>UI panel displayed for PlayStation controller input.</summary>
     public GameObject playStationPanel;
 
+    /// <summary>Types of gamepad brands supported.</summary>
     private enum GamepadType
     {
         Xbox,
@@ -14,17 +21,27 @@ public class ControlPanelSwitcher : MonoBehaviour
         Unknown
     }
 
+    /// <summary>
+    /// Subscribes to input device change events and initializes the control panels.
+    /// </summary>
     private void OnEnable()
     {
         InputDeviceDetector.OnDeviceChanged += UpdatePanels;
         UpdatePanels(InputDeviceDetector.LastUsedDevice);
     }
 
+    /// <summary>
+    /// Unsubscribes from input device change events.
+    /// </summary>
     private void OnDisable()
     {
         InputDeviceDetector.OnDeviceChanged -= UpdatePanels;
     }
 
+    /// <summary>
+    /// Activates the appropriate panel based on the current input device.
+    /// </summary>
+    /// <param name="deviceType">The type of the last used input device.</param>
     private void UpdatePanels(InputDeviceDetector.InputDeviceType deviceType)
     {
         mouseKeyboardPanel.SetActive(false);
@@ -49,6 +66,11 @@ public class ControlPanelSwitcher : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Determines the brand type of the specified gamepad device.
+    /// </summary>
+    /// <param name="gamepad">The gamepad device to evaluate.</param>
+    /// <returns>The detected GamepadType (Xbox, PlayStation, or Unknown).</returns>
     private GamepadType GetGamepadType(Gamepad gamepad)
     {
         if (gamepad == null) return GamepadType.Unknown;

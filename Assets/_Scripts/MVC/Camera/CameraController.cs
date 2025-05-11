@@ -17,6 +17,9 @@ public class CameraController : MonoBehaviour
     public InputActionReference zoomScrollAction;
     public InputActionReference zoomTriggerAction;
 
+    /// <summary>
+    /// Enable all input actions when this component is enabled.
+    /// </summary>
     private void OnEnable()
     {
         moveAction.action.Enable();
@@ -26,6 +29,9 @@ public class CameraController : MonoBehaviour
         zoomTriggerAction.action.Enable();
     }
 
+    /// <summary>
+    /// Disable all input actions when this component is disabled.
+    /// </summary>
     private void OnDisable()
     {
         moveAction.action.Disable();
@@ -35,6 +41,9 @@ public class CameraController : MonoBehaviour
         zoomTriggerAction.action.Disable();
     }
 
+    /// <summary>
+    /// Main per-frame update: handle movement, edge scrolling, rotation, height, and zoom.
+    /// </summary>
     private void Update()
     {
         HandleMovement();
@@ -44,6 +53,9 @@ public class CameraController : MonoBehaviour
         HandleZoom();
     }
 
+    /// <summary>
+    /// Move the camera based on WASD/joystick input.
+    /// </summary>
     private void HandleMovement()
     {
         Vector2 input = moveAction.action.ReadValue<Vector2>();
@@ -51,6 +63,9 @@ public class CameraController : MonoBehaviour
         view.Move(moveDir * model.moveSpeed * Time.unscaledDeltaTime);
     }
 
+    /// <summary>
+    /// Move the camera when the cursor is near the screen edges.
+    /// </summary>
     private void HandleEdgeScrolling()
     {
         Vector3 inputDir = Vector3.zero;
@@ -64,6 +79,9 @@ public class CameraController : MonoBehaviour
         view.Move(moveDir * model.moveSpeed * Time.unscaledDeltaTime);
     }
 
+    /// <summary>
+    /// Rotate the camera via right-mouse drag or gamepad input.
+    /// </summary>
     private void HandleRotation()
     {
         if (InputDeviceDetector.LastUsedDevice == InputDeviceDetector.InputDeviceType.MouseKeyboard)
@@ -86,12 +104,18 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Move the camera up or down along its Y axis.
+    /// </summary>
     private void HandleHeight()
     {
         float heightInput = heightAction.action.ReadValue<float>();
         view.Move(new Vector3(0, heightInput * model.heightSpeed * Time.unscaledDeltaTime, 0));
     }
 
+    /// <summary>
+    /// Zoom the camera by adjusting the Cinemachine follow-offset Y value.
+    /// </summary>
     private void HandleZoom()
     {
         float scrollInput = zoomScrollAction.action.ReadValue<float>();

@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 
+/// <summary>
+/// Data model representing a vehicle, including capacity, assigned tourists, and state.
+/// </summary>
 public class Vehicle
 {
     public int ID;

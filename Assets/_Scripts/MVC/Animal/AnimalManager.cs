@@ -55,8 +55,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
     public void StartPlacingAnimal(int animalType)
     {
         this.animalType = (AnimalType)animalType;
-        InputManager.Instance.OnClicked += HandleClick;
-        Debug.Log("Elkezdtem lerakni");
+        InputEventChannel.OnClick += HandleClick;
     }
 
     private void HandleClick()
@@ -66,7 +65,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
         if (animalType != AnimalType.None)
             SpawnAnimal(animalType, pos, 5);
 
-        InputManager.Instance.OnClicked -= HandleClick;
+        InputEventChannel.OnClick -= HandleClick;
     }
 
     // Létrehozzuk illetve eltávolítjuk

@@ -8,15 +8,25 @@ using UnityEngine;
 /// </summary>
 public class PopupManager : MonoBehaviour
 {
-    public static PopupManager Instance; // Singleton Instance
-
-    [SerializeField] private BuildingPopup buildingBB; // Building BillBoard
-    [SerializeField] private AnimalPopup animalUI; // Animal UI
-                                                   // You can add more Popups.
-                                                   // In Future: Can be optimized to make these inherited from a base class and maintain them.
+    /// <summary>
+    /// Singleton instance of the PopupManager.
+    /// </summary>
+    public static PopupManager Instance;
 
     /// <summary>
-    /// Initializes the singleton instance and ensures only one exists across scenes.
+    /// Building popup component used for structure UI.
+    /// </summary>
+    [SerializeField] private BuildingPopup buildingBB; // Building BillBoard
+
+    /// <summary>
+    /// Animal popup component used for animal UI.
+    /// </summary>
+    [SerializeField] private AnimalPopup animalUI; // Animal UI
+                                                   // You can add more Popups.
+                                                   // In the future: can be optimized to make these inherited from a base class and maintain them.
+
+    /// <summary>
+    /// Initializes the singleton instance and persists across scenes.
     /// </summary>
     public void Awake()
     {
@@ -56,7 +66,7 @@ public class PopupManager : MonoBehaviour
         }
         catch (Exception)
         {
-            Debug.LogWarning("Nincsen Popup pozició beállítva, az alap beállításokat fogom használni.");
+            Debug.LogWarning("Nincsen Popup poziciï¿½ beï¿½llï¿½tva, az alap beï¿½llï¿½tï¿½sokat fogom hasznï¿½lni.");
             Bounds bounds = go.GetComponentInChildren<Renderer>().bounds;
             UIPos = new Vector3(bounds.center.x, bounds.max.y + 1f, bounds.center.z);
         }
@@ -100,12 +110,24 @@ public interface IStructureUIComponent
 /// </summary>
 public enum StructureUIValues
 {
-    ID, // Structure ID
-    Name_text, // The Name of the structure
-    Refillprice_button, // Refill Price
-    Upgradeprice_button, // Upgrade Price
-    Value_slider, // Slider's current value
-    MaxValue_slider, // Slider's max value
-    Sprite_icon, // The Icon of the structure
-    Level // The current level of the structure
+    /// <summary>Structure ID</summary>
+    ID,
+
+    /// <summary>The name of the structure</summary>
+    Name_text,
+
+    /// <summary>Refill price</summary>
+    Refillprice_button,
+
+    /// <summary>Upgrade price</summary>
+    Upgradeprice_button,
+
+    /// <summary>Current slider value</summary>
+    Value_slider,
+
+    /// <summary>Maximum slider value</summary>
+    MaxValue_slider,
+
+    /// <summary>Icon sprite for the structure</summary>
+    Sprite_icon
 }
