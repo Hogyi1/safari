@@ -17,5 +17,7 @@ public enum EventType
     EARN_MONEY,
     /// <summary>Experience points have been gained.</summary>
     EXP_GAIN,
+    /// <summary>Player leveled up.</summary>
+    LEVEL_UP,
     // Add more if we need to
 }

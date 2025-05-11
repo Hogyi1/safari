@@ -1,130 +1,137 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine.InputSystem.LowLevel;
+using static VehicleState;
 
 /// <summary>
-/// Represents the visual component of a Vehicle, handling navigation and animation.
+/// View component for rendering and moving a vehicle using NavigatorComponent.
+/// Handles navigation to positions and along routes without direct NavMeshAgent or animations.
 /// </summary>
-public class VehicleView : MonoBehaviour
+[RequireComponent(typeof(NavigatorComponent))]
+public class VehicleView : MonoBehaviour, INavigatable
 {
-    /// <summary>
-    /// Reference to the vehicle model driving this view.
-    /// </summary>
-    private Vehicle vehicle;
+    private int iD;
+    private VehicleModel model;
+    [SerializeField] private NavigatorComponent navigator;
+    [SerializeField] private Transform door;
 
-    /// <summary>
-    /// NavMeshAgent used for pathfinding and movement control.
-    /// </summary>
-    private NavMeshAgent agent;
+    [SerializeField] LayerMask animalLayermask;
+    public List<AnimalType> animalsInView = new();
 
-    /// <summary>
-    /// Animator component controlling vehicle animations.
-    /// </summary>
-    private Animator animator;
+    public float waitingTime;
+    public VehicleState state;
+    public List<int> tourstIDS;
 
-    /// <summary>
-    /// NavMeshObstacle used when the agent is disabled to block navigation.
-    /// </summary>
-    private NavMeshObstacle obstacle;
-
-    /// <summary>
-    /// Initializes the VehicleView with its model and component references,
-    /// disabling the NavMeshAgent until movement begins.
-    /// </summary>
-    /// <param name="vehicle">The Vehicle model associated with this view.</param>
-    public void Init(Vehicle vehicle)
-    {
-        this.vehicle = vehicle;
-        agent = GetComponent<NavMeshAgent>();
-        animator = GetComponent<Animator>();
-        obstacle = GetComponent<NavMeshObstacle>();
-
-        agent.enabled = false;
-        obstacle.enabled = true;
-    }
-
-    /// <summary>
-    /// Called once per frame. Reserved for future animation updates.
-    /// </summary>
     private void Update()
     {
-        // Intentionally left blank; animations can be driven here.
+        waitingTime = model.WaitingTime;
+        state = model.State;
+        tourstIDS = model.AssignedTouristIDs;
     }
 
     /// <summary>
-    /// Returns the world position of the vehicle's door, used for passenger boarding.
+    /// Initializes this view with its corresponding model and sets up the navigator.
     /// </summary>
-    /// <returns>World-space position of the door.</returns>
+    /// <param name="vehicle">The VehicleModel instance to bind to.</param>
+    // Inicializálás
+    public void Init(VehicleModel model)
+    {
+        this.model = model;
+        this.iD = model.ID;
+    }
+
+    /// <summary>
+    /// Gets the world position of the vehicle's door for tourists to walk to.
+    /// </summary>
     public Vector3 GetDoorPosition()
     {
-        return this.gameObject.transform.GetChild(1).position;
+        if (door != null) return door.position;
+        return transform.GetChild(1).position;
     }
 
     /// <summary>
-    /// Moves the vehicle to a specified destination by enabling the agent.
+    /// Moves the vehicle along a sequence of waypoints in order.
     /// </summary>
-    /// <param name="Position">Target position in world space.</param>
-    public void MoveTo(Vector3 Position)
+    /// <param name="waypoints">Array of world positions defining the route.</param>
+    public void MoveOnRoute(List<Vector3> waypoints, VehicleState newState)
     {
-        obstacle.enabled = false;
-        agent.enabled = true;
-        agent.SetDestination(Position);
-        StartCoroutine(WaitForArrival());
+        // Delegate setting waypoints to navigator
+        navigator.SetWayPoints(waypoints);
+        StartCoroutine(WaitForArrival(newState));
     }
 
     /// <summary>
-    /// Begins following a series of waypoints sequentially.
+    /// Waits until the navigator reports arrival, then updates state if necessary.
     /// </summary>
-    /// <param name="Waypoints">Array of world-space positions to traverse.</param>
-    public void MoveOnRoute(Vector3[] Waypoints)
+    private IEnumerator WaitForArrival(VehicleState newState)
     {
-        obstacle.enabled = false;
-        agent.enabled = true;
-        if (!agent.hasPath)
-            StartCoroutine(FollowWaypoints(Waypoints));
+        yield return new WaitUntil(() => navigator.Arrived);
+
+        VehicleManager.Instance.SetVehicleState(iD, newState);
+        if (newState == Empty) ResetVehicle();
     }
 
     /// <summary>
-    /// Coroutine that navigates through each waypoint in order,
-    /// and marks the vehicle as Finished upon completion.
+    /// TriggerEnter handler: adds animal types to the in-view list.
     /// </summary>
-    /// <param name="waypoints">List of positions to visit.</param>
-    /// <returns>IEnumerator for coroutine execution.</returns>
-    private IEnumerator FollowWaypoints(Vector3[] waypoints)
+    private void OnTriggerEnter(Collider other)
     {
-        for (int i = 0; i < waypoints.Length; i++)
+        if ((animalLayermask & (1 << other.gameObject.layer)) == 0)
+            return;
+
+        var av = other.GetComponent<AnimalView>();
+        if (av != null && av.enabled)
         {
-            Vector3 tp = waypoints[i];
-
-            // Wait until the agent reaches the waypoint
-            while (agent.pathPending || agent.remainingDistance > 0.5f)
-            {
-                yield return null;
-            }
+            AnimalType type = av.Model.Type;
+            animalsInView.Add(type);
         }
-
-        vehicle.State = VehicleState.Finished;
-        agent.enabled = false;
-        obstacle.enabled = true;
     }
 
     /// <summary>
-    /// Coroutine that waits until the vehicle has arrived at its destination,
-    /// then updates its state to Empty if it was Busy.
+    /// TriggerExit handler: removes animal types from the in-view list.
     /// </summary>
-    private IEnumerator WaitForArrival()
+    private void OnTriggerExit(Collider other)
     {
-        while (agent.pathPending || agent.remainingDistance > 0.5f)
-        {
-            yield return null;
-        }
+        if ((animalLayermask & (1 << other.gameObject.layer)) == 0)
+            return;
 
-        if (vehicle.State == VehicleState.Busy)
+        var av = other.GetComponent<AnimalView>();
+        if (av != null && av.enabled)
         {
-            vehicle.State = VehicleState.Empty;
+            AnimalType type = av.Model.Type;
+            animalsInView.Remove(type);
         }
-
-        agent.enabled = false;
-        obstacle.enabled = true;
     }
+
+    // === INavigatable metódusok delegálása ===
+    public void SetTarget(Vector3 dest) => navigator.SetTarget(dest);
+    public void SetWayPoints(List<Vector3> wp) => navigator.SetWayPoints(wp);
+    public void Follow(MonoBehaviour t) => navigator.Follow(t);
+    public void StopMovementInstantly() => navigator.StopMovementInstantly();
+    public void StopMovement() => navigator.StopMovement();
+    public void ResetMovement() => navigator.ResetMovement();
+
+    /// <summary>
+    /// Returns to position and deactivates the vehicle
+    /// </summary>
+    /// <param name="parkingSpace"></param>
+    public void ResetVehicle()
+    {
+        transform.position = VehicleManager.Instance.GetParkingSpot();
+        VehicleManager.Instance.SetVehicleState(iD, Empty);
+        gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// Sets the agents speed
+    /// </summary>
+    /// <param name="speed"></param>
+    public void SetSpeed(float speed)
+    {
+        navigator.Agent.speed = speed;
+    }
+
+    // === Érkezés logika ===
+    public bool Arrived => navigator.Arrived;
 }

@@ -39,6 +39,36 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     private float progress;
 
     /// <summary>
+    /// True if the player is at the maximum level; otherwise false.
+    /// </summary>
+    private bool isMaxLevel = false;
+
+    /// <summary>
+    /// Gets the player's current level.
+    /// </summary>
+    public int CurrentLevel => currentLevel;
+
+    /// <summary>
+    /// Gets the player's current accumulated experience.
+    /// </summary>
+    public int CurrentExp => currentExp;
+
+    /// <summary>
+    /// Gets the experience required to reach the next level.
+    /// </summary>
+    public int RequiredExp => requiredExp;
+
+    /// <summary>
+    /// Gets a boolean; is true if the player is at the max level; otherwise false.
+    /// </summary>
+    public bool IsMaxLevel => isMaxLevel;
+
+    /// <summary>
+    /// Gets the total number of levels configured.
+    /// </summary>
+    public int MaxLevel => levels.Count;
+
+    /// <summary>
     /// Ensures only one instance of LevelManager exists and persists across scenes.
     /// </summary>
     private void Awake()
@@ -59,6 +89,8 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     /// </summary>
     private void Start()
     {
+        isMaxLevel = false;
+
         if (levels.Count > 0)
         {
             requiredExp = levels[currentLevel - 1].expRequired;
@@ -110,13 +142,14 @@ public class LevelManager : MonoBehaviour, ILevelObserver
             }
             else
             {
-                Debug.Log("You have reached the max level!");
+                if (!isMaxLevel)
+                {
+                    isMaxLevel = true;
+                    GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 0);
+                }
 
                 currentExp = requiredExp; // Lock exp to max
                 progress = 1f;
-
-                Debug.Log("Max level. Current exp: " + currentExp);
-                Debug.Log("Max level. Current progress: " + progress);
             }
         }
 
@@ -129,6 +162,8 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     private void LevelUp()
     {
         currentLevel++;
+
+        GameEvents.Instance.NotifyObservers(EventType.LEVEL_UP, currentLevel);
 
         // Request an alert that tells the player they leveled up and shows the current level.
         GameEvents.Instance.RequestAlert(
@@ -148,7 +183,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver
         }
         else
         {
-            Debug.Log("You are at max level.");
+            Debug.Log("Player is at max level.");
         }
     }
 
@@ -167,7 +202,18 @@ public class LevelManager : MonoBehaviour, ILevelObserver
         // Unlock Items
         foreach (var itemId in level.unlockItemIds)
         {
-            // ItemManager.Instance.UnlockItem(itemId); // Enable when ItemManager is implemented
+            ItemManager.Instance.UnlockItem(itemId);
         }
+    }
+
+    /// <summary>
+    /// Returns the LevelData for the given level number, or null if out of range.
+    /// </summary>
+    /// <param name="levelNumber">Level index (1 based).</param>
+    public LevelData GetLevelData(int levelNumber)
+    {
+        if (levelNumber < 1 || levelNumber > levels.Count)
+            return null;
+        return levels[levelNumber - 1];
     }
 }

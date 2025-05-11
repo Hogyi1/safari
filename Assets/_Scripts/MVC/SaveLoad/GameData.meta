@@ -1,5 +1,9 @@
 fileFormatVersion: 2
-guid: 9f2ea1d2111777f42891c9fa483ebce5
+<<<<<<<< HEAD:Assets/_Scripts/MVC/SaveLoad/GameData.meta
+guid: e2970dc42f9913946980c02a3285b59a
+========
+guid: 01c4267ac60968348a37fa53b7241681
+>>>>>>>> development:Assets/Assets/MiniMapTextures.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

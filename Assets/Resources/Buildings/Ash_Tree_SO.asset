@@ -20,4 +20,6 @@ MonoBehaviour:
   type: 0
   icon: {fileID: 21300000, guid: 97e5265ed1b1865448e683b042fbfbd0, type: 3}
   diet: 1
-  BuildingPrefab: {fileID: 8185793832496569501, guid: 3bcf6e78553a7f54c8bf39912b4124e3, type: 3}
+  level: 0
+  toupgrade: 0
+  BuildingPrefab: {fileID: 8185793832496569501, guid: 83312aea6577f4d4b90e29736cef8f48, type: 3}

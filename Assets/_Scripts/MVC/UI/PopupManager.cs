@@ -66,7 +66,7 @@ public class PopupManager : MonoBehaviour
         }
         catch (Exception)
         {
-            Debug.LogWarning("Nincsen Popup pozició beállítva, az alap beállításokat fogom használni.");
+            Debug.LogWarning("Nincsen Popup poziciï¿½ beï¿½llï¿½tva, az alap beï¿½llï¿½tï¿½sokat fogom hasznï¿½lni.");
             Bounds bounds = go.GetComponentInChildren<Renderer>().bounds;
             UIPos = new Vector3(bounds.center.x, bounds.max.y + 1f, bounds.center.z);
         }
@@ -91,8 +91,8 @@ public class PopupManager : MonoBehaviour
     /// </summary>
     public void HidePopup()
     {
-        buildingBB.Hide();
-        animalUI.gameObject.SetActive(false);
+        if (buildingBB.isActiveAndEnabled) buildingBB.Hide();
+        if (animalUI.isActiveAndEnabled) animalUI.gameObject.SetActive(false);
     }
 }
 
@@ -129,5 +129,7 @@ public enum StructureUIValues
     MaxValue_slider,
 
     /// <summary>Icon sprite for the structure</summary>
-    Sprite_icon
+    Sprite_icon,
+
+    Level
 }
