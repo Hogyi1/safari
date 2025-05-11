@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
+using static TouristState;
 
+[RequireComponent(typeof(TouristFactory))]
 public class TouristManager : MonoBehaviour, IRandomEventObserver
 {
     // Singleton pattern
@@ -12,13 +14,14 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
 
     // Az aktív touristok
     private List<Tourist> activeTourists = new List<Tourist>();
-    private Dictionary<int, TouristView> touristViews = new Dictionary<int, TouristView>();
 
-    private TouristFactory factory;
+    // factory
+    [SerializeField] private TouristFactory factory;
 
     // Az átlag kedv
-    private float OverallMood = 0f;
-
+    public float OverallMood = 50f;
+    public float OverallWaitingMood = 50f;
+    [SerializeField] private float moodSensitivity = 0.5f;
 
     public void Awake()
     {
@@ -34,97 +37,93 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
 
     public void Start()
     {
-        factory = GetComponentInChildren<TouristFactory>();
         RandomEvents.Instance.AddObserver(this);
     }
 
     public void SpawnTourist()
     {
+        int ID = IDGenerator.GenerateID();
+        Tourist newTourist = factory.CreateTourist(ID);
 
-        Tourist newTourist = new Tourist(IDGenerator.GenerateID());
-        activeTourists.Add(newTourist);
-
-        //GameObject newTouristGO = Instantiate(touristPrefab, Entrance, Quaternion.identity);
-        //TouristView view = newTouristGO.GetComponent<TouristView>();
-        //view.Init(newTourist);
-
-        TouristView view = factory.CreateTourist(newTourist);
-
-        touristViews[newTourist.GetID()] = view;
-        Debug.Log($"Új turista ID: {newTourist.GetID()}, Patience: {newTourist.patienceLevel}");
-
+        if (newTourist != null)
+            activeTourists.Add(newTourist);
     }
 
     public void RemoveTourist(int touristID)
     {
-        Tourist tourist = activeTourists.Find(t => t.GetID() == touristID);
-        if (tourist != null)
+        Tourist toRemove = activeTourists.Find(t => t.ID == touristID);
+        if (toRemove != null)
         {
-            activeTourists.Remove(tourist);
+            activeTourists.Remove(toRemove);
+            Destroy(toRemove.View.gameObject);
         }
-
-        if (touristViews.TryGetValue(touristID, out TouristView view))
-        {
-            touristViews.Remove(touristID);
-            Destroy(view);
-        }
+        Debug.Log("Removed");
     }
 
     public void Update()
     {
-        var Mood = 0f;
-        var finishedTourists = activeTourists.Where(t => t.GetState() == TouristState.Finished).ToList();
-        foreach (var tourist in finishedTourists)
-        {
-            RemoveTourist(tourist.GetID());
-        }
+        List<AnimalType> AnimalsInRange = new();
+        activeTourists.Where(t => t.Model.State == Finished).ToList().ForEach(t => RemoveTourist(t.ID));
 
         foreach (var tourist in activeTourists)
         {
             float delta = Time.deltaTime;
-            int AnimalsInRange = 0;
-            if (tourist.GetState() == TouristState.In_queue)
+            switch (tourist.Model.State)
             {
-                tourist.AddElapsedTime(delta);
-                var carPosition = VehicleManager.Instance.AssignTouristToVehicle(tourist);
-                if (carPosition != null)
-                {
-                    TouristView view = touristViews[tourist.GetID()];
-                    tourist.SetState(TouristState.Walking);
-                    view.StartWalkingToCar((Vector3)carPosition);
-                    EconomyManager.Instance.PayForTicket();
-                }
-            }
-            else if (tourist.GetState() == TouristState.On_tour)
-            {
-                AnimalsInRange = GetAnimalsInRange();
-                tourist.SetElapsedTime(delta);
-            }
+                case In_queue:
+                    float deltaWaitingMood = tourist.Model.WaitingMood - 50f;
+                    OverallWaitingMood += deltaWaitingMood * delta * moodSensitivity;
+                    OverallWaitingMood = Mathf.Clamp(OverallWaitingMood, 0f, 100f);
 
-            // Később ide jön az, hogy megnézi mennyi állat van körülötte
-            tourist.CalculateMood(AnimalsInRange);
+                    var carID = VehicleManager.Instance.AssignTouristToVehicle(tourist.ID);
+                    if (carID >= 0) StartTouristWalk(carID, tourist);
 
-            Mood += tourist.TotalMood;
+                    tourist.Model.AddElapsedTime(delta);
+                    break;
+                case On_tour:
+                    float deltaMood = tourist.Model.TourMood - 50f;
+                    OverallMood += deltaMood * delta * moodSensitivity;
+                    OverallMood = Mathf.Clamp(OverallMood, 0f, 100f);
+
+                    AnimalsInRange = GetAnimalsInRange(tourist.Model.VehicleID);
+                    tourist.Model.SetElapsedTime(delta);
+                    break;
+                default:
+                    break;
+            }
+            tourist.Model.CalculateMood(AnimalsInRange);
         }
-
-        OverallMood = Mood / activeTourists.Count;
-        // Debug.Log(OverallMood);
     }
 
-    public int GetAnimalsInRange()
+    private void StartTouristWalk(int carID, Tourist tourist)
     {
-        // TODO
-        return 0;
+        tourist.Model.VehicleID = carID;
+
+        tourist.Model.SetState(Walking);
+        tourist.View.StartWalkingToCar(VehicleManager.Instance.GetGaragePosition(carID));
+        EconomyManager.Instance.PayForTicket();
+    }
+
+    public List<AnimalType> GetAnimalsInRange(int vehicleID)
+    {
+        return VehicleManager.Instance.GetAnimalsInSight(vehicleID);
     }
 
     public void OnNotify(RandomEvent randomEvent)
     {
-
-        if (randomEvent == RandomEvent.Spawn_tourist)
+        if (randomEvent == RandomEvent.Spawn_tourist) // Minél jobb a kedv annál esélyesebb, hogy jönnek
         {
-            SpawnTourist();
+            Debug.Log("Spawn tourist Event");
+            float chance = UnityEngine.Random.Range(0f, 1f);
+            if (chance <= (OverallMood / 100f)) SpawnTourist();
         }
     }
+
+    public void SetTouristState(int id, TouristState state) =>
+        activeTourists.FirstOrDefault(t => t.ID == id).Model.SetState(state);
+
+    public TouristState GetTouristState(int id) =>
+        activeTourists.FirstOrDefault(t => t.ID == id).Model.State;
 }
 
 public enum TouristState
