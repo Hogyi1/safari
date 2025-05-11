@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prize: 100
   eventType: 0
-  state: 1
+  state: 0
   description: Buy 3 Animals
   goal: 3
   progress: 0

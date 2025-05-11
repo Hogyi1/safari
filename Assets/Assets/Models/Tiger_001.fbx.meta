@@ -29,32 +29,7 @@ ModelImporter:
     removeConstantScaleCurves: 1
     motionNodeName: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Tiger_001_idle' has import animation warnings
-      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
-      to improve retargeting quality.\n\t'spine.009' has translation animation that
-      will be discarded.\n\t'spine.010' is inbetween humanoid transforms and has
-      rotation animation that will be discarded.\n\nClip 'Tiger_001_idle_rare' has
-      import animation warnings that might lower retargeting quality:\nNote: Activate
-      translation DOF on avatar to improve retargeting quality.\n\t'spine.009' has
-      translation animation that will be discarded.\n\t'spine.010' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\nClip 'Tiger_001_run'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'thigh.R'
-      has translation animation that will be discarded.\n\t'spine.009' has translation
-      animation that will be discarded.\n\t'spine.010' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\t'shoulder.R' has translation
-      animation that will be discarded.\n\t'front_thigh.R' has translation animation
-      that will be discarded.\n\t'front_shin.R' has translation animation that will
-      be discarded.\n\t'front_shin.L' has translation animation that will be discarded.\n\t'thigh.L'
-      has translation animation that will be discarded.\n\nClip 'Tiger_001_walk'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'thigh.R'
-      has translation animation that will be discarded.\n\t'spine.010' is inbetween
-      humanoid transforms and has rotation animation that will be discarded.\n\t'shoulder.R'
-      has translation animation that will be discarded.\n\t'front_thigh.R' has translation
-      animation that will be discarded.\n\t'shoulder.L' has translation animation
-      that will be discarded.\n\t'front_thigh.L' has translation animation that will
-      be discarded.\n\t'thigh.L' has translation animation that will be discarded.\n"
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 1

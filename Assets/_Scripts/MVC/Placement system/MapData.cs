@@ -19,7 +19,7 @@ public class MapData
     /// </summary>
     /// <param name="gridPosition">Top-left origin position of the object.</param>
     /// <param name="objectSize">Size in grid units (width x height).</param>
-    /// <param name="ID">Unique ID of the object (e.g. for identification).</param>
+    /// <param name="ID">ID of the building in buildingdata</param>
     /// <param name="placedObjectIndex">Index to link back to its visual representation.</param>
     public void AddObjectAt(Vector2Int gridPosition,
                             Vector2Int objectSize,
@@ -30,9 +30,9 @@ public class MapData
         PlacementData data = new PlacementData(positionToOccupy, ID, placedObjectIndex);
         foreach (var pos in positionToOccupy)
         {
-            if (ObjectsPlacedOnGrid.ContainsKey(pos))
-                throw new Exception($"Dictionary already contains this cell position {pos}");
-            ObjectsPlacedOnGrid[pos] = data;
+            if (!ObjectsPlacedOnGrid.ContainsKey(pos)) ObjectsPlacedOnGrid[pos] = data;
+            // throw new Exception($"Dictionary already contains this cell position {pos}");
+
         }
     }
 

@@ -36,6 +36,8 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
 
     private Func<float> getRefillPrice;
     private Func<float> getUpgradePrice;
+    private int price;
+    private int ID;
 
     /// <summary>
     /// Configures button visibility, price retrieval functions,
@@ -44,7 +46,9 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
     /// <param name="data">Dictionary mapping UI value keys to dynamic data.</param>
     public void TrySetup(Dictionary<StructureUIValues, object> data)
     {
-        // Refill button setup
+        ID = (int)data[StructureUIValues.ID];
+
+        // Refill
         if (data.TryGetValue(refillKey, out var refillObj))
         {
             if (refillObj is Func<float> refillFunc)
@@ -59,7 +63,7 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
             refillText.gameObject.SetActive(true);
             refillButton.onClick.RemoveAllListeners();
             refillButton.onClick.AddListener(() =>
-                FeederManager.Instance.Refill((int)data[ID], (int)getRefillPrice()));
+                FeederManager.Instance.Refill(ID, (int)getRefillPrice()));
         }
         else
         {
@@ -82,11 +86,7 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
             upgradeButton.gameObject.SetActive(true);
             upgradeText.gameObject.SetActive(true);
             upgradeButton.onClick.RemoveAllListeners();
-            upgradeButton.onClick.AddListener(() => {
-                // TODO: Implement upgrade action when manager is ready
-            });
-
-
+            upgradeButton.onClick.AddListener(() => { FacilityManager.Instance.HandleUpgrade(ID, (int)getUpgradePrice()); });
         }
         else
         {
@@ -116,8 +116,9 @@ public class ButtonComponent : MonoBehaviour, IStructureUIComponent
         {
             float price = getUpgradePrice();
             bool canAfford = EconomyManager.Instance.HasEnoughMoney((int)price);
-            upgradeButton.enabled = canAfford && price != 0;
-            upgradeText.text = $"Upgrade ${price:0}";
+            bool canUpgrade = !FacilityManager.Instance.AtMaxLevel(ID);
+            upgradeButton.enabled = canAfford && price != 0 && canUpgrade;
+            upgradeText.text = canUpgrade ? $"Upgrade ${price:0}" : "Max level";
         }
     }
 }
