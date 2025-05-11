@@ -1,0 +1,137 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// Represents a vehicle in the system, managing passenger assignments and waiting time.
+/// </summary>
+public class VehicleModel
+{
+    /// <summary>
+    /// Unique identifier of the vehicle.
+    /// </summary>
+    private int iD;
+
+    /// <summary>
+    /// Current operational state of the vehicle.
+    /// </summary>
+    private VehicleState state;
+
+    /// <summary>
+    /// Type of the vehicle (e.g., Jeep, Bus, Van).
+    /// </summary>
+    private VehicleType type;
+
+    /// <summary>
+    /// Maximum number of passengers the vehicle can hold.
+    /// </summary>
+    private int capacity;
+
+    /// <summary>
+    /// Space already taken by existing passengers.
+    /// </summary>
+    private int spaceTaken;
+
+    /// <summary>
+    /// Accumulated waiting time in seconds.
+    /// </summary>
+    private float waitingTime;
+
+    /// <summary>
+    /// IDs of tourists assigned to this vehicle.
+    /// </summary>
+    public List<int> AssignedTouristIDs = new List<int>();
+
+    /// <summary>
+    /// Gets the unique identifier of the vehicle.
+    /// </summary>
+    public int ID => iD;
+
+    /// <summary>
+    /// Gets or sets the current state of the vehicle.
+    /// </summary>
+    public VehicleState State
+    {
+        get => state;
+        set => state = value;
+    }
+
+    /// <summary>
+    /// Gets the type of the vehicle.
+    /// </summary>
+    public VehicleType Type => type;
+
+    /// <summary>
+    /// Gets the maximum capacity of the vehicle.
+    /// </summary>
+    public int Capacity => capacity;
+
+    /// <summary>
+    /// Gets the space already taken in the vehicle.
+    /// </summary>
+    public int SpaceTaken => spaceTaken;
+
+    /// <summary>
+    /// Gets the total waiting time accumulated.
+    /// </summary>
+    public float WaitingTime => waitingTime;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VehicleModel"/> class.
+    /// </summary>
+    /// <param name="id">Unique identifier for this vehicle.</param>
+    /// <param name="data">Data object containing type, capacity, and space-taken values.</param>
+    public VehicleModel(int id, VehicleData data)
+    {
+        iD = id;
+        type = data.type;
+        capacity = data.capacity;
+        spaceTaken = data.spacetaken;
+        state = VehicleState.Empty;
+        waitingTime = 0f;
+    }
+
+    /// <summary>
+    /// Attempts to add a passenger by their tourist ID.
+    /// </summary>
+    /// <param name="touristId">ID of the tourist to add.</param>
+    /// <returns>True if added; false if capacity is full.</returns>
+    public bool AddPassenger(int touristId)
+    {
+        if (AssignedTouristIDs.Count >= capacity)
+            return false;
+
+        AssignedTouristIDs.Add(touristId);
+        state = AssignedTouristIDs.Count == capacity
+            ? VehicleState.Full
+            : VehicleState.Waiting;
+        return true;
+    }
+
+    /// <summary>
+    /// Adds to the waiting time counter.
+    /// </summary>
+    /// <param name="time">Seconds to add.</param>
+    public void AddWaitingTime(float time)
+    {
+        waitingTime += time;
+    }
+
+    /// <summary>
+    /// Clears all assigned passengers and resets waiting time.
+    /// </summary>
+    public void ClearPassengers()
+    {
+        AssignedTouristIDs.Clear();
+        waitingTime = 0f;
+    }
+}
+
+/// <summary>
+/// Types of vehicles available in the system.
+/// </summary>
+public enum VehicleType
+{
+    Jeep,
+    Bus,
+    Van
+}

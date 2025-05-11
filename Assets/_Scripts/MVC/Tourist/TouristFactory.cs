@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class TouristFactory : MonoBehaviour
 {
-    [SerializeField]
-    private List<GameObject> TouristPrefabs;
+    [SerializeField] private List<GameObject> TouristPrefabs;
 
     [SerializeField] private GameObject Entrance;
+    [SerializeField] private GameObject TouristParent;
+    private Bounds entranceBounds;
 
     List<string> clothes = new List<string> { "Shirt", "Pants", "Shoes" };
 
@@ -16,13 +17,21 @@ public class TouristFactory : MonoBehaviour
 
     [SerializeField] private List<Color> hairColors;
 
-    public TouristView CreateTourist(Tourist newTourist)
+    private void Start()
+    {
+        entranceBounds = Entrance.GetComponent<Renderer>().bounds;
+    }
+
+    public Tourist CreateTourist(int ID)
     {
         GameObject prefab = GetRandomPrefab();
 
-        GameObject instance = Instantiate(prefab, Entrance.transform.position, Quaternion.identity);
-        TouristView view = instance.GetComponent<TouristView>();
-        view.Init(newTourist);
+        float x = Random.Range(entranceBounds.min.x, entranceBounds.max.x);
+        float z = Random.Range(entranceBounds.min.z, entranceBounds.max.z);
+        float y = entranceBounds.center.y;
+
+        GameObject instance = Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity);
+        instance.transform.SetParent(TouristParent.transform, true);
 
         SetMaterials(GetMaterials(instance, clothes));
 
@@ -33,8 +42,11 @@ public class TouristFactory : MonoBehaviour
         }
         GetMaterial(instance, "Hair").color = hairColors[Random.Range(0, hairColors.Count)];
 
-        return view;
 
+        TouristView view = instance.GetComponent<TouristView>();
+        TouristModel model = new TouristModel(ID);
+
+        return new Tourist(ID, model, view);
     }
 
     public List<Material> GetMaterials(GameObject prefab, List<string> names)

@@ -11,6 +11,7 @@ public class StructureManager : MonoBehaviour
     [SerializeField] private FeederManager feederManager;
     [SerializeField] private WaterManager waterManager;
     [SerializeField] private RoadManager roadManager;
+    [SerializeField] private FacilityManager facilityManager;
 
     [SerializeField] private List<Structure> activeSelectables = new List<Structure>();
     public Dictionary<int, IPlaceable> IInteractables = new Dictionary<int, IPlaceable>();
@@ -44,6 +45,7 @@ public class StructureManager : MonoBehaviour
             BuildingType.Water => waterManager,
             BuildingType.Feeder => feederManager,
             BuildingType.Road => roadManager,
+            BuildingType.Facility => facilityManager,
             _ => null
         };
     }
@@ -94,12 +96,12 @@ public class StructureManager : MonoBehaviour
         }
     }
 
-    public bool RegisterStructures(BuildingData Data, int ID, IPlaceable view)
+    public bool RegisterStructures(BuildingData Data, int ID, IPlaceable view, Vector2Int nodePosition)
     {
         IStructureManager manager = GetManager(Data.type);
         if (manager.IsUnityNull()) return false;
 
-        Structure newStructure = manager.AddStructure(Data, ID, Vector2Int.zero); // Nem jó az utakhoz
+        Structure newStructure = manager.AddStructure(Data, ID, nodePosition); // Nem jó az utakhoz
         activeSelectables.Add(newStructure);
         view.Init(newStructure);
 
@@ -163,11 +165,26 @@ public interface IPlaceable
     public BuildingData GetData();
 }
 
+// Interfész IHasInteractingPosition
+// Minden view aminél van egy ajtó vagy bármilyen rész amivel az npc interaktálhat
+public interface IHasInteractingPosition
+{
+    public Vector3 GetInteractingPosition();
+}
+
 //Interfész IStageable
-//Minden, aminek változó kinézete vagy mechanizmusa van szinttől eltérően pl: Fa, Parkoló
+//Minden, aminek változó kinézete vagy mechanizmusa van szinttől eltérően pl: Fa
 //A View vagy a Model is megkaphatja, ha View megkapta akkor a Model is
 public interface IStageable
 {
     public float GetStage();
     public void SetStage(float stage);
+}
+
+//Interfész IUpgradeable
+// Minden amit lehet fejleszteni megkapja, a View és Model egyaránt megkapja
+public interface IUpgradeable
+{
+    public void LevelUp();
+    public void LevelDown();
 }
