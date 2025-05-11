@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prize: 500
   eventType: 5
-  state: 1
+  state: 0
   description: Earn 1000 Money
   goal: 1000
   progress: 0
