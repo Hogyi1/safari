@@ -8,17 +8,6 @@ public class MapClickTeleport : MonoBehaviour, IPointerClickHandler
     [SerializeField] private RectTransform mapRect;     // A RawImage RectTransform-ja
     [SerializeField] private GameObject worldMapUI;     // A teljes UI panel (RawImage vagy parent Canvas)
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (worldMapUI != null && worldMapUI.activeSelf)
-            {
-                worldMapUI.SetActive(false);
-            }
-        }
-    }
-
     public void OnPointerClick(PointerEventData eventData)
     {
         Debug.Log("Kattintás történt a térképen.");
