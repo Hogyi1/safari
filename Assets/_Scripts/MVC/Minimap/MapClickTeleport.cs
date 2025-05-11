@@ -26,11 +26,6 @@ public class MapClickTeleport : MonoBehaviour, IPointerClickHandler
         {
             Debug.Log("Teleportálás pozícióra: " + worldPos);
             playerTransform.position = new Vector3(worldPos.x, playerTransform.position.y, worldPos.z);
-
-            if (worldMapUI != null)
-            {
-                worldMapUI.SetActive(false);
-            }
         }
         else
         {
