@@ -2,6 +2,9 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manages the UI elements for a single challenge item, including its description, progress, and reward collection.
+/// </summary>
 public class ChallengeItemUI : MonoBehaviour
 {
     [SerializeField] private TMP_Text descriptionText;
@@ -11,6 +14,10 @@ public class ChallengeItemUI : MonoBehaviour
     [SerializeField] private Image progressBar;
     [SerializeField] private Button collectButton;
 
+    /// <summary>
+    /// Configures the UI to display the provided challenge's data and sets up the collect button.
+    /// </summary>
+    /// <param name="challenge">The challenge data to display.</param>
     public void Setup(Challenge challenge)
     {
         descriptionText.text = challenge.description;

@@ -4,6 +4,7 @@ using UnityEngine.AI;
 using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(NavigatorComponent))]
 public class AnimalView : MonoBehaviour, INavigatable, IInteractable
 {
     // === Állat azonosító és modell ===

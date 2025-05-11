@@ -1,30 +1,30 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// Egyszerű lineáris kongruens generátor (LCG) alapú egyedi ID generátor.
-/// Nem megfelelő kriptográfiai elvárásoknak
-/// https://www.youtube.com/watch?v=LUusa5Mhx_g
+/// Simple linear congruential generator (LCG) for unique ID generation.
+/// Not suitable for cryptographic applications.
 /// </summary>
 public static class IDGenerator
 {
-    // A modulo érték – az ID-k a [0, m) tartományból kerülnek ki.
+    // The modulus value – IDs are generated in the [0, m) range.
     private const int m = 100000;
 
-    // A szorzótényező (LCG paraméter).
+    // The multiplier factor (an LCG parameter).
     private const int a = 321234523;
 
-    // Az eltolás (más néven "increment") szintén egy LCG paraméter.
+    // The increment (another LCG parameter).
     private const int c = 1042341230;
 
-    // A jelenlegi állapot, vagyis az utoljára generált ID. Ez alapján számítjuk a következőt.
+    // The current state, i.e., the last generated ID. The next ID is computed from this.
     private static int seed = 1;
 
-    // Egyszerre csak egy szál férhet hozzá, ne legyen versenyhelyzet
+    // Ensures only one thread can access at a time to prevent race conditions.
     private static readonly object LockObject = new object();
 
     /// <summary>
-    /// Egyedi, 0 és (m-1) közé eső ID generálása.
+    /// Generates a new unique ID in the range [0, m).
     /// </summary>
+    /// <returns>An integer ID.</returns>
     public static int GenerateID()
     {
         lock (LockObject)

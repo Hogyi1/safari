@@ -1,44 +1,75 @@
 using UnityEngine;
 
+/// <summary>
+/// Manages show/hide operations for UI panels in the side menu and action bar.
+/// Integrates with UIStackService to track currently open UI panels.
+/// </summary>
 public class MenuManager : MonoBehaviour
 {
+    /// <summary>
+    /// List of side menu panels that can be toggled.
+    /// </summary>
     [SerializeField] GameObject[] panels;
-    [SerializeField] GameObject[] actionBarPanels; 
- 
+
+    /// <summary>
+    /// List of action bar panels that can be toggled.
+    /// </summary>
+    [SerializeField] GameObject[] actionBarPanels;
+
+    /// <summary>
+    /// Activates the specified menu GameObject.
+    /// </summary>
+    /// <param name="menu">The menu GameObject to show.</param>
     public void ShowMenu(GameObject menu)
     {
-        menu.SetActive(true);
-    }
-
-    public void HideMenu(GameObject menu)
-    {
-        menu.SetActive(false);
+        UIStackService.Push(menu);
     }
 
     /// <summary>
-    /// Disables all panels in panels list, then enables the selected one.
+    /// Deactivates the specified menu GameObject.
     /// </summary>
-    /// <param name="activePanel"></param>
+    /// <param name="menu">The menu GameObject to hide.</param>
+    public void HideMenu(GameObject menu)
+    {
+        if (UIStackService.Peek() == menu)
+        {
+            UIStackService.Pop();
+        }
+        else
+        {
+            menu.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Disables all side menu panels then enables the specified panel.
+    /// </summary>
+    /// <param name="activePanel">The side menu panel to activate.</param>
     public void SideMenuNavigationClick(GameObject activePanel)
     {
         foreach (GameObject panel in panels)
         {
-            panel.SetActive(false);
+            if (UIStackService.Peek() == panel)
+                UIStackService.Pop();
+            else
+                panel.SetActive(false);
         }
-        activePanel.SetActive(true);
+        UIStackService.Push(activePanel);
     }
 
     /// <summary>
-    /// Disables all panels in panels list, then enables the selected one.
+    /// Disables all action bar panels then enables the specified panel.
     /// </summary>
-    /// <param name="activePanel"></param>
+    /// <param name="activePanel">The action bar panel to activate.</param>
     public void ActionBarNavigationClick(GameObject activePanel)
     {
         foreach (GameObject panel in actionBarPanels)
         {
-            panel.SetActive(false);
+            if (UIStackService.Peek() == panel)
+                UIStackService.Pop();
+            else
+                panel.SetActive(false);
         }
-        activePanel.SetActive(true);
+        UIStackService.Push(activePanel);
     }
-
 }

@@ -10,12 +10,13 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
     public static AnimalManager Instance { get; private set; }
 
     // Every Animal
-    public List<Animal> ActiveAnimals = new List<Animal>();
+    private List<Animal> ActiveAnimals = new List<Animal>();
 
     // Factory
     private AnimalFactory factory;
 
-    public AnimalType animalType;
+    // Csak a lerakáshoz kell
+    private AnimalType animalType;
 
     public void Awake()
     {
@@ -54,7 +55,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
     public void StartPlacingAnimal(int animalType)
     {
         this.animalType = (AnimalType)animalType;
-        InputManager.Instance.OnClicked += HandleClick;
+        InputEventChannel.OnClick += HandleClick;
     }
 
     private void HandleClick()
@@ -64,7 +65,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
         if (animalType != AnimalType.None)
             SpawnAnimal(animalType, pos, 5);
 
-        InputManager.Instance.OnClicked -= HandleClick;
+        InputEventChannel.OnClick -= HandleClick;
     }
 
     // Létrehozzuk illetve eltávolítjuk
@@ -73,15 +74,18 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
         int ID = IDGenerator.GenerateID();
         Animal newAnimal = factory.CreateAnimal(type, SpawningLocation, ID, Age);
 
-        ActiveAnimals.Add(newAnimal);
+        if (newAnimal != null)
+            ActiveAnimals.Add(newAnimal);
     }
 
     public void RemoveAnimal(int ID)
     {
         Animal toRemove = ActiveAnimals.Find(t => t.ID == ID);
-        ActiveAnimals.Remove(toRemove);
-
-        Destroy(toRemove.View.gameObject);
+        if (toRemove != null)
+        {
+            ActiveAnimals.Remove(toRemove);
+            Destroy(toRemove.View.gameObject);
+        }
     }
 
     // Kiválaszt egy random állatot aki képes párzani

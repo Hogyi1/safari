@@ -1,22 +1,54 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
+/// <summary>
+/// Handles fade-in and fade-out effects for all child renderers of a GameObject,
+/// either by adjusting material color alpha or a shader's '_AlphaClip' property.
+/// </summary>
 public class FadeEffect : MonoBehaviour
 {
+    /// <summary>
+    /// Cached array of all Renderer components in children to apply fade effect.
+    /// </summary>
     private Renderer[] renderers;
+
+    /// <summary>
+    /// Reference to the currently running fade coroutine.
+    /// </summary>
     private Coroutine fadeRoutine;
 
-    [SerializeField] private float speed = 5f, fadeAmount = 0.65f;
+    /// <summary>
+    /// Speed multiplier controlling how fast the fade occurs.
+    /// </summary>
+    [SerializeField] private float speed = 5f;
+
+    /// <summary>
+    /// Target alpha or clip value to fade to (0 to 1).
+    /// </summary>
+    [SerializeField] private float fadeAmount = 0.65f;
+
+    /// <summary>
+    /// Indicates whether the object is currently faded.
+    /// </summary>
     public bool IsFaded { get; private set; } = false;
+
+    /// <summary>
+    /// When true, uses a shader's '_AlphaClip' property instead of material color alpha.
+    /// </summary>
     [SerializeField] private bool HasShader = false;
 
+    /// <summary>
+    /// Caches all child renderers on awake.
+    /// </summary>
     private void Awake()
     {
         renderers = GetComponentsInChildren<Renderer>();
     }
 
+    /// <summary>
+    /// Fades the object back to full opacity by running the ResetView coroutine.
+    /// </summary>
     public void FadeOut()
     {
         if (fadeRoutine != null) StopCoroutine(fadeRoutine);
@@ -24,6 +56,9 @@ public class FadeEffect : MonoBehaviour
         IsFaded = false;
     }
 
+    /// <summary>
+    /// Fades the object to the configured fadeAmount by running the FadeView coroutine.
+    /// </summary>
     public void FadeIn()
     {
         if (fadeRoutine != null) StopCoroutine(fadeRoutine);
@@ -31,6 +66,11 @@ public class FadeEffect : MonoBehaviour
         IsFaded = true;
     }
 
+    /// <summary>
+    /// Coroutine that reduces materials' transparency or shader clip value to fadeAmount.
+    /// Configures blend settings for transparency when HasShader is false.
+    /// </summary>
+    /// <returns>IEnumerator for coroutine execution.</returns>
     private IEnumerator FadeView()
     {
         List<Material> allMaterials = new List<Material>();
@@ -40,10 +80,11 @@ public class FadeEffect : MonoBehaviour
 
             foreach (var mat in materials)
             {
-
+                if (mat.HasProperty("_NotFadeable")) continue;
 
                 if (!HasShader)
                 {
+                    // Configure material for transparent blending
                     mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
                     mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                     mat.SetInt("_ZWrite", 0);
@@ -98,7 +139,10 @@ public class FadeEffect : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Coroutine that restores materials to full opacity and resets blend settings if HasShader is false.
+    /// </summary>
+    /// <returns>IEnumerator for coroutine execution.</returns>
     private IEnumerator ResetView()
     {
         List<Material> allMaterials = new List<Material>();

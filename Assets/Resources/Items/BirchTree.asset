@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BirchTree
   m_EditorClassIdentifier: 
   id: 1
+  buildingId: 3
   itemName: BirchTree
   price: 100
   category: 1

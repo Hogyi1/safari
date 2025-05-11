@@ -5,9 +5,10 @@ using UnityEngine;
 public class VegetationManager : MonoBehaviour, IStructureManager, IRandomEventObserver
 {
     public static VegetationManager Instance;
-    private List<Vegetation> ActiveVegetations = new List<Vegetation>();
-    private Dictionary<int, VegetationView> ActiveViews = new Dictionary<int, VegetationView>();
+    private List<Vegetation> activeVegetations = new List<Vegetation>();
+    private Dictionary<int, VegetationView> activeViews = new Dictionary<int, VegetationView>();
 
+    public int Count;
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -24,14 +25,19 @@ public class VegetationManager : MonoBehaviour, IStructureManager, IRandomEventO
         RandomEvents.Instance.AddObserver(this);
     }
 
+    void Update()
+    {
+        Count = activeVegetations.Count;
+    }
+
     // Létrehozza a megadott Model réteget és eltárolja
     // Visszaadja a Model-t, hogy a fő manager tudjon vele foglalkozni
-    public Structure AddStructure(BuildingData Data, int ID)
+    public Structure AddStructure(BuildingData Data, int ID, Vector2Int gridPosition)
     {
         Vegetation Vegetation = new Vegetation(Data, ID);
         if (Vegetation == null) throw new Exception("Nem sikerült léterhozni a következőt: Vegetation");
 
-        ActiveVegetations.Add(Vegetation);
+        activeVegetations.Add(Vegetation);
 
         return Vegetation;
     }
@@ -39,19 +45,19 @@ public class VegetationManager : MonoBehaviour, IStructureManager, IRandomEventO
     // Törli a saját referenciáját
     public void RemoveStructure(int ID)
     {
-        Vegetation Vegetation = ActiveVegetations.Find(t => t.GetID() == ID);
+        Vegetation Vegetation = activeVegetations.Find(t => t.GetID() == ID);
         if (Vegetation == null) return;
 
-        ActiveVegetations.Remove(Vegetation);
-        ActiveViews.Remove(ID);
+        activeVegetations.Remove(Vegetation);
+        activeViews.Remove(ID);
     }
 
     // Random mennyiségben megnöveli a növényeket
     private void HandleRegrowEvent()
     {
-        foreach (Vegetation Vegetation in ActiveVegetations)
+        foreach (Vegetation Vegetation in activeVegetations)
         {
-            int RandomAmount = UnityEngine.Random.Range(0, Vegetation.GetMaxCapacity());
+            int RandomAmount = UnityEngine.Random.Range(0, Vegetation.GetMaxCapacity() / 3);
 
             Vegetation.Regrow(RandomAmount);
         }
@@ -65,6 +71,6 @@ public class VegetationManager : MonoBehaviour, IStructureManager, IRandomEventO
     // Beállítja a megfelelő modellhez a nézetet
     public void SetView(IPlaceable view, int ID)
     {
-        ActiveViews[ID] = (VegetationView)view;
+        activeViews[ID] = (VegetationView)view;
     }
 }

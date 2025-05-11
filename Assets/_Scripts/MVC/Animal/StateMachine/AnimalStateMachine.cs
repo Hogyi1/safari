@@ -109,6 +109,9 @@ public class AnimalStateMachine : MonoBehaviour
     public void MarkAsDead()
     {
         animal.View.StopMovementInstantly();
+
+        gameObject.GetComponent<AgentSync>().enabled = false;
+
         if (animal.Group != null) animal.Group.LeaveGroup(animal);
         StartCoroutine(DeathDelay());
     }

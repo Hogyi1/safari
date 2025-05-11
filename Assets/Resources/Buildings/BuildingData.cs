@@ -12,6 +12,7 @@ public class BuildingData : ScriptableObject
     [Tooltip("Szemből nézve, szélesség, mélység/hosszúság")]
     public Vector2Int SpaceTaken;
 
+    public string Name;
 
     /// <summary>
     /// Building specifikus adatok
@@ -28,6 +29,9 @@ public class BuildingData : ScriptableObject
 
     public DietType diet;
 
+    public int level;
+
+    public ManagerType toupgrade;
 
     /// <summary>
     /// Megjelenítendő objektum

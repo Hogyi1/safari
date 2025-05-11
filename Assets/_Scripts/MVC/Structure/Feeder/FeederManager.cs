@@ -25,7 +25,7 @@ public class FeederManager : MonoBehaviour, IStructureManager
 
     // Létrehozza a megadott Model réteget és eltárolja
     // Visszaadja a Model-t, hogy a fő manager tudjon vele foglalkozni
-    public Structure AddStructure(BuildingData Data, int ID)
+    public Structure AddStructure(BuildingData Data, int ID, Vector2Int gridPosition)
     {
         Feeder Feeder = new Feeder(Data, ID);
         if (Feeder == null) throw new Exception("Nem sikerült létrehpzni a következőt: Feeder");

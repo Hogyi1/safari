@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8111252607364778754}
   - component: {fileID: 22908481455398867}
   - component: {fileID: -3546670531482982802}
+  - component: {fileID: -2241104053457391415}
   m_Layer: 8
   m_Name: Cactus_Parent
   m_TagString: Untagged
@@ -47,8 +48,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3185da8e3435b8542851d2a117fed1c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isHovered: 0
-  isActive: 0
 --- !u!114 &-3546670531482982802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,7 +60,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a94389f87ef942046a40d518e788413e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 3
+  speed: 5
+  fadeAmount: 0.65
+  HasShader: 0
+--- !u!208 &-2241104053457391415
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212690234365177027}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &1584386425009635319
 GameObject:
   m_ObjectHideFlags: 0

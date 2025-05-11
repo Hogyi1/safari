@@ -2,15 +2,16 @@
 
 public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceable
 {
-#warning Not final implementation, might change in the future
+    [SerializeField] private BuildingData data;
 
     private Structure MySelectable;
     private bool isActive = false;
+
     // Fade effekt komponens, ami elhalványítja ha rávisszük az egeret
     private FadeEffect fadeEffect;
     private StageEffect stageEffect;
 
-    [SerializeField] private float MyStage = 0f;
+    private float MyStage = 0f;
 
     private void Update()
     {
@@ -18,7 +19,6 @@ public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceab
         {
             SetStage(GetStage());
             MyStage = GetStage();
-            Debug.Log(GetStage());
         }
     }
 
@@ -101,5 +101,10 @@ public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceab
     public Structure GetStructure()
     {
         return MySelectable;
+    }
+
+    public BuildingData GetData()
+    {
+        return data;
     }
 }

@@ -1,5 +1,8 @@
 ﻿
+using System.Collections;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 public class PreviewSystem : MonoBehaviour
@@ -13,7 +16,7 @@ public class PreviewSystem : MonoBehaviour
 
     [SerializeField]
     private Material previewMaterialPrefab;
-    private Material previewMaterialInstance;
+    private static Material previewMaterialInstance;
 
     [SerializeField]
     private GameObject gridVisualization;
@@ -57,7 +60,7 @@ public class PreviewSystem : MonoBehaviour
     {
         gridVisualization.SetActive(true);
         previewObject = Instantiate(prefab);
-        PreparePreview(previewObject);
+        StartCoroutine(PreparePreview(previewObject));
         PrepareCursor(size);
         cellIndicator.SetActive(true);
     }
@@ -71,9 +74,11 @@ public class PreviewSystem : MonoBehaviour
         }
     }
 
-    private void PreparePreview(GameObject previewObject)
+    private IEnumerator PreparePreview(GameObject previewObject)
     {
-        Renderer[] renderers = previewObject.GetComponentsInChildren<Renderer>();
+        yield return new WaitForEndOfFrame();
+        Renderer[] renderers = previewObject.GetComponentsInChildren<Renderer>(true);
+
         foreach (Renderer renderer in renderers)
         {
             Material[] materials = renderer.materials;
@@ -134,12 +139,5 @@ public class PreviewSystem : MonoBehaviour
             position.x,
             position.y + previewYOffset,
             position.z);
-    }
-
-    internal void StartShowingRemovePreview()
-    {
-        cellIndicator.SetActive(true);
-        PrepareCursor(Vector2Int.one);
-        ApplyFeedbackToCursor(false);
     }
 }
