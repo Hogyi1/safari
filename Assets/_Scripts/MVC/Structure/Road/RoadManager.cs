@@ -9,6 +9,7 @@ public class RoadManager : MonoBehaviour, IStructureManager
     // https://en.wikipedia.org/wiki/A*_search_algorithm
 #warning Ezeket mindenképpen be kell állítani, ha meg van, hogy a Griden hol helyezkedik a ki és bejárat
     [SerializeField] private GameObject firstCell;
+    [SerializeField] private GameObject secondCell;
     [SerializeField] private GameObject lastCell;
 
     public static RoadManager Instance;
@@ -19,8 +20,9 @@ public class RoadManager : MonoBehaviour, IStructureManager
     private Dictionary<Vector2Int, Node> Nodes = new Dictionary<Vector2Int, Node>();
     public List<Road> ActiveRoads = new List<Road>();
 
-    private Node StartingNode;
-    private Node DestinationNode;
+    private Node GarageNode;
+    private Node ExitNode;
+    private Node DrivewayNode;
     // Irányok amerre kapcsolódhat két út, ha akarjuk akkor az oldal irányt is belerakhatjuk
     private static readonly List<Vector2Int> directions = new()
     {
@@ -45,10 +47,12 @@ public class RoadManager : MonoBehaviour, IStructureManager
     private void Start()
     {
         Vector2Int garagePos = PlacementManager.Instance.GetRoadCellByPosition(firstCell.transform.position);
+        Vector2Int drivewayPos = PlacementManager.Instance.GetRoadCellByPosition(secondCell.transform.position);
         Vector2Int exitPos = PlacementManager.Instance.GetRoadCellByPosition(lastCell.transform.position);
 
-        StartingNode = AddNode(garagePos, 0);
-        DestinationNode = AddNode(exitPos, 1);
+        GarageNode = AddNode(garagePos, 0);
+        ExitNode = AddNode(exitPos, 1);
+        DrivewayNode = AddNode(drivewayPos, 2);
     }
 
     // Létrehozza a megadott Model réteget és eltárolja
@@ -83,7 +87,7 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
     public List<Vector3> SearchForRandomPath()
     {
-        List<Node> nodes = RandomDFS(StartingNode, DestinationNode);
+        List<Node> nodes = RandomDFS(GarageNode, ExitNode);
 
         if (nodes.Count == 0) { Debug.Log("Nincsen út"); return new(); }
 
@@ -93,7 +97,7 @@ public class RoadManager : MonoBehaviour, IStructureManager
     public List<Vector3> FindNewPath(Vector3 from, bool toExit)
     {
         Node fromNode = Nodes[PlacementManager.Instance.GetRoadCellByPosition(from)];
-        Node dest = toExit ? DestinationNode : StartingNode;
+        Node dest = toExit ? ExitNode : GarageNode;
         List<Node> nodes = AStar(fromNode, dest);
 
         if (nodes.Count == 0) { Debug.Log("Nincsen út"); return new(); }
@@ -103,7 +107,7 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
     public bool SearchForPath()
     {
-        List<Node> nodes = AStar(StartingNode, DestinationNode);
+        List<Node> nodes = AStar(GarageNode, ExitNode);
         return nodes.Count > 0;
     }
 
@@ -114,7 +118,8 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
         foreach (var node in nodes)
         {
-            if (node.NodeID == 0 || node.NodeID == 1) continue;
+            if (node == DrivewayNode) { positions.Add(firstCell.transform.position); continue; }
+            else if (node == ExitNode || node == GarageNode) continue;
             positions.Add(StructureManager.Instance.GetCorrespondingView(node.NodeID).GetGameObject().transform.Find("Middle").position);
         }
 

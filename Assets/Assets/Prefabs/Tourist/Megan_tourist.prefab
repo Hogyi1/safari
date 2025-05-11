@@ -134,7 +134,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 2
   m_BaseOffset: 0
-  m_WalkableMask: 4294967295
+  m_WalkableMask: 8
   m_ObstacleAvoidanceType: 0
 --- !u!114 &4472317481498800714
 MonoBehaviour:
@@ -167,6 +167,9 @@ MonoBehaviour:
   Loco: 0
   isWalking: 0
   arrived: 0
+  waitingmood: 0
+  mood: 0
+  fav: 0
 --- !u!95 &8610505614121844881 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 71f59cf33b6275548be4f143223ed0fe, type: 3}

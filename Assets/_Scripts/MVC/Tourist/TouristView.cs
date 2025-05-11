@@ -28,20 +28,6 @@ public class TouristView : MonoBehaviour, INavigatable
     public static readonly int IsRunning = Animator.StringToHash("IsRunning");
     public static readonly int IsInteracting = Animator.StringToHash("IsInteracting");
 
-    private void Update()
-    {
-        destination = navigator.Agent.destination;
-        hasPath = navigator.Agent.hasPath;
-        Loco = animator.GetFloat(AgentSync.Loco);
-        isWalking = animator.GetBool(IsWalking);
-        arrived = Arrived;
-
-        waitingmood = model.WaitingMood;
-        mood = model.TourMood;
-
-        fav = model.FavouriteAnimalType;
-    }
-
     // Inicializálás
     public void Init(TouristModel model)
     {

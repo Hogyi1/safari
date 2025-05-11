@@ -77,6 +77,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
     /// <param name="vehicleTypeIndex">Index to select vehicle data from factory.</param>
     public void SpawnVehicle(int vehicleTypeIndex)
     {
+        if (capacity <= activeVehicles.Count) return;
         int id = IDGenerator.GenerateID();
 
         Vehicle newVehicle = factory.CreateVehicle(id, vehicleTypeIndex);

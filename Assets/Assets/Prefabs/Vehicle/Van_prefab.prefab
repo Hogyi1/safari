@@ -126,6 +126,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5e84beea871ba8141828ab6ac98c9edf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3338868577552366165}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5e84beea871ba8141828ab6ac98c9edf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4128666377956774278}
   m_SourcePrefab: {fileID: 100100000, guid: 5e84beea871ba8141828ab6ac98c9edf, type: 3}
 --- !u!4 &7205222421715133118 stripped
 Transform:
@@ -151,7 +154,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0.1
+  m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 0
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -171,6 +174,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3268a0d9901362849a42a79962050234, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  navigator: {fileID: 0}
+  door: {fileID: 0}
+  animalLayermask:
+    serializedVersion: 2
+    m_Bits: 0
+  animalsInView: 
+  waitingTime: 0
+  state: 0
+  tourstIDS: 
 --- !u!95 &2861024783597559113
 Animator:
   serializedVersion: 7
@@ -209,3 +221,15 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &4128666377956774278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7545155770517747716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97290119a5e3fd24193218600972c8e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -31,14 +31,14 @@ public class AgentSync : MonoBehaviour
     private void OnAnimatorMove()
     {
         Vector3 rootPos = Animator.rootPosition;
-        rootPos.y = Agent.nextPosition.y;
+        rootPos.y = Mathf.Max(Agent.nextPosition.y, Terrain.activeTerrain.SampleHeight(transform.position));
         transform.position = rootPos;
         Agent.nextPosition = rootPos;
     }
 
     private void FixedUpdate()
     {
-        if (Agent.enabled && Agent.hasPath)
+        if (Agent.enabled)
             UpdateAnimatorParameters();
         else
         {

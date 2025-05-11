@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(TerrainController))]
 [RequireComponent(typeof(PreviewSystem))]
@@ -20,6 +21,9 @@ public class PlacementManager : MonoBehaviour
     [SerializeField] private NavMeshSurface terrainNavMesh;
     [SerializeField] private Grid normalGrid;
     [SerializeField] private Grid roadGrid;
+    [SerializeField] private GameObject preplacedStructures;
+    [SerializeField] private GameObject preplacedObjects;
+    [SerializeField] private GameObject structureParent;
 
     private Grid activeGrid;
     private Vector3Int LastDetectedPosition = Vector3Int.zero;
@@ -52,6 +56,7 @@ public class PlacementManager : MonoBehaviour
         previewSystem = GetComponent<PreviewSystem>();
 
         LoadPreplacedStructures();
+        LoadPreplacedObjects();
         StopPlacement();
     }
 
@@ -124,6 +129,7 @@ public class PlacementManager : MonoBehaviour
     {
         OnPlace?.Invoke();
         GameObject newStructureGO = Instantiate(Data.BuildingPrefab, position, Quaternion.identity);
+        newStructureGO.transform.SetParent(structureParent.transform, true);
         IPlaceable view = newStructureGO.GetComponent<IPlaceable>();
         view.Init(newStructure);
 
@@ -178,19 +184,27 @@ public class PlacementManager : MonoBehaviour
 
     private void LoadPreplacedStructures()
     {
-        GameObject preplacedParent = GameObject.Find("PreplacedStructures");
         bool success = true;
-        foreach (IPlaceable placeable in preplacedParent.GetComponentsInChildren<IPlaceable>())
+        foreach (IPlaceable placeable in preplacedStructures.GetComponentsInChildren<IPlaceable>())
         {
             BuildingData data = placeable.GetData();
             int iD = IDGenerator.GenerateID();
 
-            // Ha ut akkor a roadgridrol a middle-től az 1x1-re valtas
-
             Vector3 worldPosition = placeable.GetGameObject().transform.position;
             Vector3Int gridPosition = normalGrid.WorldToCell(worldPosition);
-            Vector3Int roadPosition = roadGrid.WorldToCell(worldPosition);
             Vector2Int mapPosition = new Vector2Int(gridPosition.x, gridPosition.z);
+            Vector3Int roadPosition = Vector3Int.zero;
+
+            // EZ kibaszott felesleges ha már van rajta épület
+            if (data.type == BuildingType.Road)
+            {
+                Vector3 middle = placeable.GetGameObject().transform.Find("Middle").position; // közepe hogy benn legyen pont a 6x6ban
+                roadPosition = roadGrid.WorldToCell(middle); // 6x6 helye
+                Vector3 normalPosition = roadGrid.CellToWorld(roadPosition); // sarka az 1x1-nek world pos
+                Vector3Int newGridPosition = normalGrid.WorldToCell(normalPosition); // cell pos az 1x1-ben
+                mapPosition = new Vector2Int(newGridPosition.x, newGridPosition.z);
+            }
+
             Vector2Int nodePosition = new Vector2Int(roadPosition.x, roadPosition.z); // Csak azért, hogyha később az utakat is betöltjük
 
             MapData.AddObjectAt(mapPosition, data.SpaceTaken, data.BuildingID, iD);
@@ -201,6 +215,40 @@ public class PlacementManager : MonoBehaviour
         string msg = success
             ? "The structures were loaded successfully."
             : "An error occurred while loading the structures.";
+        GameEvents.Instance.RequestAlert(success, msg, displayTime: 5f);
+    }
+
+    private void LoadPreplacedObjects()
+    {
+        bool success = true;
+        foreach (Transform child in preplacedObjects.transform)
+        {
+            GameObject go = child.gameObject;
+            Bounds bounds = go.GetComponent<Renderer>().bounds;
+
+            Vector3 min = bounds.min;
+            Vector3 max = bounds.max;
+
+            Vector3Int leftDownCorner = normalGrid.WorldToCell(min);
+            Vector3Int rightUpperCorner = normalGrid.WorldToCell(max);
+
+            Vector3Int difference = rightUpperCorner - leftDownCorner;
+            Vector2Int spaceTaken = new Vector2Int(difference.x, difference.z);
+            Vector2Int mapPosition = new Vector2Int(leftDownCorner.x, leftDownCorner.z);
+
+            try
+            {
+                MapData.AddObjectAt(mapPosition, spaceTaken, -999, -999);
+            }
+            catch (Exception e)
+            {
+                success = false;
+            }
+        }
+
+        string msg = success
+            ? "The objects were loaded successfully."
+            : "An error occurred while loading the objects.";
         GameEvents.Instance.RequestAlert(success, msg, displayTime: 5f);
     }
 }

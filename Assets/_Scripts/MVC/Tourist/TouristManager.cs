@@ -42,8 +42,6 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
 
     public void SpawnTourist()
     {
-        if (activeTourists.Count > 0) return;
-
         int ID = IDGenerator.GenerateID();
         Tourist newTourist = factory.CreateTourist(ID);
 

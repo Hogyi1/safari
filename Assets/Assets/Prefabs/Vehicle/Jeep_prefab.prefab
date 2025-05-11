@@ -151,7 +151,7 @@ NavMeshAgent:
   m_Acceleration: 15
   avoidancePriority: 50
   m_AngularSpeed: 180
-  m_StoppingDistance: 0.1
+  m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 0
   m_AutoBraking: 0
   m_AutoRepath: 1
@@ -177,6 +177,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8192
   animalsInView: 
+  waitingTime: 0
+  state: 0
+  tourstIDS: 
 --- !u!114 &2501493094259350293
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,6 +1,4 @@
-using NUnit.Framework;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class BodySolver : MonoBehaviour
@@ -17,7 +15,7 @@ public class BodySolver : MonoBehaviour
 
     private void Start()
     {
-        terrain = GameObject.FindGameObjectWithTag("Terrain").GetComponent<Terrain>();
+        terrain = Terrain.activeTerrain;
         allHitNormals = new Vector3[RayOrigins.Count];
         allHitPos = new Vector3[RayOrigins.Count];
     }

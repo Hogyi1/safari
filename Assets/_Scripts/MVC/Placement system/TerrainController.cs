@@ -233,7 +233,13 @@ public class TerrainController : MonoBehaviour
         int depth = Mathf.CeilToInt((offsetDepth / terrainSize.z) * res); // - Z
 
         // Az eredeti heightmap
-        float[,] originalHeightMap = terrainData.GetHeights(xStart, zStart, depth, width);
+        float[,] originalHeightMap = new float[width, depth];
+
+        try
+        {
+            originalHeightMap = terrainData.GetHeights(xStart, zStart, width, depth);
+        }
+        catch (Exception e) { Debug.LogWarning("Can't access terrain heights"); return; }
 
         // A kulcs, xStart, zStart és a StructureIndex-ből áll
         Vector3Int SaveKey = new Vector3Int(xStart, zStart, index);

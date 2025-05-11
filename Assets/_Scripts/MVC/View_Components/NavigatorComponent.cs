@@ -78,6 +78,7 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
     /// </summary>
     public void ResetMovement()
     {
+        if (!agent.enabled) return;
         agent.isStopped = false;
     }
 

@@ -37,12 +37,13 @@ public class Group
         State = state;
         waterSources = new HashSet<Vector3>();
         foodSources = new HashSet<Vector3>();
+
+        UpdateCircle();
         foreach (var member in members)
         {
             member.SetGroup(this);
             member.Brain.ReenterState();
         }
-
         InitializeSources();
     }
 
