@@ -16,4 +16,4 @@ MonoBehaviour:
   expRequired: 30
   unlockChallenges:
   - Place 5 Trees
-  unlockItemIds: 
+  unlockItemIds: 01000000
