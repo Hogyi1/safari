@@ -6,8 +6,8 @@ public class MinimapFollow : MonoBehaviour
     [SerializeField] private float height = 50f;
 
     // → Két új Inspector-paraméter, amikkel X és Z irányban tolod a kamerát
-    [SerializeField] private float offsetX = -20f;
-    [SerializeField] private float offsetZ = -20f;
+    [SerializeField] private float offsetX = 0;
+    [SerializeField] private float offsetZ = 0;
 
     private void LateUpdate()
     {

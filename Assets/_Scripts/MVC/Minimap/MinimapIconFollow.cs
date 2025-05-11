@@ -3,20 +3,16 @@
 public class MinimapIconFollow : MonoBehaviour
 {
     [SerializeField] private Transform target;
-    [SerializeField] private float height = 0;
-
-    // → Két új Inspector-paraméter, amikkel X és Z irányban tolod a kamerát
-    [SerializeField] private float offsetX = 0;
-    [SerializeField] private float offsetZ  = 0;
+    [SerializeField] private float height;
 
     private void LateUpdate()
     {
-        if (target == null) return;
         Vector3 newPos = new Vector3(
-            target.position.x + offsetX,
+            target.position.x,
             height,
-            target.position.z + offsetZ
+            target.position.z
         );
         transform.position = newPos;
+        transform.rotation = Quaternion.Euler(90f, target.eulerAngles.y + 270f, 0f);
     }
 }
