@@ -1,49 +1,36 @@
-﻿using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static VehicleState;
 
 /// <summary>
-/// Manages vehicle lifecycle: spawning, assignment of tourists, tours, and cleanup.
-/// Implements a singleton pattern for global access.
+/// Controls the lifecycle and routing of vehicles, assigns tourists to vehicles,
+/// and manages tour start and finish in an MVC architecture.
 /// </summary>
-public class VehicleManager : MonoBehaviour
+[RequireComponent(typeof(VehicleFactory))]
+public class VehicleManager : MonoBehaviour, IUpgradeable
 {
-    /// <summary>
-    /// Database of all available VehicleData assets loaded from Resources.
-    /// </summary>
-    [SerializeField]
-    public static List<VehicleData> vehicleDatabase = new List<VehicleData>();
-
-    /// <summary>
-    /// List of active Vehicle models currently in the simulation.
-    /// </summary>
-    private List<Vehicle> activeVehicles = new List<Vehicle>();
-
-    /// <summary>
-    /// Mapping from vehicle ID to its VehicleView instance.
-    /// </summary>
-    private Dictionary<int, VehicleView> vehicleViews = new Dictionary<int, VehicleView>();
-
-    /// <summary>
-    /// Maximum real-time seconds a vehicle will wait for passengers.
-    /// </summary>
-    [SerializeField]
-    private readonly float MAX_WAITING_TIME = 15f;
-
-    /// <summary>
-    /// Maximum number of vehicles allowed simultaneously.
-    /// </summary>
-    public int capacity = 5;
-
     /// <summary>
     /// Singleton instance of the VehicleManager.
     /// </summary>
     public static VehicleManager Instance { get; private set; }
 
-    /// <summary>
-    /// Ensures a single instance and persists across scene loads.
-    /// </summary>
-    public void Awake()
+    [SerializeField] private VehicleFactory factory;
+
+    [Tooltip("Which manager type is mine")]
+    [SerializeField] private ManagerType myType = ManagerType.Vehicle;
+    [Tooltip("The position, where the vehicles should return to")]
+    [SerializeField] private GameObject garage;
+    [Tooltip("Maximum waiting time per vehicle in seconds")]
+    [SerializeField] private const float maxWaitingTime = 15f;
+    [Tooltip("The amount of an upgrade session")]
+    [SerializeField] private const int upgradeAmount = 2;
+
+
+    private List<Vehicle> activeVehicles = new List<Vehicle>();
+    private int capacity = 5;
+    private void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -55,185 +42,218 @@ public class VehicleManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    /// <summary>
-    /// Loads the vehicle database and spawns an initial Jeep on start.
-    /// </summary>
-    void Start()
+    private void Start()
     {
-        LoadAllVehicles();
-        SpawnVehicle(VehicleType.Jeep);
+        RoadManager.Instance.OnRoadRemoved += HandleRedirect;
     }
 
-    /// <summary>
-    /// Updates vehicle states each frame, handling tours, waiting, and completion.
-    /// </summary>
-    void Update()
+    private void Update()
     {
+        float delta = Time.deltaTime;
+
         foreach (var vehicle in activeVehicles)
         {
-            float delta = Time.deltaTime;
-
-            switch (vehicle.GetState())
+            switch (vehicle.Model.State)
             {
-                case VehicleState.On_tour:
-                    // This may not be the most efficient approach; the Tourists themselves could
-                    // potentially check the vehicle’s current position instead
-                    vehicle.UpdateTouristPosition(vehicleViews[vehicle.GetID()].transform.position);
+                case Full:
+                    StartTour(vehicle.ID);
                     break;
-                case VehicleState.Full:
-                    StartTour(vehicle.GetID());
+                case Finished:
+                    FinishTour(vehicle.ID);
                     break;
-                case VehicleState.Finished:
-                    FinishTour(vehicle.GetID());
+                case Waiting:
+                    vehicle.Model.AddWaitingTime(delta);
+                    if (vehicle.Model.WaitingTime >= maxWaitingTime) StartTour(vehicle.ID);
                     break;
-                case VehicleState.Waiting:
-                    vehicle.AddWaitingTime(delta);
-                    if (vehicle.WaitingTime >= MAX_WAITING_TIME) StartTour(vehicle.GetID());
+                default:
                     break;
             }
         }
     }
 
     /// <summary>
-    /// Spawns a new vehicle of the specified type and initializes its view.
+    /// Spawns a new vehicle at a parking spot and registers it.
     /// </summary>
-    /// <param name="Type">Type of vehicle to instantiate.</param>
-    public void SpawnVehicle(VehicleType Type)
+    /// <param name="vehicleTypeIndex">Index to select vehicle data from factory.</param>
+    public void SpawnVehicle(int vehicleTypeIndex)
     {
-        var selectedData = vehicleDatabase.Find(t => t.type == Type);
-        Vehicle newVehicle = new Vehicle(IDGenerator.GenerateID(), selectedData);
-        activeVehicles.Add(newVehicle);
-        GameObject newVehicleGO = Instantiate(selectedData.vehiclePrefab, AssignVehicleToParkingSpot(), Quaternion.identity);
-        VehicleView view = newVehicleGO.GetComponent<VehicleView>();
-        view.Init(newVehicle);
-        vehicleViews[newVehicle.GetID()] = view;
+        if (capacity <= activeVehicles.Count) return;
+        int id = IDGenerator.GenerateID();
+
+        Vehicle newVehicle = factory.CreateVehicle(id, vehicleTypeIndex);
+        if (newVehicle != null)
+            activeVehicles.Add(newVehicle);
     }
 
     /// <summary>
-    /// Removes a vehicle and its view by ID.
+    /// Removes a vehicle by ID, destroying its view GameObject if present.
     /// </summary>
-    /// <param name="vehicleID">ID of the vehicle to remove.</param>
-    public void RemoveVehicle(int vehicleID)
+    /// <param name="id">Unique identifier of the vehicle to remove.</param>
+    public void RemoveVehicle(int id)
     {
-        Vehicle vehicle = activeVehicles.Find(t => t.GetID() == vehicleID);
-        if (vehicle != null)
-        {
-            activeVehicles.Remove(vehicle);
-        }
+        var toRemove = activeVehicles.Find(v => v.ID == id);
 
-        if (vehicleViews.TryGetValue(vehicleID, out VehicleView view))
+        if (toRemove != null)
         {
-            vehicleViews.Remove(vehicleID);
-            Destroy(view.gameObject);
-            Destroy(view);
+            activeVehicles.Remove(toRemove);
+
+            if (toRemove.View != null)
+                Destroy(toRemove.View.gameObject);
         }
     }
 
     /// <summary>
-    /// Assigns a tourist to the first available vehicle and returns its door position.
+    /// Attempts to assign a tourist to an available vehicle.
+    /// Returns the door position if successful, otherwise zero vector.
     /// </summary>
     /// <param name="tourist">Tourist to assign.</param>
-    /// <returns>Door position for pickup, or null if none available.</returns>
-    public Vector3? AssignTouristToVehicle(Tourist tourist)
+    /// <returns>Door position of the assigned vehicle or Vector3.zero.</returns>
+    public int AssignTouristToVehicle(int touristID)
     {
-        if (FindRoute().IsUnityNull()) return null;
-        var filteredVehicles = activeVehicles.FindAll(t => t.GetState() != VehicleState.On_tour && t.GetState() != VehicleState.Finished && t.GetState() != VehicleState.Busy);
+        if (!RoadManager.Instance.HasRoute)
+            return -1;
 
-        foreach (var vehicle in filteredVehicles)
+        var available = activeVehicles
+            .Where(v => v.Model.State == Empty || v.Model.State == Waiting)
+            .ToList();
+
+        foreach (var vehicle in available)
         {
-            if (vehicle.AddPassenger(tourist))
-            {
-                var view = vehicleViews[vehicle.GetID()];
-                return view.GetDoorPosition();
-            }
+            if (vehicle.Model.AddPassenger(touristID))
+                return vehicle.ID;
         }
 
-        return null;
+        return -1;
     }
 
     /// <summary>
-    /// Returns a parking spot position for vehicles when idle.
+    /// Determines the parking spot position for spawning vehicles.
     /// </summary>
-    /// <returns>World position of the parking spot.</returns>
-    public Vector3 AssignVehicleToParkingSpot()
+    public Vector3 GetParkingSpot()
     {
-        // TODO: Implement the Map/ParkingManager here later
-        return new Vector3(39f, 1.05f, 8.0f);
-    }
-
-    /// <summary>
-    /// Finds a path through the scene using RoadManager.
-    /// </summary>
-    /// <returns>Array of waypoint positions, or null if none found.</returns>
-    public Vector3[] FindRoute()
-    {
-        List<Vector3> path = RoadManager.Instance.SearchForPath();
-        if (path.Count == 0) return null;
-        return path.ToArray();
-    }
-
-    /// <summary>
-    /// Starts the tour for a vehicle if all passengers have boarded.
-    /// </summary>
-    /// <param name="ID">ID of the vehicle starting its tour.</param>
-    public void StartTour(int ID)
-    {
-        var vehicle = activeVehicles.Find(t => t.GetID() == ID);
-        var view = vehicleViews[vehicle.GetID()];
-        if (vehicle != null && view != null && vehicle.AllPassengersArrived())
+        Vector3 pos;
+        try
         {
-            vehicle.State = VehicleState.On_tour;
-
-            vehicle.SetTouristState(TouristState.On_tour);
-
-            var WayPoints = FindRoute();
-
-            view.MoveOnRoute(WayPoints);
-
+            pos = garage.transform.Find("Garage").position;
         }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("Nincsen beállítva Garage az alap beállításokat fogom használni");
+            pos = garage.GetComponent<Renderer>().bounds.center;
+        }
+        return pos;
     }
 
     /// <summary>
-    /// Completes the tour, returns vehicle to parking, and clears its passengers.
+    /// Finds a random route via the RoadManager.
     /// </summary>
-    /// <param name="ID">ID of the vehicle finishing its tour.</param>
-    public void FinishTour(int ID)
+    private List<Vector3> FindRoute()
     {
-        var vehicle = activeVehicles.Find(t => t.GetID() == ID);
-        var view = vehicleViews[vehicle.GetID()];
-        if (vehicle != null && view != null)
+        return RoadManager.Instance.SearchForRandomPath();
+    }
+
+    /// <summary>
+    /// Checks if all passengers of a vehicle have arrived by querying TouristManager.
+    /// </summary>
+    private bool AllPassengersArrived(Vehicle vehicle)
+    {
+        return !vehicle.Model.AssignedTouristIDs
+            .Any(id => TouristManager.Instance.GetTouristState(id) == TouristState.Walking);
+    }
+
+    /// <summary>
+    /// Starts the tour for a vehicle if all passengers have arrived.
+    /// </summary>
+    /// <param name="id">Vehicle ID to start tour.</param>
+    private void StartTour(int id)
+    {
+        var vehicle = activeVehicles.Find(v => v.ID == id);
+
+        if (vehicle != null && AllPassengersArrived(vehicle))
         {
-            vehicle.SetTouristState(TouristState.Finished);
+            vehicle.Model.State = On_tour;
+            vehicle.Model.AssignedTouristIDs
+                .ForEach(tid => TouristManager.Instance.SetTouristState(tid, TouristState.On_tour));
 
-            vehicle.State = VehicleState.Busy;
-
-            view.MoveTo(AssignVehicleToParkingSpot());
-
-            vehicle.ClearPassengers();
-
+            vehicle.View.gameObject.SetActive(true);
+            vehicle.View.MoveOnRoute(FindRoute(), Finished);
         }
     }
 
     /// <summary>
-    /// Adjusts the maximum vehicle capacity by a specified amount.
+    /// Finishes the tour for a vehicle, resets passenger states, and returns it to parking.
     /// </summary>
-    /// <param name="amount">Change in capacity (positive or negative).</param>
-    public void UpdateCapacity(int amount)
+    /// <param name="id">Vehicle ID to finish tour.</param>
+    private void FinishTour(int id)
     {
-        capacity += amount;
+        var vehicle = activeVehicles.Find(v => v.ID == id);
+
+        if (vehicle != null)
+        {
+            vehicle.Model.AssignedTouristIDs
+                .ForEach(tid => TouristManager.Instance.SetTouristState(tid, TouristState.Finished));
+
+            List<Vector3> backRoute = RoadManager.Instance.FindNewPath(vehicle.View.transform.position, false);
+            if (backRoute.Count == 0) vehicle.View.ResetVehicle();
+            else vehicle.View.MoveOnRoute(backRoute, Empty);
+
+            vehicle.Model.State = Busy;
+            vehicle.Model.ClearPassengers();
+        }
     }
 
-    /// <summary>
-    /// Loads all VehicleData ScriptableObjects from the Resources/Vehicles folder.
-    /// </summary>
-    private void LoadAllVehicles()
+    public void SetVehicleState(int iD, VehicleState newState)
     {
-        vehicleDatabase = new List<VehicleData>(Resources.LoadAll<VehicleData>("Vehicles"));
+        activeVehicles.Find(t => t.ID == iD).Model.State = newState;
     }
+
+    private void HandleRedirect()
+    {
+        Debug.Log("Redirecting rn");
+        var vehiclesOnTour = activeVehicles.FindAll(t => t.Model.State == On_tour || t.Model.State == Busy);
+
+        foreach (var vehicle in vehiclesOnTour)
+        {
+            bool toExit = vehicle.Model.State == On_tour;
+            Debug.Log("ToExit? " + toExit);
+            List<Vector3> newPath = RoadManager.Instance.FindNewPath(vehicle.View.transform.position, toExit);
+            vehicle.View.StopAllCoroutines();
+            Debug.Log("current state " + vehicle.Model.State);
+            Debug.Log("do i have a path " + (newPath.Count != 0));
+
+            if (newPath.Count == 0 && toExit) vehicle.Model.State = Finished;
+            else if (newPath.Count == 0 && !toExit) vehicle.View.ResetVehicle();
+            else if (toExit) vehicle.View.MoveOnRoute(newPath, Finished);
+            else vehicle.View.MoveOnRoute(newPath, Empty);
+        }
+    }
+
+    public List<AnimalType> GetAnimalsInSight(int vehicleID)
+    {
+        return activeVehicles.Find(t => t.ID == vehicleID).View.animalsInView;
+    }
+
+    public Vector3 GetGaragePosition(int ID)
+    {
+        return FacilityManager.Instance.GetInteractingPosition(myType);
+    }
+
+    public void LevelUp()
+    {
+        capacity += upgradeAmount;
+    }
+
+    public void LevelDown()
+    {
+        capacity -= upgradeAmount;
+    }
+
+    public int MaxCapacity => capacity;
+    public int Capacity => activeVehicles.Count;
 }
 
 /// <summary>
-/// Enumeration of possible states a vehicle can be in during its lifecycle.
+/// Enumerates possible states of a vehicle's lifecycle.
 /// </summary>
 public enum VehicleState
 {

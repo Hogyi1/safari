@@ -19,7 +19,6 @@ public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceab
         {
             SetStage(GetStage());
             MyStage = GetStage();
-            Debug.Log(GetStage());
         }
     }
 
