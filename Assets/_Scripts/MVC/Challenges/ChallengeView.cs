@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using System.Collections;
 
 /// <summary>
 /// Manages the visual list of challenges and updates it in response to game events.
@@ -64,6 +65,12 @@ public class ChallengeView : MonoBehaviour, IChallengeObserver
     /// </summary>
     public void RefreshChallengeList()
     {
+        if (ChallengeManager.Instance == null)
+        {
+            Debug.LogWarning("ChallengeManager is not ready. Skipping RefreshChallengeList.");
+            return;
+        }
+
         foreach (Transform child in challengeContainer)
         {
             Destroy(child.gameObject);
