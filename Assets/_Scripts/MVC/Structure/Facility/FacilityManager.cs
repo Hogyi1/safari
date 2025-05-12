@@ -9,6 +9,7 @@ public class FacilityManager : MonoBehaviour, IStructureManager
     private Dictionary<int, FacilityView> activeViews = new Dictionary<int, FacilityView>();
 
     [SerializeField] private int garageUpgradeAmount = 2;
+    [SerializeField] private int rangerUpgradeAmount = 1;
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -30,6 +31,9 @@ public class FacilityManager : MonoBehaviour, IStructureManager
         {
             case ManagerType.Vehicle:
                 facility = new Parking(Data, ID);
+                break;
+            case ManagerType.Ranger:
+                facility = new RangerHouse(Data, ID);
                 break;
             default:
                 break;
@@ -75,6 +79,9 @@ public class FacilityManager : MonoBehaviour, IStructureManager
                 VehicleManager.Instance.LevelUp(garageUpgradeAmount);
                 break;
             case ManagerType.Ranger:
+                upgrade.LevelUp(rangerUpgradeAmount);
+                activeViews[ID].LevelUp(0);
+                RangerManager.Instance.LevelUp(rangerUpgradeAmount);
                 break;
         }
 
