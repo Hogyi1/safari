@@ -49,13 +49,13 @@ public class InventoryManager : MonoBehaviour
     void Start()
     {
         if (inventory == null) inventory = new Inventory();
-        inventoryView.GenerateInventoryUI(inventory.items);
+        inventoryView.GenerateInventoryUI(inventory.Items);
     }
 
     /// <summary>
     /// Displays the entire inventory in the UI without filtering.
     /// </summary>
-    public void FilterAll() => inventoryView.GenerateInventoryUI(inventory.items);
+    public void FilterAll() => inventoryView.GenerateInventoryUI(inventory.Items);
 
     /// <summary>
     /// Filters inventory items by category and updates the UI.
@@ -66,7 +66,7 @@ public class InventoryManager : MonoBehaviour
         inventoryView.CleanUp();
         Category category = (Category)categoryIndex;
 
-        var filtered = inventory.items
+        var filtered = inventory.Items
             .Where(entry => entry.Key.Category == category)
             .ToDictionary(entry => entry.Key, entry => entry.Value);
 
@@ -118,7 +118,7 @@ public class InventoryManager : MonoBehaviour
         manager.OnStopped -= StopPlacement;
         manager.OnPlaced -= PlaceItem;
 
-        inventoryView.GenerateInventoryUI(inventory.items);
+        inventoryView.GenerateInventoryUI(inventory.Items);
         inventoryView.gameObject.SetActive(true);
     }
 
@@ -129,7 +129,7 @@ public class InventoryManager : MonoBehaviour
     public void PlaceItem()
     {
         inventory.RemoveItem(currentItem);
-        inventoryView.GenerateInventoryUI(inventory.items);
+        inventoryView.GenerateInventoryUI(inventory.Items);
 
         IPlaceableManager manager = GetManager(currentItem);
 
@@ -151,7 +151,7 @@ public class InventoryManager : MonoBehaviour
 
         inventory.DecreaseItemCountOrRemove(item);
         EconomyManager.Instance.AddMoney(item.CalculateSellingPrice());
-        inventoryView.GenerateInventoryUI(inventory.items);
+        inventoryView.GenerateInventoryUI(inventory.Items);
 
         if (inventory.HasItem(item))
         {

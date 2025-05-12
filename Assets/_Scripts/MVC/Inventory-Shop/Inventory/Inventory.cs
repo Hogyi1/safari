@@ -12,6 +12,11 @@ public class Inventory
     private Dictionary<Item, int> items;
 
     /// <summary>
+    /// Public getter of items.
+    /// </summary>
+    public Dictionary<Item, int> Items => items;
+
+    /// <summary>
     /// Creates an empty inventory.
     /// </summary>
     public Inventory()
