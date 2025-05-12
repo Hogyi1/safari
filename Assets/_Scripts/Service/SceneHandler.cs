@@ -32,6 +32,6 @@ public class SceneHandler : MonoBehaviour
     /// <param name="name">Name of the scene to load.</param>
     public void LoadGameScene(string name)
     {
-        SceneManager.LoadScene(name);
+        SceneLoadManager.LoadScene(name);
     }
 }
