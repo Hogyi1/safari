@@ -26,7 +26,7 @@ public class HuntingState : AnimalBaseState
         // Kinyírjuk az állatot
         context.KillAnimal(prey);
         context.animal.Model.IsConsuming = true;
-        eatTimer = 0f;
+        eatTimer = EatingInterval;
     }
 
 

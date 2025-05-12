@@ -112,6 +112,13 @@ public class AnimalStateMachine : MonoBehaviour
 
         gameObject.GetComponent<AgentSync>().enabled = false;
 
+        MonoBehaviour[] allBehaviours = gameObject.GetComponentsInChildren<MonoBehaviour>(true);
+        foreach (var behaviour in allBehaviours)
+        {
+            if (behaviour != this)
+                behaviour.enabled = false;
+        }
+
         if (animal.Group != null) animal.Group.LeaveGroup(animal);
         StartCoroutine(DeathDelay());
     }
