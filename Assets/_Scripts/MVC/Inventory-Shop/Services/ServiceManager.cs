@@ -11,7 +11,7 @@ public class ServiceManager : MonoBehaviour
 
     void Start()
     {
-        items = ItemManager.Instance.getItems();
+        items = null;//ItemManager.Instance.GetItems();
         serviceView.GenerateServiceItems(items);
     }
 
@@ -23,7 +23,7 @@ public class ServiceManager : MonoBehaviour
             return;
         }
         Instance = this;
-        
+
     }
 
     public void ShowItemDetails(Item item)

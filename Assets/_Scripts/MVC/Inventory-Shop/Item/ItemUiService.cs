@@ -12,8 +12,8 @@ public class ItemUiService : MonoBehaviour
 
     public void SetItemData(Item item)
     {
-        this.text.text = item.itemName;
-        itemImage.sprite = item.imagePath;
+        this.text.text = item.ItemName;
+        itemImage.sprite = item.Image;
         ItemButton.onClick.RemoveAllListeners();
         ItemButton.onClick.AddListener(() =>
         {
