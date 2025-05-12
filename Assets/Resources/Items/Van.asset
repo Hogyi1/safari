@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c7d6274d742c4e4b8e8004aa87cbc6e, type: 3}
-  m_Name: Cow
+  m_Name: Van
   m_EditorClassIdentifier: 
-  id: 5
-  buildingId: 0
-  itemName: Cow
-  price: 10
-  category: 2
-  state: 1
-  imagePath: {fileID: 0}
+  ID: 12
+  ItemName: Van
+  Category: 3
+  LockState: 1
+  Image: {fileID: 21300000, guid: 5778cf5d15c26d34b92f42e93babfe83, type: 3}
+  ItemData: {fileID: 11400000, guid: 70757d615c498ea4dbafd2f87cbf8214, type: 2}

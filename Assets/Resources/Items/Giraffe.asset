@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c7d6274d742c4e4b8e8004aa87cbc6e, type: 3}
-  m_Name: Car
+  m_Name: Giraffe
   m_EditorClassIdentifier: 
-  id: 0
-  buildingId: 1
-  itemName: Car
-  price: 100
-  category: 3
-  state: 1
-  imagePath: {fileID: 0}
+  ID: 3
+  ItemName: Giraffe
+  Category: 2
+  LockState: 1
+  Image: {fileID: 21300000, guid: 39bcef1fc49787844a9768bb6617f464, type: 3}
+  ItemData: {fileID: 11400000, guid: f9f3b576b412a824aae800864aecbf88, type: 2}
+  Placeable: 1

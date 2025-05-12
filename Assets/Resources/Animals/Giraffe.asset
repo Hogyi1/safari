@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 510fbff66f1ebac4bbdcc1b3d5fd3541, type: 3}
-  m_Name: Tiger2
+  m_Name: Giraffe
   m_EditorClassIdentifier: 
-  MaxAge: 13
+  MaxAge: 20
   Diet: 1
   Type: 3
-  Speed: 1
-  animalID: 1
+  Speed: 2
+  AnimalID: 1
+  Price: 650
   AnimalPrefab: {fileID: 7794872704550605394, guid: fbd80a6f5bda93446b4a66744798ea91, type: 3}

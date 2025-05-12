@@ -16,8 +16,11 @@ MonoBehaviour:
   SpaceTaken: {x: 3, y: 3}
   Name: Big chestnut tree
   Price: 0
+  BuyingPrice: 200
   Capacity: 20
-  type: 0
-  icon: {fileID: 21300000, guid: 97e5265ed1b1865448e683b042fbfbd0, type: 3}
-  diet: 1
+  Type: 0
+  Icon: {fileID: 21300000, guid: 97e5265ed1b1865448e683b042fbfbd0, type: 3}
+  Diet: 1
+  MaxLevel: 0
+  ToUpgrade: 0
   BuildingPrefab: {fileID: 1991462268964490261, guid: 5cc5f150373cc2b40bcd7603a986dd3e, type: 3}

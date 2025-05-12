@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c7d6274d742c4e4b8e8004aa87cbc6e, type: 3}
-  m_Name: BirchTree
+  m_Script: {fileID: 11500000, guid: 510fbff66f1ebac4bbdcc1b3d5fd3541, type: 3}
+  m_Name: Hyena
   m_EditorClassIdentifier: 
-  id: 1
-  buildingId: 3
-  itemName: BirchTree
-  price: 100
-  category: 1
-  state: 1
-  imagePath: {fileID: 0}
+  MaxAge: 12
+  Diet: 0
+  Type: 4
+  Speed: 1
+  AnimalID: 3
+  Price: 450
+  AnimalPrefab: {fileID: 7688860683303307212, guid: 39fd5e6b9eeb66740970cb42d049b621, type: 3}
