@@ -11,7 +11,7 @@ public class SaveSlotsMenu : MonoBehaviour
     //saveslot lista
     [SerializeField]private SaveSlot[] saveSlots;
     private bool isLoadingGame = false;
-    [SerializeField] private string gameSceneName = "Bemutato";
+    [SerializeField] private string gameSceneName = "Final";
 
     private void Awake()
     {
@@ -32,10 +32,7 @@ public class SaveSlotsMenu : MonoBehaviour
             DataPersistenceManager.Instance.LoadGame();
         }
 
-        if (SceneHandler.Instance != null)
-        {
-            SceneHandler.Instance.LoadGameScene(gameSceneName);
-        }
+        SceneLoadManager.LoadScene(gameSceneName);
 
     }
 

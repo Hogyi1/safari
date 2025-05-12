@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,7 +10,7 @@ using static VehicleState;
 /// and manages tour start and finish in an MVC architecture.
 /// </summary>
 [RequireComponent(typeof(VehicleFactory))]
-public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager
+public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager , IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the VehicleManager.
@@ -26,7 +27,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager
     [SerializeField] private const float maxWaitingTime = 15f;
 
     private List<Vehicle> activeVehicles = new List<Vehicle>();
-    private int maxCapacity = 5;
+    [SerializeField]private int maxCapacity = 5; //kiszedni
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -78,6 +79,17 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager
         int id = IDGenerator.GenerateID();
 
         Vehicle newVehicle = factory.CreateVehicle(id, vehicleTypeIndex);
+        if (newVehicle != null)
+            activeVehicles.Add(newVehicle);
+    }
+
+
+    public void SpawnVehicle(VehicleType type)
+    {
+        if (maxCapacity <= activeVehicles.Count) return;
+        int id = IDGenerator.GenerateID();
+
+        Vehicle newVehicle = factory.CreateVehicle(id, type);
         if (newVehicle != null)
             activeVehicles.Add(newVehicle);
     }
@@ -248,8 +260,38 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager
     }
 
     public bool CanBuy() => Capacity < MaxCapacity;
+
     public int MaxCapacity => maxCapacity;
     public int Capacity => activeVehicles.Count;
+
+
+    public void LoadData(GameData data)
+    {
+        this.maxCapacity = data.vehicleData.maxCapacity;
+
+             StartCoroutine(SpawnTouristsWithDelay(data.vehicleData.activevehicle));
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.vehicleData.maxCapacity = this.maxCapacity;
+        data.vehicleData.activevehicle.Clear();
+        foreach (var vehicle in this.activeVehicles) {
+            data.vehicleData.activevehicle.Add(vehicle.Model.Type);
+        }
+    }
+
+
+    private IEnumerator SpawnTouristsWithDelay(List<VehicleType> list)
+    {
+        yield return new WaitForEndOfFrame();
+        foreach (var v in list)
+        {
+            SpawnVehicle(v);
+        }
+        Debug.LogError("beoltott");
+    }
+
 }
 
 /// <summary>

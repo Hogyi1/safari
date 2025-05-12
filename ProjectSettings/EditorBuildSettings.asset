@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Bemutato.unity
     guid: dff0a0ffa6e244947bdcaf3a3b48e896
+  - enabled: 1
+    path: Assets/Scenes/Final.unity
+    guid: d07bb92d6bbabd842b4381712af2913e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

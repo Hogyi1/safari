@@ -43,6 +43,10 @@ public class GameData
 
     public Vector3 CameraPosition;
     public Vector3 CameraRotation;
+    
+    public TouristData touristData;
+
+    public VehicleSaveData vehicleData;
     /// <summary>
     /// Initializes a new GameData instance with default values.
     /// Called when no previous save exists for a profile.
@@ -57,6 +61,8 @@ public class GameData
         this.CameraPosition = new Vector3(0,35,0);
         this.CameraPosition = new Vector3(68.199f,0,0);
         this.Economy = new Economy();
+        this.touristData = new TouristData();
+        this.vehicleData = new VehicleSaveData();
     }
     /// <summary>
     /// Returns the overall completion percentage of the game.

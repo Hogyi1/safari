@@ -32,7 +32,7 @@ public class MainMenuController : MonoBehaviour
     /// <summary>
     /// The name of the main game scene to load when starting or continuing a game.
     /// </summary>
-    [SerializeField] private string gameSceneName = "Bemutato";
+    [SerializeField] private string gameSceneName;
 
     /// <summary>
     /// Hides all menu panels on start.
@@ -61,15 +61,8 @@ public class MainMenuController : MonoBehaviour
     /// </summary>
     public void mm_Continue()
     {
-        if (SceneHandler.Instance != null)
-        {
             DataPersistenceManager.Instance.LoadGame();
-            SceneHandler.Instance.LoadGameScene(gameSceneName);
-        }
-        else
-        {
-            Debug.LogWarning("SceneHandler.Instance is null. Can't load menu.");
-        }
+            SceneLoadManager.LoadScene(gameSceneName);
     }
 
     /// <summary>

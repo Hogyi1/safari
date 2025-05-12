@@ -20,7 +20,6 @@ public class DataPersistenceManager : MonoBehaviour
     public static DataPersistenceManager Instance { get; private set; }
 
 
-
     private void Awake()
     {
         if (Instance != null)
@@ -58,14 +57,16 @@ public class DataPersistenceManager : MonoBehaviour
     /// </summary>
     public void LoadGame()
     {
-        dataPersistenceObjects = FindAllDataPersistenceObjects();
-        this.gameData = dataHandler.Load(selectedProfileId);
-        foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects)
-        {
-            dataPersistenceObj.LoadData(gameData);
-        }
-        SaveGame();
+            dataPersistenceObjects = FindAllDataPersistenceObjects();
+            this.gameData = dataHandler.Load(selectedProfileId);
+
+            foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects)
+            {
+                dataPersistenceObj.LoadData(gameData);
+            }
+           // SaveGame();
     }
+
 
     // <summary>
     /// Saves the current game state for the selected profile ID.
