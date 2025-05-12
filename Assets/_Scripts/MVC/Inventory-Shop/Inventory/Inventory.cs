@@ -12,7 +12,7 @@ public class Inventory
     private Dictionary<Item, int> items;
 
     /// <summary>
-    /// Public getter of inventory
+    /// Public getter of items.
     /// </summary>
     public Dictionary<Item, int> Items => items;
 

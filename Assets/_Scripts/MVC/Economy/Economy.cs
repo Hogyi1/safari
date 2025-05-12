@@ -42,7 +42,7 @@ public class Economy
     /// </summary>
     public Economy()
     {
-        CurrentMoney = 500;
+        CurrentMoney = 2500;
         CurrentExpenses = 0;
         TicketPrice = 10;
         RangerSalary = 100;
