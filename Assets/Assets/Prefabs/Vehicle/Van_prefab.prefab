@@ -122,13 +122,10 @@ PrefabInstance:
       addedObject: {fileID: 5011869374589851556}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5e84beea871ba8141828ab6ac98c9edf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2861024783597559113}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5e84beea871ba8141828ab6ac98c9edf, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3338868577552366165}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5e84beea871ba8141828ab6ac98c9edf, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 4128666377956774278}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5e84beea871ba8141828ab6ac98c9edf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 699491470176628035}
   m_SourcePrefab: {fileID: 100100000, guid: 5e84beea871ba8141828ab6ac98c9edf, type: 3}
 --- !u!4 &7205222421715133118 stripped
 Transform:
@@ -174,53 +171,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3268a0d9901362849a42a79962050234, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  navigator: {fileID: 0}
-  door: {fileID: 0}
+  navigator: {fileID: 4128666377956774278}
+  door: {fileID: 7605138126506276278}
   animalLayermask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8192
   animalsInView: 
   waitingTime: 0
   state: 0
   tourstIDS: 
---- !u!95 &2861024783597559113
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7545155770517747716}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
---- !u!208 &3338868577552366165
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7545155770517747716}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 1.1, y: 1.16, z: 2.41}
-  m_MoveThreshold: 0.1
-  m_Carve: 0
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 1, z: 0}
-  m_TimeToStationary: 0.5
 --- !u!114 &4128666377956774278
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,3 +192,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97290119a5e3fd24193218600972c8e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &699491470176628035
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7545155770517747716}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 20
+  m_Center: {x: 0, y: 0, z: 0}

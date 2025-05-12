@@ -14,7 +14,7 @@ public class VehicleView : MonoBehaviour, INavigatable
     private int iD;
     private VehicleModel model;
     [SerializeField] private NavigatorComponent navigator;
-    [SerializeField] private Transform door;
+    [SerializeField] private GameObject door;
 
     [SerializeField] LayerMask animalLayermask;
     public List<AnimalType> animalsInView = new();
@@ -46,8 +46,8 @@ public class VehicleView : MonoBehaviour, INavigatable
     /// </summary>
     public Vector3 GetDoorPosition()
     {
-        if (door != null) return door.position;
-        return transform.GetChild(1).position;
+        if (door != null) return door.transform.position;
+        return Vector3.zero;
     }
 
     /// <summary>

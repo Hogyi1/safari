@@ -8,9 +8,9 @@ public class Feeder : Structure, ISelectable, IRefillable, IFoodSource
     private int MaxCapacity;
     private int RefillPrice;
     private DietType dietType;
-    public Feeder(BuildingData Data, int iD) : base(iD, Data.Name, Data.icon, Data.type)
+    public Feeder(BuildingData Data, int iD) : base(iD, Data.Name, Data.Icon, Data.Type)
     {
-        dietType = Data.diet;
+        dietType = Data.Diet;
         this.MaxCapacity = Data.Capacity;
         this.Capacity = Data.Capacity / 2;
         this.RefillPrice = Data.Price;

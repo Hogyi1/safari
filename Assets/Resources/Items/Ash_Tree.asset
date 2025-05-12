@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c7d6274d742c4e4b8e8004aa87cbc6e, type: 3}
+  m_Name: Ash_Tree
+  m_EditorClassIdentifier: 
+  ID: 4
+  ItemName: Ash Tree
+  Category: 1
+  LockState: 1
+  Image: {fileID: 21300000, guid: eaf42ce77c84dc344ad07452e656d925, type: 3}
+  ItemData: {fileID: 11400000, guid: 91536f637acba7a44830e24b8f6626a0, type: 2}
+  Placeable: 1
