@@ -111,7 +111,7 @@ public class ActionBarManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        money.text =  Convert.ToString(EconomyManager.Instance.getEconomy().CurrentMoney);
+        money.text = Convert.ToString(EconomyManager.Instance.GetEconomy().CurrentMoney);
         animalCount.text = "100"; // TODO: Replace hardcoded value with dynamic data
         visitorCount.text = "100"; // TODO: Replace hardcoded value with dynamic data
         Date.text = TimeManager.Instance.GetCurrentTime().ToString();
