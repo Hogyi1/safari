@@ -1,35 +1,20 @@
-using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class ServiceManager : MonoBehaviour
 {
-    public ServiceView serviceView;
-    public static ServiceManager Instance;
-    public HashSet<Item> items;
-    public Item currentItem;
+    public TMP_Text RangerCount;
+    public TMP_Text Salary;
+    public Button HireButton;
+    public Button FireButton;
+    
 
-
-    void Start()
+    private void LateUpdate()
     {
-        items = null;//ItemManager.Instance.GetItems();
-        serviceView.GenerateServiceItems(items);
-    }
+        RangerCount.text = RangerManager.Instance.Capacity.ToString();
+        Salary.text =  (EconomyManager.Instance.GetEconomy().RangerSalary * RangerManager.Instance.Capacity).ToString();
 
-    public void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-            return;
-        }
-        Instance = this;
-
-    }
-
-    public void ShowItemDetails(Item item)
-    {
-        serviceView.ShowItemDetails(item);
-        currentItem = item;
     }
 
 }
