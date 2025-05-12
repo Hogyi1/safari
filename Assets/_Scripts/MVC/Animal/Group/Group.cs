@@ -41,6 +41,7 @@ public class Group
         UpdateCircle();
         foreach (var member in members)
         {
+            if (member.IsUnityNull()) continue;
             member.SetGroup(this);
             member.Brain.ReenterState();
         }
@@ -83,6 +84,7 @@ public class Group
         Vector3 averageCenter = Vector3.zero;
         foreach (var member in members)
         {
+            if (member.IsUnityNull()) continue;
             averageCenter += member.View.transform.position;
         }
         averageCenter /= count;
@@ -117,6 +119,7 @@ public class Group
 
         foreach (var member in members)
         {
+            if (member.IsUnityNull()) continue;
             waterSources.UnionWith(member.Model.waterSources);
             foodSources.UnionWith(member.Model.foodSources);
         }
@@ -153,6 +156,7 @@ public class Group
                 ToMove.AddRange(new List<Animal>(thirstyAnimals));
                 foreach (var animal in ToMove)
                 {
+                    if (animal.IsUnityNull()) continue;
                     LeaveGroup(animal);
                 }
                 return;
@@ -214,6 +218,7 @@ public class Group
             // Random offset, csak a View kapja meg a targetet, így biztosítjuk a keresés State aktiválódását
             foreach (var t in members)
             {
+                if (t.IsUnityNull()) continue;
                 Vector3 offset = GetRandomOffset(5f);
                 t.View.SetTarget(targetPosition + offset);
                 t.Model.SetTarget(Vector3.zero);

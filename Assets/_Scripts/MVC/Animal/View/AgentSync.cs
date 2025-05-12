@@ -16,6 +16,10 @@ public class AgentSync : MonoBehaviour
     public static readonly int IsWalking = Animator.StringToHash("IsWalking");
     public static readonly int Loco = Animator.StringToHash("Loco");
 
+    /// <summary>
+    /// Initializes the NavMeshAgent and Animator references if not manually assigned.
+    /// Configures agent behavior to use root motion and custom position updates.
+    /// </summary>
     private void Awake()
     {
         if (Agent.IsUnityNull())
@@ -28,6 +32,10 @@ public class AgentSync : MonoBehaviour
         Agent.updateRotation = true;
     }
 
+    // <summary>
+    /// Applies root motion from the animator to control character position,
+    /// synchronizing it with the NavMeshAgent's next position, and aligning with terrain height.
+    /// </summary>
     private void OnAnimatorMove()
     {
         Vector3 rootPos = Animator.rootPosition;
@@ -36,17 +44,10 @@ public class AgentSync : MonoBehaviour
         Agent.nextPosition = rootPos;
     }
 
-    private void FixedUpdate()
-    {
-        if (Agent.enabled)
-            UpdateAnimatorParameters();
-        else
-        {
-            Animator.SetBool(IsWalking, false);
-            Animator.SetFloat(Loco, 0);
-        }
-    }
-
+    /// <summary>
+    /// Updates the character's movement state and animation parameters based on current navigation progress.
+    /// Handles smoothing of velocity, stopping behavior, and position interpolation for natural movement.
+    /// </summary>
     private void UpdateAnimatorParameters()
     {
         Vector3 worldDelta = Agent.nextPosition - transform.position;
@@ -76,5 +77,23 @@ public class AgentSync : MonoBehaviour
 
         Animator.SetBool(IsWalking, shouldMove);
         Animator.SetFloat(Loco, velocity.magnitude);
+    }
+
+    /// <summary>
+    /// Called every physics frame to evaluate movement and update animator state if the agent is enabled.
+    /// </summary>
+    private void FixedUpdate()
+    {
+        if (Agent.enabled) UpdateAnimatorParameters();
+    }
+
+    /// <summary>
+    /// Automatically resets animation parameters when this component is disabled,
+    /// ensuring the character returns to idle state visually.
+    /// </summary>
+    private void OnDisable()
+    {
+        Animator.SetBool(IsWalking, false);
+        Animator.SetFloat(Loco, 0);
     }
 }

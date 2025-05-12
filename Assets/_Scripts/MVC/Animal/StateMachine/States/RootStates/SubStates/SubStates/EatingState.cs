@@ -23,7 +23,7 @@ public class EatingState : AnimalBaseState
 
         foodSource = fs;
         context.animal.Model.IsConsuming = true;
-        eatTimer = 2f;
+        eatTimer = EatingInterval;
     }
 
 
