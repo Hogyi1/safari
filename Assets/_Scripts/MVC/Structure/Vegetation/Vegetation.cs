@@ -9,9 +9,9 @@ public class Vegetation : Structure, ISelectable, IFoodSource
     private DietType Diet;
     private int Capacity;
     private int MaxCapacity;
-    public Vegetation(BuildingData Data, int iD) : base(iD, Data.Name, Data.icon, Data.type)
+    public Vegetation(BuildingData Data, int iD) : base(iD, Data.Name, Data.Icon, Data.Type)
     {
-        this.Diet = Data.diet;
+        this.Diet = Data.Diet;
         this.Capacity = 0;
         this.MaxCapacity = Data.Capacity;
     }

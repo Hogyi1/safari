@@ -83,9 +83,9 @@ public class VehicleModel
     public VehicleModel(int id, VehicleData data)
     {
         iD = id;
-        type = data.type;
-        capacity = data.capacity;
-        spaceTaken = data.spacetaken;
+        type = data.Type;
+        capacity = data.Capacity;
+        spaceTaken = data.SpaceTaken;
         state = VehicleState.Empty;
         waitingTime = 0f;
     }

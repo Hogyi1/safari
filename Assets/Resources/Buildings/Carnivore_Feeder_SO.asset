@@ -16,8 +16,11 @@ MonoBehaviour:
   SpaceTaken: {x: 2, y: 1}
   Name: Carnivore Feeder
   Price: 350
+  BuyingPrice: 500
   Capacity: 100
-  type: 2
-  icon: {fileID: 21300000, guid: 8a60f47992b0ee6459599b48b7c8116a, type: 3}
-  diet: 0
+  Type: 2
+  Icon: {fileID: 21300000, guid: 97e5265ed1b1865448e683b042fbfbd0, type: 3}
+  Diet: 0
+  MaxLevel: 0
+  ToUpgrade: 0
   BuildingPrefab: {fileID: 6221993677471747854, guid: bf0b152245119ee42b45c45cfe38815c, type: 3}

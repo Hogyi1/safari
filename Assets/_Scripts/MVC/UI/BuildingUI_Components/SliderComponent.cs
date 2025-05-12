@@ -30,6 +30,7 @@ public class SliderComponent : MonoBehaviour, IStructureUIComponent
     private StructureUIValues capKey = Value_slider;
 
     private Func<float> getCurrentValue;
+    private Func<float> getMaxValue;
     private float maxValue;
 
     /// <summary>
@@ -50,8 +51,17 @@ public class SliderComponent : MonoBehaviour, IStructureUIComponent
                 float fixedValue = Convert.ToSingle(cap);
                 getCurrentValue = () => fixedValue;
             }
-            maxValue = (int)maxcap;
-            slider.maxValue = maxValue;
+
+            if (maxcap is Func<float> maxcapFunc)
+            {
+                getMaxValue = maxcapFunc;
+            }
+            else
+            {
+                float fixedMax = Convert.ToSingle(maxcap);
+                getMaxValue = () => fixedMax;
+            }
+
             parent.gameObject.SetActive(true);
         }
         else
@@ -66,11 +76,15 @@ public class SliderComponent : MonoBehaviour, IStructureUIComponent
     /// </summary>
     private void Update()
     {
-        if (getCurrentValue != null)
+        if (getCurrentValue != null && getMaxValue != null)
         {
             float current = getCurrentValue();
+            float max = getMaxValue();
+
+            slider.maxValue = max;
             slider.value = current;
-            ProgressText.text = $"{(int)current}/{(int)maxValue}";
+
+            ProgressText.text = $"{(int)current}/{(int)max}";
         }
     }
 }

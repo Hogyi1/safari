@@ -4,7 +4,7 @@ using static StructureUIValues;
 public class Water : Structure, ISelectable, IWaterSource
 {
     private DietType dietType;
-    public Water(BuildingData Data, int iD) : base(iD, Data.Name, Data.icon, Data.type)
+    public Water(BuildingData Data, int iD) : base(iD, Data.Name, Data.Icon, Data.Type)
     {
         dietType = DietType.Water;
     }

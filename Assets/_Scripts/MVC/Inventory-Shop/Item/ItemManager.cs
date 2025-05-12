@@ -1,12 +1,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static LockState;
 
+/// <summary>
+/// Manages all item-related logic, including loading, unlocking, and retrieval of items.
+/// This class is implemented as a singleton and persists across scenes.
+/// </summary>
 public class ItemManager : MonoBehaviour
 {
-
-    public HashSet<Item> items;
+    /// <summary>
+    /// Singleton instance of the ItemManager.
+    /// </summary>
     public static ItemManager Instance;
+
+    /// <summary>
+    /// Stores all items currently loaded into the system.
+    /// </summary>
+    private HashSet<Item> Items;
+
+    /// <summary>
+    /// Initializes the singleton instance and loads all items from Resources.
+    /// Ensures only one instance exists and persists across scenes.
+    /// </summary>
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -16,32 +32,59 @@ public class ItemManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        LoadAllItem();
+        LoadAllItems();
     }
 
-    public void UnlockItem(int itemId) {
+    /// <summary>
+    /// Returns all currently loaded items as a List.
+    /// </summary>
+    /// <returns>List of all loaded Item instances.</returns>
+    public List<Item> GetItems() => Items.ToList();
 
-        foreach (var item in items) {
-
-            if (item.id == itemId && item.state == LockState.LOCKED) { 
-                
-                item.state = LockState.UNLOCKED;
-            }        
-        }
-    }
-
-    public void LoadAllItem()
+    /// <summary>
+    /// Unlocks all items in the collection that match the given item ID and are currently locked.
+    /// </summary>
+    /// <param name="itemID">The ID of the item(s) to unlock.</param>
+    public void UnlockItem(int itemID)
     {
-        items = new HashSet<Item>(Resources.LoadAll<Item>("Items"));
-        Debug.Log($"Betöltve {items.Count} Item.");
+        Items.ToList()
+            .FindAll(t => t.ID == itemID && t.LockState == Locked)
+            .ForEach(t => t.LockState = Unlocked);
     }
-    public HashSet<Item> getItems()
+
+    /// <summary>
+    /// Loads all Item assets located under the "Resources/Items" folder into memory.
+    /// </summary>
+    private void LoadAllItems()
     {
-        return items;
+        Items = new HashSet<Item>(Resources.LoadAll<Item>("Items"));
+        Debug.Log($"Betöltve {Items.Count} Item.");
     }
 
     public Item GetItemById(int id)
     {
         return items.FirstOrDefault(item => item.id == id);
     }
+}
+
+/// <summary>
+/// Enum representing different item categories.
+/// Used to classify items by type.
+/// </summary>
+public enum Category
+{
+    Structure, // 0
+    Vegetation, // 1
+    Animal, // 2
+    Vehicle, // 3
+    Service, // 4
+}
+
+/// <summary>
+/// Enum representing the lock state of an item.
+/// </summary>
+public enum LockState
+{
+    Locked,
+    Unlocked
 }
