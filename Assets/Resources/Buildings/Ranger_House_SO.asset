@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ranger_House_SO
   m_EditorClassIdentifier: 
   BuildingID: 998
-  SpaceTaken: {x: 8, y: 10}
+  SpaceTaken: {x: 20, y: 20}
   Name: Ranger's house
   Price: 250
   BuyingPrice: 0
