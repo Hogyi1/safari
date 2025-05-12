@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 [RequireComponent(typeof(TerrainController))]
 [RequireComponent(typeof(PreviewSystem))]
-public class PlacementManager : MonoBehaviour
+public class PlacementManager : MonoBehaviour, IPlaceableManager
 {
     public static PlacementManager Instance;
 
@@ -29,8 +29,8 @@ public class PlacementManager : MonoBehaviour
     private Vector3Int LastDetectedPosition = Vector3Int.zero;
     private IBuildingState BuildingState;
 
-    public event Action OnPlace;
-    public event Action<int> OnRemoved;
+    public event Action OnPlaced;
+    public event Action OnStopped;
 
     private PreviewSystem previewSystem;
     private TerrainController terrainController;
@@ -79,7 +79,7 @@ public class PlacementManager : MonoBehaviour
         return new Vector2Int(cell3D.x, cell3D.z);
     }
 
-    public void StartPlacingItem(int StructureID)
+    public void StartPlacing(int StructureID)
     {
         InputManager.Instance.SetState(InputState.PlacementMode);
         InputEventChannel.OnClick += TryPlacement;
@@ -90,7 +90,7 @@ public class PlacementManager : MonoBehaviour
         BuildingData Data = buildingDatabase.FirstOrDefault(t => t.BuildingID == StructureID);
 
         if (Data.IsUnityNull()) return;
-        switch (Data.type)
+        switch (Data.Type)
         {
             case BuildingType.Road:
                 activeGrid = roadGrid;
@@ -111,6 +111,8 @@ public class PlacementManager : MonoBehaviour
         BuildingState.EndState();
         BuildingState = null;
 
+        OnStopped?.Invoke();
+
         InputManager.Instance.SetState(InputState.NormalMode);
         InputEventChannel.OnClick -= TryPlacement;
         InputManager.Instance.StopPlacement -= StopPlacement;
@@ -122,12 +124,12 @@ public class PlacementManager : MonoBehaviour
 
         Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
 
-        BuildingState.OnAction(mousePosition);
+        bool placed = BuildingState.OnAction(mousePosition);
+        if (placed) OnPlaced?.Invoke();
     }
 
-    public IPlaceable PlaceStructure(BuildingData Data, Vector3 position, Structure newStructure)
+    public IPlaceable Place(BuildingData Data, Vector3 position, Structure newStructure)
     {
-        OnPlace?.Invoke();
         GameObject newStructureGO = Instantiate(Data.BuildingPrefab, position, Quaternion.identity);
         newStructureGO.transform.SetParent(structureParent.transform, true);
         IPlaceable view = newStructureGO.GetComponent<IPlaceable>();
@@ -135,7 +137,7 @@ public class PlacementManager : MonoBehaviour
 
         terrainController.AdjustTerrainToStructure(newStructureGO, view.GetID(), true);
 
-        if (Data.type == BuildingType.Road)
+        if (Data.Type == BuildingType.Road)
         {
             roadNavMesh.BuildNavMesh();
             newStructureGO.transform.SetParent(roadNavMesh.transform, true);
@@ -146,11 +148,10 @@ public class PlacementManager : MonoBehaviour
 
     public void RemoveStructure(IPlaceable placeable)
     {
-        OnRemoved?.Invoke(placeable.GetID());
         Vector3Int gridPosition = normalGrid.WorldToCell(placeable.GetGameObject().transform.position);
-
         Vector2Int GridPosition = new Vector2Int(gridPosition.x, gridPosition.z);
 
+        InventoryManager.Instance.PickedUpItem(placeable.GetData().BuildingID);
         MapData.RemoveObjectAt(GridPosition);
         terrainController.RestoreTerrain(placeable.GetID());
 
@@ -175,13 +176,6 @@ public class PlacementManager : MonoBehaviour
         return null;
     }
 
-    // Betölti a Resource folderból az összes StructureData ScriptableObjectet
-    private void LoadAllStructures()
-    {
-        buildingDatabase = new List<BuildingData>(Resources.LoadAll<BuildingData>("Buildings"));
-        Debug.Log($"Betöltve {buildingDatabase.Count} épület.");
-    }
-
     private void LoadPreplacedStructures()
     {
         bool success = true;
@@ -196,7 +190,7 @@ public class PlacementManager : MonoBehaviour
             Vector3Int roadPosition = Vector3Int.zero;
 
             // EZ kibaszott felesleges ha már van rajta épület
-            if (data.type == BuildingType.Road)
+            if (data.Type == BuildingType.Road)
             {
                 Vector3 middle = placeable.GetGameObject().transform.Find("Middle").position; // közepe hogy benn legyen pont a 6x6ban
                 roadPosition = roadGrid.WorldToCell(middle); // 6x6 helye
@@ -251,11 +245,18 @@ public class PlacementManager : MonoBehaviour
             : "An error occurred while loading the objects.";
         GameEvents.Instance.RequestAlert(success, msg, displayTime: 5f);
     }
+
+    // Betölti a Resource folderból az összes StructureData ScriptableObjectet
+    private void LoadAllStructures()
+    {
+        buildingDatabase = new List<BuildingData>(Resources.LoadAll<BuildingData>("Buildings"));
+        Debug.Log($"Betöltve {buildingDatabase.Count} épület.");
+    }
 }
 
 public interface IBuildingState
 {
     void EndState();
-    void OnAction(Vector3 gridPosition);
+    bool OnAction(Vector3 gridPosition);
     void UpdateState(Vector3 gridPosition);
 }
