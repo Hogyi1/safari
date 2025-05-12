@@ -7,7 +7,7 @@ using System.Linq;
 /// Manages the player's inventory logic, including item placement, filtering, selling, and UI updates.
 /// Acts as a bridge between the inventory data, UI, and placement systems.
 /// </summary>
-public class InventoryManager : MonoBehaviour
+public class InventoryManager : MonoBehaviour , IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the InventoryManager.
@@ -46,7 +46,7 @@ public class InventoryManager : MonoBehaviour
             inventory = new Inventory();
 
         }
-        inventoryView.GenerateInventoryUI(inventory.items);
+        inventoryView.GenerateInventoryUI(inventory.Items);
     }
 
     /// <summary>
@@ -128,25 +128,6 @@ public class InventoryManager : MonoBehaviour
         inventoryView.gameObject.SetActive(true);
     }
 
-    public void Sell()
-    {
-
-        if (inventory.CanSellItem(inventory.currentItem))
-        {
-            inventory.DecreaseItemCountOrRemove(inventory.currentItem);
-            economyManager.AddMoney(inventory.currentItem.CalculateSellingPrice());
-            inventoryView.GenerateInventoryUI(inventory.items);
-            inventoryView.DetailPanelUpdate(inventory.currentItem);
-            if (inventory.GetItemCount(inventory.currentItem) == 0)
-            {
-                inventoryView.HideDetailPanel();
-            }
-        }
-        else
-        {
-            Debug.Log("Sellerror");
-        }
-    }
 
     /// <summary>
     /// Callback method invoked when the current item has been placed.
@@ -172,7 +153,7 @@ public class InventoryManager : MonoBehaviour
         if (inventory == null) inventory = new Inventory();
 
 
-        inventory.items.Clear();
+        inventory.Items.Clear();
         if (data.inventoryData == null || data.inventoryData.items == null)
             return;
         foreach (var pair in data.inventoryData.items)
@@ -180,7 +161,7 @@ public class InventoryManager : MonoBehaviour
             Item item = ItemManager.Instance.GetItemById(pair.Key);
             if (item != null)
             {
-                inventory.items[item] = pair.Value;
+                inventory.Items[item] = pair.Value;
             }
         }
         Debug.Log("Inventory betöltve.");
@@ -190,9 +171,9 @@ public class InventoryManager : MonoBehaviour
     {
         data.inventoryData.items.Clear();
 
-        foreach (var pair in inventory.items)
+        foreach (var pair in inventory.Items)
         {
-            data.inventoryData.items[pair.Key.id] = pair.Value;
+            data.inventoryData.items[pair.Key.ID] = pair.Value;
         }
         Debug.Log("Inventory elmentve.");
     }

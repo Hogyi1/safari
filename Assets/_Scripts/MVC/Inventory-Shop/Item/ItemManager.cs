@@ -63,7 +63,7 @@ public class ItemManager : MonoBehaviour
 
     public Item GetItemById(int id)
     {
-        return items.FirstOrDefault(item => item.id == id);
+        return Items.FirstOrDefault(item => item.ID == id);
     }
 }
 
