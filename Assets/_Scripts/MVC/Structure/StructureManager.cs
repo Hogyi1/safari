@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class StructureManager : MonoBehaviour
+public class StructureManager : MonoBehaviour, IBuyableManager
 {
     public static StructureManager Instance;
 
@@ -56,15 +56,15 @@ public class StructureManager : MonoBehaviour
     // Visszatérési értéke a generált ID amit, később a MapData tárol el
     public int CreateStructure(BuildingData Data, Vector3 position, Vector2Int gridPosition)
     {
-        IStructureManager manager = GetManager(Data.type);
-        if (manager.IsUnityNull()) throw new Exception("Nem található a következő manager: " + Data.type + "Manager");
+        IStructureManager manager = GetManager(Data.Type);
+        if (manager.IsUnityNull()) throw new Exception("Nem található a következő manager: " + Data.Type + "Manager");
 
         int ID = IDGenerator.GenerateID();
 
         Structure newStructure = manager.AddStructure(Data, ID, gridPosition);
         activeSelectables.Add(newStructure);
 
-        IPlaceable view = PlacementManager.Instance.PlaceStructure(Data, position, newStructure);
+        IPlaceable view = PlacementManager.Instance.Place(Data, position, newStructure);
 
         manager.SetView(view, ID);
 
@@ -98,7 +98,7 @@ public class StructureManager : MonoBehaviour
 
     public bool RegisterStructures(BuildingData Data, int ID, IPlaceable view, Vector2Int nodePosition)
     {
-        IStructureManager manager = GetManager(Data.type);
+        IStructureManager manager = GetManager(Data.Type);
         if (manager.IsUnityNull()) return false;
 
         Structure newStructure = manager.AddStructure(Data, ID, nodePosition); // Nem jó az utakhoz
@@ -131,6 +131,8 @@ public class StructureManager : MonoBehaviour
         }
         return null;
     }
+
+    public bool CanBuy() => true;
 }
 
 // Interfész IStructureManager
@@ -185,6 +187,6 @@ public interface IStageable
 // Minden amit lehet fejleszteni megkapja, a View és Model egyaránt megkapja
 public interface IUpgradeable
 {
-    public void LevelUp();
-    public void LevelDown();
+    public void LevelUp(int amount);
+    public void LevelDown(int amount);
 }

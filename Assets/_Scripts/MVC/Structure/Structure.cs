@@ -16,14 +16,8 @@ public abstract class Structure
         this.buildingType = buildingType;
     }
 
-    public int GetID()
-    {
-        return ID;
-    }
-    public BuildingType GetBuildingType()
-    {
-        return buildingType;
-    }
+    public int GetID() => ID;
+    public BuildingType GetBuildingType() => buildingType;
 
     public override bool Equals(object obj)
     {

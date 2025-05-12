@@ -32,7 +32,7 @@ public class PlacementState : IBuildingState
         this.previewSystem = previewSystem;
         this.MapData = MapData;
         this.cellSize = Mathf.RoundToInt(grid.cellSize.x);
-        this.isRoad = Data.type == BuildingType.Road;
+        this.isRoad = Data.Type == BuildingType.Road;
 
         previewSystem.StartShowingPlacementPreview(Data.BuildingPrefab, Data.SpaceTaken);
     }
@@ -50,12 +50,12 @@ public class PlacementState : IBuildingState
     /// Checks if placement is valid and registers the structure if so.
     /// </summary>
     /// <param name="mousePosition">World position under the mouse.</param>
-    public void OnAction(Vector3 mousePosition)
+    public bool OnAction(Vector3 mousePosition)
     {
         Vector3Int gridPosition = grid.WorldToCell(mousePosition); // The position in cell coordinate
         Vector2Int mapPosition = new Vector2Int(gridPosition.x * cellSize, gridPosition.z * cellSize); // Normalized cell coordinate
 
-        if (!MapData.CanPlaceObjectAt(mapPosition, Data.SpaceTaken)) return; // If occupied return
+        if (!MapData.CanPlaceObjectAt(mapPosition, Data.SpaceTaken)) return false; // If occupied return
 
         Vector3 worldPosition = grid.CellToWorld(gridPosition); // Snapped world position
         float buildHeight = isRoad ? grid.transform.position.y : mousePosition.y; // Buildheight based on the type of the object
@@ -65,6 +65,7 @@ public class PlacementState : IBuildingState
 
         MapData.AddObjectAt(mapPosition, Data.SpaceTaken, Data.BuildingID, index); // Occupy the position in the mapData
         previewSystem.UpdatePosition(buildingPos, false); // Let the player know the position is occupied visually
+        return true;
     }
 
     /// <summary>

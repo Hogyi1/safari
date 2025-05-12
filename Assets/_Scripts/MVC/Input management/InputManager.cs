@@ -36,7 +36,7 @@ public class InputManager : MonoBehaviour
     /// <summary>
     /// Current input state mode (placement or normal).
     /// </summary>
-    public State state = State.NormalMode;
+    public InputState State = InputState.NormalMode;
 
     /// <summary>
     /// Singleton instance of the InputManager.
@@ -85,10 +85,10 @@ public class InputManager : MonoBehaviour
     /// Sets the input state mode, toggling the ViewHandler accordingly.
     /// </summary>
     /// <param name="state">The new input state to apply.</param>
-    public void SetState(State state)
+    public void SetState(InputState state)
     {
-        this.state = state;
-        if (state == State.PlacementMode) ViewHandler.gameObject.SetActive(false);
+        State = state;
+        if (state != InputState.NormalMode) ViewHandler.gameObject.SetActive(false);
         else
         {
             StopPlacement?.Invoke();
@@ -133,7 +133,7 @@ public class InputManager : MonoBehaviour
 /// <summary>
 /// Enumerates the input manager states.
 /// </summary>
-public enum State
+public enum InputState
 {
     /// <summary>
     /// Mode where placement input is processed.
@@ -143,5 +143,10 @@ public enum State
     /// <summary>
     /// Default mode for normal interactions.
     /// </summary>
-    NormalMode
+    NormalMode,
+
+    /// <summary>
+    /// Mode where animal placement input is processed.
+    /// </summary>
+    AnimalPlacementMode
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -29,14 +27,14 @@ public class AnimalFactory : MonoBehaviour
     /// Létrehoz egy új állatot a megadott típus, pozíció, ID és életkor alapján.
     /// Visszaad egy teljesen felépített Animal objektumot, ami tartalmazza a View, Model és StateMachine komponenseket.
     /// </summary>
-    /// <param name="Type">Az állat típusa (enum).</param>
+    /// <param name="animalID">Az állat típusa.</param>
     /// <param name="position">Világpozíció, ahová az állat kerül.</param>
     /// <param name="ID">Egyedi azonosító.</param>
     /// <param name="Age">Életkor.</param>
     /// <returns>Az elkészült Animal példány, vagy null, ha nem található adat hozzá.</returns>
-    public Animal CreateAnimal(AnimalType Type, Vector3 position, int ID, int Age)
+    public Animal CreateAnimal(AnimalType type, Vector3 position, int ID, int Age)
     {
-        AnimalData data = FindAnimalData(Type);
+        AnimalData data = FindAnimalData(type);
         if (data == null) return null;
 
         GameObject instance = Instantiate(data.AnimalPrefab, position, Quaternion.identity);
@@ -55,6 +53,16 @@ public class AnimalFactory : MonoBehaviour
     private AnimalData FindAnimalData(AnimalType type)
     {
         return animalDatabase.Find(t => t.Type == type);
+    }
+
+    /// <summary>
+    /// Get animal data by ID
+    /// </summary>
+    /// <param name="ID"></param>
+    /// <returns></returns>
+    public AnimalType GetAnimalTypeByID(int ID)
+    {
+        return animalDatabase.Find(t => t.AnimalID == ID).Type;
     }
 
     /// <summary>

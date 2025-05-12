@@ -1,4 +1,4 @@
-    using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// Manages the game's economy: tracks money, expenses, income, and handles transactions.
@@ -36,7 +36,7 @@ public class EconomyManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        this.Economy = new Economy();
+        Economy = new Economy();
     }
 
     /// <summary>
@@ -111,30 +111,12 @@ public class EconomyManager : MonoBehaviour
     /// </summary>
     /// <param name="price">The price to check against current money.</param>
     /// <returns>True if current money is greater than or equal to the price; otherwise false.</returns>
-    public bool HasEnoughMoney(int price)
-    {
-        return Economy.CurrentMoney >= price;
-    }
-
-    /// <summary>
-    /// Calculates the selling price for an item at 50% of its original price.
-    /// </summary>
-    /// <param name="price">The original price of the item.</param>
-    /// <returns>The selling price rounded to the nearest integer.</returns>
-    public int GetSellingPrice(int price)
-    {
-        return (int)Mathf.Round(price * 0.5f);
-    }
+    public bool HasEnoughMoney(int price) => Economy.CurrentMoney >= price;
 
     /// <summary>
     /// Retrieves the current Economy data instance.
     /// </summary>
     /// <returns>The underlying Economy object.</returns>
-    public Economy getEconomy() {
-
-        return this.Economy;
-    
-    }
-
+    public Economy GetEconomy() => Economy;
 
 }
