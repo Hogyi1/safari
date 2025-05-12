@@ -1,34 +1,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public class Inventory : MonoBehaviour, IDataPersistence
+public class Inventory
 {
 
     //contains the purchesed items
-    public static Inventory Instance;
-    [SerializeField]public Dictionary<Item, int> items = new ();
+    [SerializeField] public SerializableDictionary<Item, int> items;
     public Item currentItem;
 
 
-    public void Awake()
+    public Inventory()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        items = new SerializableDictionary<Item, int>();
     }
 
+    //a saveing miatt kell
+    public Inventory(SerializableDictionary<Item, int> items)
+    {
+        this.items = items;
+    }
     public void AddItem(Item item)
     {
 
         if (items.TryGetValue(item, out int itemcount))
         {
-            items[item] +=  1;
+            items[item] += 1;
         }
         else
         {
@@ -45,17 +41,16 @@ public class Inventory : MonoBehaviour, IDataPersistence
             itemcount -= 1;
             if (itemcount <= 0)
             {
-                items.Remove(item); 
+                items.Remove(item);
             }
             else
             {
-                items[item] = itemcount; 
+                items[item] = itemcount;
             }
         }
 
     }
-    
-   
+
     public void DecreaseItemCountOrRemove(Item item)
     {
         if (!CanSellItem(item))
@@ -70,23 +65,24 @@ public class Inventory : MonoBehaviour, IDataPersistence
 
                 if (items[item] <= 0)
                 {
-                    items.Remove(item); 
+                    items.Remove(item);
                 }
             }
         }
     }
 
-    public bool HasItem(Item item) {
+    public bool HasItem(Item item)
+    {
         return items.ContainsKey(item) && items[item] > 0;
     }
 
-
-    public bool CanSellItem(Item item) { 
+    public bool CanSellItem(Item item)
+    {
         return GetItemCount(item) > 0;
     }
 
-
-    public int GetItemCount(Item item) {
+    public int GetItemCount(Item item)
+    {
         if (items.TryGetValue(item, out int itemcount))
         {
             return itemcount;
@@ -96,39 +92,5 @@ public class Inventory : MonoBehaviour, IDataPersistence
             return 0;
         }
 
-    }
-
-    public void LoadData(GameData data)
-    {
-        items.Clear();
-
-        if (data.inventoryData == null || data.inventoryData.items == null)
-            return;
-        Debug.Log("asd");
-        foreach (var pair in data.inventoryData.items)
-        {
-            Item item = ItemHelper.Instance.GetItemById(pair.Key);
-            if (item != null)
-            {
-                items[item] = pair.Value;
-            }
-            else
-            {
-                Debug.LogWarning($"Item with ID {pair.Key} not found in ItemHelper.");
-            }
-        }
-
-        Debug.Log("Inventory betöltve.");
-    }
-    public void SaveData(GameData data)
-    {
-        data.inventoryData.items.Clear();
-
-        foreach (var pair in items)
-        {
-            data.inventoryData.items[pair.Key.id] = pair.Value;
-        }
-
-        Debug.Log("Inventory elmentve.");
     }
 }

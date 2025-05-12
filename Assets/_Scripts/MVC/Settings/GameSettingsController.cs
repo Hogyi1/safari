@@ -14,7 +14,7 @@ using UnityEngine;
 /// Controller responsible for applying, saving, and loading game settings.
 /// Implements a simple persistence mechanism via PlayerPrefs.
 /// </summary>
-public class GameSettingsController : MonoBehaviour
+public class GameSettingsController : MonoBehaviour, IDataPersistence
 {
     /// <summary>
     /// Singleton instance for global access to game settings operations.
@@ -180,5 +180,17 @@ public class GameSettingsController : MonoBehaviour
         }
         ApplyGraphicsSettings();
         ApplyDisplaySettings();
+    }
+
+    public void LoadData(GameData data)
+    {
+        this.CurrentSettings = data.settingsModel;
+        ApplyGraphicsSettings();
+        ApplyDisplaySettings();
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.settingsModel = this.CurrentSettings;
     }
 }

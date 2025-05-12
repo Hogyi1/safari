@@ -19,7 +19,7 @@ public class ItemDetailPanelInventory : MonoBehaviour
         this.Type.text = "Type";
         this.itemCategoryText.text = Convert.ToString(item.category);
         this.capacity.text = "capacity";
-        this.inInventory.text = Convert.ToString(Inventory.Instance.GetItemCount(item));
+        this.inInventory.text = Convert.ToString(InventoryManager.Instance.inventory.GetItemCount(item));
         this.sellingPrice.text = Convert.ToString(item.CalculateSellingPrice()) + " $";
         this.gameObject.SetActive(true);
     }

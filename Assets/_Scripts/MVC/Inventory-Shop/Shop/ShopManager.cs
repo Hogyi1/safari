@@ -30,7 +30,7 @@ public class ShopManager : MonoBehaviour
         //mivel nincs más lehetõség vásárlásra ezért amikor rányom egy itemre csak akkor tudja megvenni
         if (currentItem != null)
         {
-                Inventory.Instance.AddItem(currentItem);
+                InventoryManager.Instance.inventory.AddItem(currentItem);
                 EconomyManager.Instance.RemoveMoney(currentItem.price);
                 ShowItemDetails(currentItem);
                 Debug.Log("megvette");

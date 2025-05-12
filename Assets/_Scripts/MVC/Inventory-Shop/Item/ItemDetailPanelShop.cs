@@ -21,7 +21,7 @@ public class ItemDetailPanelShop : MonoBehaviour
         this.Type.text = "asd";
         this.itemCategoryText.text = Convert.ToString(item.category);
         this.capacity.text = "";
-        this.inInventory.text = Convert.ToString(Inventory.Instance.GetItemCount(item));
+        this.inInventory.text = Convert.ToString(InventoryManager.Instance.inventory.GetItemCount(item));
         this.sellingPrice.text = Convert.ToString(item.CalculateSellingPrice()) + " $";
         buyButton.enabled = EconomyManager.Instance.HasEnoughMoney(item.price);
         this.gameObject.SetActive(true);

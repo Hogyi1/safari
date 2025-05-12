@@ -3,13 +3,24 @@ using UnityEngine;
 using System;
 using System.IO;
 
+
+/// <summary>
+/// Handles saving and loading of game data to and from the file system.
+/// Supports multiple profiles and optional encryption.
+/// </summary>
 public class FileDataHandler
 {
     private string dataDirPath = "";
     private string dataFileName = "";
     private bool useEncryption = false;
-    private readonly string encryptionCodeWord = "word";
+    private readonly string encryptionCodeWord = "Xe9vL2rMqT1fBg7D";
 
+    /// <summary>
+    /// Creates a new FileDataHandler instance for handling file I/O operations.
+    /// </summary>
+    /// <param name="dataDirPath">The base directory path where data will be stored.</param>
+    /// <param name="dataFileName">The name of the file to read/write.</param>
+    /// <param name="useEncryption">Whether to encrypt/decrypt the data during save/load.</param>
     public FileDataHandler(string dataDirPath, string dataFileName, bool useEncryption)
     {
         this.dataDirPath = dataDirPath;
@@ -17,6 +28,11 @@ public class FileDataHandler
         this.useEncryption = useEncryption;
     }
 
+    /// <summary>
+    /// Loads the game data for a given profile ID from file.
+    /// </summary>
+    /// <param name="profileId">The profile ID to load data for.</param>
+    /// <returns>The loaded GameData object, or null if loading failed or no file exists.</returns>
     public GameData Load(string profileId)
     {
         if (profileId == null)
@@ -51,6 +67,11 @@ public class FileDataHandler
         return loadedData;
     }
 
+    /// <summary>
+    /// Saves the given game data to file under the specified profile ID.
+    /// </summary>
+    /// <param name="data">The GameData object to save.</param>
+    /// <param name="profileId">The profile ID to save the data for.</param>
     public void Save(GameData data, string profileId)
     {
         if (profileId == null)
@@ -80,6 +101,11 @@ public class FileDataHandler
         }
     }
 
+
+    /// <summary>
+    /// Loads all game data files for every available profile in the data directory.
+    /// </summary>
+    /// <returns>A dictionary mapping profile IDs to their corresponding GameData.</returns>
     public Dictionary<string, GameData> LoadAllProfiles()
     {
         Dictionary<string, GameData> profileDictionary = new Dictionary<string, GameData>();
@@ -107,6 +133,10 @@ public class FileDataHandler
         return profileDictionary;
     }
 
+    /// <summary>
+    /// Determines which profile was most recently updated based on the timestamp in GameData.
+    /// </summary>
+    /// <returns>The profile ID of the most recently updated profile, or null if none found.</returns>
     public string GetMostRecentlyUpdatedProfileId()
     {
         string mostRecentProfileId = null;
@@ -136,6 +166,11 @@ public class FileDataHandler
         return mostRecentProfileId;
     }
 
+    /// <summary>
+    /// Encrypts or decrypts the given string using a simple XOR cipher with the encryption key.
+    /// </summary>
+    /// <param name="data">The input string to encrypt or decrypt.</param>
+    /// <returns>The transformed string after XOR operation.</returns>
     private string EncryptDecrypt(string data)
     {
         string modifiedData = "";

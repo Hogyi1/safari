@@ -1,7 +1,7 @@
 using UnityEngine;
 using Unity.Cinemachine;
 
-public class CameraView : MonoBehaviour
+public class CameraView : MonoBehaviour , IDataPersistence
 {
     [SerializeField] private CinemachineCamera cinemachineCamera;
     private CinemachineFollow followComponent;
@@ -40,5 +40,17 @@ public class CameraView : MonoBehaviour
     public void SetFollowOffset(Vector3 offset, float zoomSpeed)
     {
         followComponent.FollowOffset = Vector3.Lerp(followComponent.FollowOffset, offset, zoomSpeed * Time.deltaTime);
+    }
+
+    public void LoadData(GameData data)
+    {
+        gameObject.transform.position = data.CameraPosition;
+        gameObject.transform.rotation = Quaternion.Euler(data.CameraRotation);
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.CameraPosition = gameObject.transform.position;
+        data.CameraRotation = gameObject.transform.rotation.eulerAngles;
     }
 }

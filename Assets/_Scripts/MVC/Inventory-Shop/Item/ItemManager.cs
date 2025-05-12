@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ItemManager : MonoBehaviour
@@ -37,5 +38,10 @@ public class ItemManager : MonoBehaviour
     public HashSet<Item> getItems()
     {
         return items;
+    }
+
+    public Item GetItemById(int id)
+    {
+        return items.FirstOrDefault(item => item.id == id);
     }
 }

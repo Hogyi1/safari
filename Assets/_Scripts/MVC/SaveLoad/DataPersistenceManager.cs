@@ -39,7 +39,9 @@ public class DataPersistenceManager : MonoBehaviour
     }
 
 
-    //ez amikor uj game kell
+    /// <summary>
+    /// Starts a New Game
+    /// </summary>
     public void NewGame()
     {
         this.gameData = new GameData();
@@ -49,7 +51,11 @@ public class DataPersistenceManager : MonoBehaviour
     }
 
 
-
+    /// <summary>
+    /// Loads an existing game using the selected profile ID.
+    /// Distributes the loaded data to all objects implementing IDataPersistence.
+    /// Then saves the game state to ensure consistency.
+    /// </summary>
     public void LoadGame()
     {
         dataPersistenceObjects = FindAllDataPersistenceObjects();
@@ -60,6 +66,12 @@ public class DataPersistenceManager : MonoBehaviour
         }
         SaveGame();
     }
+
+    // <summary>
+    /// Saves the current game state for the selected profile ID.
+    /// Collects data from all objects implementing IDataPersistence,
+    /// updates the last modified timestamp, and writes the data to file.
+    /// </summary>
     public void SaveGame()
     {
         //minden osztály savel
@@ -77,7 +89,10 @@ public class DataPersistenceManager : MonoBehaviour
         dataHandler.Save(gameData, selectedProfileId);
     }
 
-
+    /// <summary>
+    /// Finds all active and inactive MonoBehaviour components in the scene
+    /// that implement the IDataPersistence interface.
+    /// </summary>
     private List<IDataPersistence> FindAllDataPersistenceObjects()
     {
         IEnumerable<IDataPersistence> dataPersistenceObjects = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)
@@ -85,7 +100,10 @@ public class DataPersistenceManager : MonoBehaviour
         return new List<IDataPersistence>(dataPersistenceObjects);
     }
 
-
+    /// <summary>
+    /// Changes the currently selected profile ID for loading and saving game data.
+    /// This does not load or save immediately, but updates the internal reference.
+    /// </summary>
     public void ChangeSelectedProfileId(string newProfileId)
     {
         // update the profile to use for saving and loading
@@ -93,16 +111,34 @@ public class DataPersistenceManager : MonoBehaviour
         // load the game, which will use that profile, updating our game data accordingly
     }
 
+    /// <summary>
+    /// Checks whether valid game data is currently loaded in memory.
+    /// </summary>
+    /// <returns>True if game data exists, false otherwise.</returns>
+    ///</summary>
     public bool HasGameData()
     {
         return gameData != null;
     }
 
+    /// <summary>
+    /// Retrieves all saved game data for all available player profiles.
+    /// </summary>
+    /// <returns>A dictionary mapping profile IDs to their corresponding game data.</returns>
+    /// </summary>
     public Dictionary<string, GameData> GetAllProfilesGameData()
     {
         return dataHandler.LoadAllProfiles();
     }
 
+
+
+    /// <summary>
+    /// Callback invoked when a new scene is loaded. 
+    /// Re-discovers all data persistence objects in the scene and loads the game data for them.
+    /// </summary>
+    /// <param name="scene">The scene that was loaded.</param>
+    /// <param name="mode">The load mode used for the scene.</param>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Debug.Log("Scene loaded: " + scene.name);
@@ -110,7 +146,10 @@ public class DataPersistenceManager : MonoBehaviour
         LoadGame();
     }
 
-
+    /// <summary>
+    /// Callback invoked when the application is quitting. 
+    /// Automatically saves the current game state before exit.
+    /// </summary>
     private void OnApplicationQuit()
     {
         SaveGame();

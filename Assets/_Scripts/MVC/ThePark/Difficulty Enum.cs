@@ -9,7 +9,6 @@ public enum DifficultyEnum
 
 public static class DifficultyExtensions
 {
-    // Szorzó visszaadása az adott nehézséghez
     public static int GetMultiplier(this DifficultyEnum difficulty)
     {
         return difficulty switch

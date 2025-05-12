@@ -1,8 +1,7 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
-public class InventoryManager : MonoBehaviour
+public class InventoryManager : MonoBehaviour, IDataPersistence
 {
     public Inventory inventory;
     public InventoryView inventoryView;
@@ -16,9 +15,13 @@ public class InventoryManager : MonoBehaviour
             Destroy(this);
             return;
         }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        if (inventory == null)
+        {
+            inventory = new Inventory();
+
+        }
         inventoryView.GenerateInventoryUI(inventory.items);
     }
 
@@ -28,13 +31,18 @@ public class InventoryManager : MonoBehaviour
     }
     void Start()
     {
+        if (inventory == null)
+        {
+            inventory = new Inventory();
+
+        }
         inventoryView.GenerateInventoryUI(inventory.items);
     }
 
 
     public void FilterAll()
     {
-       inventoryView.GenerateInventoryUI(inventory.items);
+        inventoryView.GenerateInventoryUI(inventory.items);
     }
 
     public void FilterCategory(int categoryIndex)
@@ -42,7 +50,7 @@ public class InventoryManager : MonoBehaviour
         inventoryView.ClearUP();
         Category category = (Category)categoryIndex;
 
-        // Csak a kiválasztott kategóriát rendereljük
+        // Csak a kivï¿½lasztott kategï¿½riï¿½t rendereljï¿½k
         Dictionary<Item, int> filtered = new Dictionary<Item, int>();
 
         foreach (KeyValuePair<Item, int> entry in inventory.items)
@@ -52,7 +60,7 @@ public class InventoryManager : MonoBehaviour
                 filtered.Add(entry.Key, entry.Value);
             }
         }
-    
+
         inventoryView.GenerateInventoryUI(filtered);
     }
     public void StartPlacing()
@@ -73,7 +81,8 @@ public class InventoryManager : MonoBehaviour
         inventoryView.gameObject.SetActive(true);
     }
 
-    public void Sell() {
+    public void Sell()
+    {
 
         if (inventory.CanSellItem(inventory.currentItem))
         {
@@ -90,8 +99,6 @@ public class InventoryManager : MonoBehaviour
         {
             Debug.Log("Sellerror");
         }
-
-       
     }
 
     public void ShowItemDetails(Item item)
@@ -100,10 +107,39 @@ public class InventoryManager : MonoBehaviour
         inventory.currentItem = item;
     }
 
-    //amikor felveszi az adott objectet akkor a pickup miatt berakja az inventoryba hogy lehessen használni
-    public void PickedUpItem(Item Item) { 
+    //amikor felveszi az adott objectet akkor a pickup miatt berakja az inventoryba hogy lehessen hasznï¿½lni
+    public void PickedUpItem(Item Item)
+    {
         inventory.AddItem(Item);
     }
 
- 
+    public void LoadData(GameData data)
+    {
+        if (inventory == null) inventory = new Inventory();
+
+
+        inventory.items.Clear();
+        if (data.inventoryData == null || data.inventoryData.items == null)
+            return;
+        foreach (var pair in data.inventoryData.items)
+        {
+            Item item = ItemManager.Instance.GetItemById(pair.Key);
+            if (item != null)
+            {
+                inventory.items[item] = pair.Value;
+            }
+        }
+        Debug.Log("Inventory betÃ¶ltve.");
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.inventoryData.items.Clear();
+
+        foreach (var pair in inventory.items)
+        {
+            data.inventoryData.items[pair.Key.id] = pair.Value;
+        }
+        Debug.Log("Inventory elmentve.");
+    }
 }

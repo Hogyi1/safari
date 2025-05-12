@@ -109,6 +109,7 @@ public class PauseController : MonoBehaviour
     public void SaveGame()
     {
         Debug.Log("SaveGame clicked (not implemented).");
+        DataPersistenceManager.Instance.SaveGame();
     }
 
     /// <summary>

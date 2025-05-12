@@ -6,7 +6,7 @@ using UnityEngine;
 /// and unlocking content based on completed levels.
 /// Implements ILevelObserver to respond to experience gain events.
 /// </summary>
-public class LevelManager : MonoBehaviour, ILevelObserver
+public class LevelManager : MonoBehaviour, ILevelObserver , IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the LevelManager for global access.
@@ -215,5 +215,21 @@ public class LevelManager : MonoBehaviour, ILevelObserver
         if (levelNumber < 1 || levelNumber > levels.Count)
             return null;
         return levels[levelNumber - 1];
+    }
+
+    public void LoadData(GameData data)
+    {
+         this.currentLevel = data.levelSaveData.currentLevel;
+         this.currentExp = data.levelSaveData.currentExp;
+         this.progress = data.levelSaveData.progress;
+         this.isMaxLevel = data.levelSaveData.isMaxLevel;
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.levelSaveData.currentLevel = this.currentLevel;
+        data.levelSaveData.currentExp = this.currentExp ;
+        data.levelSaveData.progress = this.progress ;
+        data.levelSaveData.isMaxLevel = this.isMaxLevel;
     }
 }

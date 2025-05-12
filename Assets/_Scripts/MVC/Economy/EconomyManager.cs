@@ -4,7 +4,7 @@
 /// Manages the game's economy: tracks money, expenses, income, and handles transactions.
 /// Implements a singleton pattern for global access.
 /// </summary>
-public class EconomyManager : MonoBehaviour
+public class EconomyManager : MonoBehaviour, IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the EconomyManager.
@@ -36,7 +36,7 @@ public class EconomyManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        this.Economy = new Economy();
+        if (this.Economy == null)  this.Economy = new Economy();
     }
 
     /// <summary>
@@ -136,5 +136,13 @@ public class EconomyManager : MonoBehaviour
     
     }
 
+    public void LoadData(GameData data)
+    {
+       this.Economy = data.Economy;
+    }
 
+    public void SaveData(GameData data)
+    {
+       data.Economy = this.Economy;
+    }
 }
