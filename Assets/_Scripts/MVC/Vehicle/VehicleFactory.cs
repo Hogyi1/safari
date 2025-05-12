@@ -38,11 +38,11 @@ public class VehicleFactory : MonoBehaviour
         if (data == null)
             return null;
         Vector3 position = VehicleManager.Instance.GetParkingSpot();
-        var instance = Instantiate(data.vehiclePrefab, position, Quaternion.identity);
+        var instance = Instantiate(data.VehiclePrefab, position, Quaternion.identity);
         instance.transform.SetParent(VehicleParent.transform, true);
 
         var view = instance.GetComponent<VehicleView>();
-        view.SetSpeed(data.speed);
+        view.SetSpeed(data.Speed);
         view.gameObject.SetActive(false);
 
         var model = new VehicleModel(id, data);

@@ -9,7 +9,7 @@ using static VehicleState;
 /// and manages tour start and finish in an MVC architecture.
 /// </summary>
 [RequireComponent(typeof(VehicleFactory))]
-public class VehicleManager : MonoBehaviour, IUpgradeable
+public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager
 {
     /// <summary>
     /// Singleton instance of the VehicleManager.
@@ -24,9 +24,6 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
     [SerializeField] private GameObject garage;
     [Tooltip("Maximum waiting time per vehicle in seconds")]
     [SerializeField] private const float maxWaitingTime = 15f;
-    [Tooltip("The amount of an upgrade session")]
-    [SerializeField] private const int upgradeAmount = 2;
-
 
     private List<Vehicle> activeVehicles = new List<Vehicle>();
     private int capacity = 5;
@@ -238,16 +235,17 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
         return FacilityManager.Instance.GetInteractingPosition(myType);
     }
 
-    public void LevelUp()
+    public void LevelUp(int amount)
     {
-        capacity += upgradeAmount;
+        capacity += amount;
     }
 
-    public void LevelDown()
+    public void LevelDown(int amount)
     {
-        capacity -= upgradeAmount;
+        capacity -= amount;
     }
 
+    public bool CanBuy() => Capacity < MaxCapacity;
     public int MaxCapacity => capacity;
     public int Capacity => activeVehicles.Count;
 }
