@@ -172,7 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   navigator: {fileID: 2501493094259350293}
-  door: {fileID: 5833637087766730708}
+  door: {fileID: 1764485894499241303}
   animalLayermask:
     serializedVersion: 2
     m_Bits: 8192

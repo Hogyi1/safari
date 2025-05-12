@@ -28,14 +28,14 @@ public class FacilityView : MonoBehaviour, IPlaceable, IInteractable, IUpgradeab
         isActive = false;
     }
 
-    public void LevelUp()
+    public void LevelUp(int amount)
     {
         Facility facility = (Facility)MySelectable;
         int level = facility.GetCurrentLevel();
         upgradeEffect.RefreshView(level);
     }
 
-    public void LevelDown()
+    public void LevelDown(int amount)
     {
         Facility facility = (Facility)MySelectable;
         int level = facility.GetCurrentLevel();

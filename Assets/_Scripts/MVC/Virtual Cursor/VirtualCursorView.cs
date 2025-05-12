@@ -45,6 +45,6 @@ public class VirtualCursorView : MonoBehaviour
         Vector2 virtualMousePosition = virtualMouseInput.virtualMouse.position.value;
         virtualMousePosition.x = Mathf.Clamp(virtualMousePosition.x, 0f, Screen.width);
         virtualMousePosition.y = Mathf.Clamp(virtualMousePosition.y, 0f, Screen.height);
-        InputState.Change(virtualMouseInput.virtualMouse, virtualMousePosition);
+        UnityEngine.InputSystem.LowLevel.InputState.Change(virtualMouseInput.virtualMouse, virtualMousePosition);
     }
 }

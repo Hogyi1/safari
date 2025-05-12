@@ -85,8 +85,8 @@ public class NextLevelRewardsUIController : MonoBehaviour, ILevelObserver
         foreach (int id in data.unlockItemIds)
         {
             Item itemToShow = null;
-            foreach (var itm in ItemManager.Instance.getItems())
-                if (itm.id == id)
+            foreach (var itm in ItemManager.Instance.GetItems())
+                if (itm.ID == id)
                 {
                     itemToShow = itm;
                     break;
@@ -94,8 +94,8 @@ public class NextLevelRewardsUIController : MonoBehaviour, ILevelObserver
             if (itemToShow == null) continue;
 
             var card = Instantiate(itemCardPrefab, itemsContainer);
-            card.GetComponentInChildren<Image>().sprite = itemToShow.imagePath;
-            card.GetComponentInChildren<TextMeshProUGUI>().text = itemToShow.itemName;
+            card.GetComponentInChildren<Image>().sprite = itemToShow.Image;
+            card.GetComponentInChildren<TextMeshProUGUI>().text = itemToShow.ItemName;
         }
     }
 

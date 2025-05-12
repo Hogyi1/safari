@@ -6,7 +6,6 @@ public class Parking : Facility, ISelectable
 {
     public Parking(BuildingData Data, int iD) : base(Data, iD) { }
 
-
     public Dictionary<StructureUIValues, object> GetUIData()
     {
         return new Dictionary<StructureUIValues, object> {
@@ -16,8 +15,7 @@ public class Parking : Facility, ISelectable
             { Upgradeprice_button, new Func<float>(() => GetUpgradePrice()) },
             { Level, new Func<int>(() => GetCurrentLevel()) },
             { Value_slider, new Func<float>(() => VehicleManager.Instance.Capacity) },
-            { MaxValue_slider, VehicleManager.Instance.MaxCapacity }
+            { MaxValue_slider, new Func<float>(() => Capacity) }
         };
     }
-
 }
