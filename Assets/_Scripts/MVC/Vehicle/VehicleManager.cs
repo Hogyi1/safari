@@ -26,7 +26,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager
     [SerializeField] private const float maxWaitingTime = 15f;
 
     private List<Vehicle> activeVehicles = new List<Vehicle>();
-    private int capacity = 5;
+    private int maxCapacity = 5;
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -74,7 +74,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager
     /// <param name="vehicleTypeIndex">Index to select vehicle data from factory.</param>
     public void SpawnVehicle(int vehicleTypeIndex)
     {
-        if (capacity <= activeVehicles.Count) return;
+        if (maxCapacity <= activeVehicles.Count) return;
         int id = IDGenerator.GenerateID();
 
         Vehicle newVehicle = factory.CreateVehicle(id, vehicleTypeIndex);
@@ -92,6 +92,8 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager
 
         if (toRemove != null)
         {
+            toRemove.Model.AssignedTouristIDs
+                .ForEach(tid => TouristManager.Instance.SetTouristState(tid, TouristState.Finished));
             activeVehicles.Remove(toRemove);
 
             if (toRemove.View != null)
@@ -237,16 +239,16 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager
 
     public void LevelUp(int amount)
     {
-        capacity += amount;
+        maxCapacity += amount;
     }
 
     public void LevelDown(int amount)
     {
-        capacity -= amount;
+        maxCapacity -= amount;
     }
 
     public bool CanBuy() => Capacity < MaxCapacity;
-    public int MaxCapacity => capacity;
+    public int MaxCapacity => maxCapacity;
     public int Capacity => activeVehicles.Count;
 }
 

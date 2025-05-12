@@ -9,7 +9,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     public static AnimalManager Instance { get; private set; }
 
     // Every Animal
-    private List<Animal> ActiveAnimals = new List<Animal>();
+    private List<Animal> activeAnimals = new List<Animal>();
 
     // Factory
     [SerializeField] private AnimalFactory factory;
@@ -18,6 +18,9 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
     public event Action OnPlaced;
     public event Action OnStopped;
+
+    public bool Incoming;
+    public int Count => activeAnimals.Count;
 
     public void Awake()
     {
@@ -43,7 +46,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         // Tudsz ennél biztonságosabb kódot? XDD
         try
         {
-            List<Animal> deadAnimals = ActiveAnimals.FindAll(t => t.CanRemove);
+            List<Animal> deadAnimals = activeAnimals.FindAll(t => t.CanRemove);
 
             foreach (var dead in deadAnimals)
             {
@@ -96,15 +99,17 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         Animal newAnimal = factory.CreateAnimal(animalType, SpawningLocation, ID, Age);
 
         if (newAnimal != null)
-            ActiveAnimals.Add(newAnimal);
+            activeAnimals.Add(newAnimal);
+        Incoming = true;
     }
 
     public void RemoveAnimal(int ID)
     {
-        Animal toRemove = ActiveAnimals.Find(t => t.ID == ID);
+        Animal toRemove = activeAnimals.Find(t => t.ID == ID);
         if (toRemove != null)
         {
-            ActiveAnimals.Remove(toRemove);
+            Incoming = false;
+            activeAnimals.Remove(toRemove);
             Destroy(toRemove.View.gameObject);
         }
     }
@@ -113,7 +118,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     private void SelectAnimalForBreeding()
     {
         List<AnimalModel> breedables = new List<AnimalModel>();
-        foreach (var animal in ActiveAnimals)
+        foreach (var animal in activeAnimals)
         {
             if (animal.Model.CanBreed && animal.Group != null && !animal.Model.IsBreeding) breedables.Add(animal.Model);
         }
@@ -136,20 +141,20 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     public void Breed(AnimalModel mate1, AnimalModel mate2)
     {
         // Opció evoluciora
-        Animal animal = ActiveAnimals.Find(t => t.ID == mate1.ID);
+        Animal animal = activeAnimals.Find(t => t.ID == mate1.ID);
         SpawnAnimal(animal.Model.Type, animal.View.transform.position, 1);
     }
 
     public Animal GetAnimal(int iD)
     {
-        Animal animal = ActiveAnimals.Find(t => t.ID == iD);
+        Animal animal = activeAnimals.Find(t => t.ID == iD);
         if (animal == null) return null;
         return animal;
     }
 
     public void KillAnimal(Animal prey)
     {
-        if (ActiveAnimals.Contains(prey))
+        if (activeAnimals.Contains(prey))
             prey.Model.GetKilled();
     }
 

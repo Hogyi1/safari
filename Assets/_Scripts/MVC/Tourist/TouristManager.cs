@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using static TouristState;
 
@@ -21,6 +18,10 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
     // Az átlag kedv
     public float OverallMood = 50f;
     public float OverallWaitingMood = 50f;
+
+    public bool Incoming;
+    public int Count => activeTourists.Count;
+
     [SerializeField] private float moodSensitivity = 0.5f;
 
     public void Awake()
@@ -47,6 +48,7 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
 
         if (newTourist != null)
             activeTourists.Add(newTourist);
+        Incoming = true;
     }
 
     public void RemoveTourist(int touristID)
@@ -54,10 +56,10 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
         Tourist toRemove = activeTourists.Find(t => t.ID == touristID);
         if (toRemove != null)
         {
+            Incoming = false;
             activeTourists.Remove(toRemove);
             Destroy(toRemove.View.gameObject);
         }
-        Debug.Log("Removed");
     }
 
     public void Update()
