@@ -9,10 +9,7 @@ public class FacilityManager : MonoBehaviour, IStructureManager
     private Dictionary<int, FacilityView> activeViews = new Dictionary<int, FacilityView>();
 
     [SerializeField] private int garageUpgradeAmount = 2;
-<<<<<<< HEAD
     [SerializeField] private int rangerUpgradeAmount = 1;
-=======
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
     public void Awake()
     {
         if (Instance != null && Instance != this)

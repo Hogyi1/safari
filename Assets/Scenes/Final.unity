@@ -2197,10 +2197,7 @@ Transform:
   m_Children:
   - {fileID: 1748204639}
   - {fileID: 1328911811}
-<<<<<<< HEAD
   - {fileID: 1280127738}
-=======
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &126714161
@@ -3635,10 +3632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   garageUpgradeAmount: 2
-<<<<<<< HEAD
   rangerUpgradeAmount: 1
-=======
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
 --- !u!1 &180566293
 GameObject:
   m_ObjectHideFlags: 0
@@ -3964,10 +3958,7 @@ Transform:
   - {fileID: 762414456}
   - {fileID: 405320952}
   - {fileID: 1475454218}
-<<<<<<< HEAD
   - {fileID: 1758698750}
-=======
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
   m_Father: {fileID: 1325113601}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &192729174
@@ -9723,10 +9714,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   factory: {fileID: 528436426}
   previewSystem: {fileID: 525987953}
-<<<<<<< HEAD
   Incoming: 0
-=======
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
 --- !u!114 &528436426
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11493,10 +11481,7 @@ Transform:
   - {fileID: 175434874}
   - {fileID: 186977007}
   - {fileID: 1531696309}
-<<<<<<< HEAD
   - {fileID: 624506477}
-=======
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
   m_Father: {fileID: 1936778373}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &644914880
@@ -15362,11 +15347,7 @@ Transform:
   m_GameObject: {fileID: 886906791}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-<<<<<<< HEAD
   m_LocalPosition: {x: 0, y: 0, z: 0}
-=======
-  m_LocalPosition: {x: 56.68, y: 4.682, z: 54.53}
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20257,11 +20238,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-<<<<<<< HEAD
   m_NavMeshData: {fileID: 23800000, guid: c4540b143b16be24897675e4821e43bc, type: 2}
-=======
-  m_NavMeshData: {fileID: 23800000, guid: ea02d8213b8120640bcd0dd2a8ec5c67, type: 2}
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
   m_BuildHeightMesh: 1
 --- !u!114 &1173176510
 MonoBehaviour:
@@ -28631,10 +28608,7 @@ Transform:
   - {fileID: 528436424}
   - {fileID: 536646144}
   - {fileID: 152803839}
-<<<<<<< HEAD
   - {fileID: 591794117}
-=======
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
   m_Father: {fileID: 771144600}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1668716270
@@ -29631,11 +29605,7 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-<<<<<<< HEAD
     m_Bits: 65536
-=======
-    m_Bits: 16384
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
   m_UseGeometry: 0
   m_DefaultArea: 3
   m_GenerateLinks: 0
@@ -29916,11 +29886,7 @@ MonoBehaviour:
   m_Size: {x: 38, y: 20, z: 30}
   m_Center: {x: 0, y: 1, z: 0}
   m_Area: 1
-<<<<<<< HEAD
   m_AffectedAgents: f46d2d58c3c0608d
-=======
-  m_AffectedAgents: f46d2d58
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
 --- !u!4 &1748204639
 Transform:
   m_ObjectHideFlags: 0

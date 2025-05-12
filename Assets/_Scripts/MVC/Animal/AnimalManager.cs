@@ -18,13 +18,9 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
     public event Action OnPlaced;
     public event Action OnStopped;
-<<<<<<< HEAD
-
 
     public bool Incoming;
     public int Count => activeAnimals.Count;
-=======
->>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
 
     public void Awake()
     {
