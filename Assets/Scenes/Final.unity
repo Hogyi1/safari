@@ -5077,10 +5077,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff751136dc0ee3e478e72f63ea4de6c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  challenges:
-  - {fileID: 11400000, guid: b1433ca407e417647ae2544858e5c1ca, type: 2}
-  - {fileID: 11400000, guid: f48182d4b36f92b44849b1b5721cf49f, type: 2}
-  - {fileID: 11400000, guid: a111a62bcd3bb5e4a94a80c40308beeb, type: 2}
 --- !u!1 &242514429
 GameObject:
   m_ObjectHideFlags: 0
@@ -17471,6 +17467,7 @@ MonoBehaviour:
   zoomAmount: 3
   followOffsetMin: 13
   followOffsetMax: 35
+  terrain: {fileID: 1361285685}
   followOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &1024424965
 MonoBehaviour:
