@@ -52,6 +52,10 @@ public class CameraController : MonoBehaviour
         HandleRotation();
         HandleHeight();
         HandleZoom();
+
+        // Clamp camera position inside terrain
+        Vector3 clamped = model.ClampPosition(view.transform.position);
+        view.SetPosition(clamped);
     }
 
     /// <summary>
