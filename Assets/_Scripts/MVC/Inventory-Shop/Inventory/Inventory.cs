@@ -12,7 +12,11 @@ public class Inventory
     private Dictionary<Item, int> items;
 
     /// <summary>
+<<<<<<< HEAD
     /// Public getter of items.
+=======
+    /// Public getter of inventory
+>>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
     /// </summary>
     public Dictionary<Item, int> Items => items;
 

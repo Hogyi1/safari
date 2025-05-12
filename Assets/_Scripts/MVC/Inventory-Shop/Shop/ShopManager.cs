@@ -111,9 +111,14 @@ public class ShopManager : MonoBehaviour
         bool enoughMoney = EconomyManager.Instance.HasEnoughMoney(item.GetPrice());
         IBuyableManager manager = GetManagerByItem(item);
         bool hasSpace = manager != null && manager.CanBuy();
+<<<<<<< HEAD
         bool unlocked = item.LockState == LockState.Unlocked;
 
         return enoughMoney && hasSpace && unlocked;
+=======
+
+        return enoughMoney && hasSpace;
+>>>>>>> e4d01ad65ab90aaa4cc20044773b309cfe295325
     }
 
     /// <summary>
