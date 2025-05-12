@@ -8,16 +8,31 @@ using UnityEngine.UI;
 public class MainMenuController : MonoBehaviour
 {
     [Header("Menu Navigation")]
-    [SerializeField] private SaveSlotsMenu saveSlotsMenu;
+
     /// <summary>
-    /// Array of menu GameObjects to toggle on navigation.
+    /// Reference to the save slots menu used for selecting save files.
     /// </summary>
-    [SerializeField] GameObject[] menus;
+    [SerializeField] private SaveSlotsMenu saveSlotsMenu;
+
+    /// <summary>
+    /// Array of menu GameObjects to toggle during navigation.
+    /// </summary>
+    [SerializeField] private GameObject[] menus;
+
+    /// <summary>
+    /// Button used to continue the most recently saved game.
+    /// </summary>
     [SerializeField] private Button continueGameButton;
+
+    /// <summary>
+    /// Button used to load an existing save game from the save slots menu.
+    /// </summary>
     [SerializeField] private Button loadGameButton;
+
+    /// <summary>
+    /// The name of the main game scene to load when starting or continuing a game.
+    /// </summary>
     [SerializeField] private string gameSceneName = "Bemutato";
-
-
 
     /// <summary>
     /// Hides all menu panels on start.
@@ -78,16 +93,28 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called when the "New Game" button is clicked.
+    /// Activates the save slots menu for starting a new game.
+    /// </summary>
     public void OnNewGameClicked()
     {
         saveSlotsMenu.ActivateMenu(false);
     }
 
+    /// <summary>
+    /// Called when the "Load Game" button is clicked.
+    /// Activates the save slots menu for loading an existing game.
+    /// </summary>
     public void OnLoadGameClicked()
     {
         saveSlotsMenu.ActivateMenu(true);
     }
 
+    /// <summary>
+    /// Disables the "Continue" and "Load Game" buttons
+    /// if no game data is found in the current profile.
+    /// </summary>
     private void DisableButtonsDependingOnData()
     {
         if (!DataPersistenceManager.Instance.HasGameData())
@@ -96,4 +123,5 @@ public class MainMenuController : MonoBehaviour
             loadGameButton.interactable = false;
         }
     }
+
 }
