@@ -11,7 +11,7 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
     /// </summary>
     public static ChallengeManager Instance { get; private set; }
 
-    [SerializeField] private List<Challenge> challenges = new();
+    private List<Challenge> challenges = new();
 
     /// <summary>
     /// Ensures a single instance and persists this object across scenes.
@@ -26,6 +26,8 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        challenges = new List<Challenge>(Resources.LoadAll<Challenge>(""));
     }
 
     /// <summary>
