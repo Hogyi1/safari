@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Inventory {
+public class Inventory
+{
 
     //contains the purchesed items
-    [SerializeField]public Dictionary<Item, int> items;
+    [SerializeField] public Dictionary<Item, int> items;
     public Item currentItem;
 
 
@@ -15,7 +16,8 @@ public class Inventory {
     }
 
     //a saveing miatt kell
-    public Inventory(Dictionary<Item, int> items) { 
+    public Inventory(Dictionary<Item, int> items)
+    {
         this.items = items;
     }
     public void AddItem(Item item)
@@ -23,7 +25,7 @@ public class Inventory {
 
         if (items.TryGetValue(item, out int itemcount))
         {
-            items[item] +=  1;
+            items[item] += 1;
         }
         else
         {
@@ -40,11 +42,11 @@ public class Inventory {
             itemcount -= 1;
             if (itemcount <= 0)
             {
-                items.Remove(item); 
+                items.Remove(item);
             }
             else
             {
-                items[item] = itemcount; 
+                items[item] = itemcount;
             }
         }
 
@@ -64,21 +66,21 @@ public class Inventory {
 
                 if (items[item] <= 0)
                 {
-                    items.Remove(item); 
+                    items.Remove(item);
                 }
             }
         }
     }
 
-    public bool HasItem(Item item) {
-        return items.ContainsKey(item) && items[item] > 0;
-    }
+    public bool HasItem(Item item) => items.ContainsKey(item);
 
-    public bool CanSellItem(Item item) { 
+    public bool CanSellItem(Item item)
+    {
         return GetItemCount(item) > 0;
     }
 
-    public int GetItemCount(Item item) {
+    public int GetItemCount(Item item)
+    {
         if (items.TryGetValue(item, out int itemcount))
         {
             return itemcount;
