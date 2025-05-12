@@ -44,14 +44,15 @@ public class AnimalPlacementState : IBuildingState
     /// Attempts to place an animal at the selected position.
     /// </summary>
     /// <param name="mousePosition">World position where the player clicked.</param>
-    public void OnAction(Vector3 mousePosition)
+    public bool OnAction(Vector3 mousePosition)
     {
         float terrainY = Terrain.activeTerrain.SampleHeight(mousePosition);
         Vector3 spawnPosition = new Vector3(mousePosition.x, terrainY, mousePosition.z);
 
         if (previewSystem == null || !previewSystem.CheckValidity(new Vector3(mousePosition.x, 0, mousePosition.z)))
-            return;
+            return false;
 
         AnimalManager.Instance.SpawnAnimal(animalType, spawnPosition, 5);
+        return true;
     }
 }

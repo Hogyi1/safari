@@ -11,9 +11,9 @@ public class AnimalPreviewSystem : MonoBehaviour
     [SerializeField] private float yOffset;
     private bool isShowing;
 
-
     void Start()
     {
+        isShowing = false;
         projector.gameObject.SetActive(false);
     }
 

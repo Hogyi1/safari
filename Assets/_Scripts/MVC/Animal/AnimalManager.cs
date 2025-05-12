@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AnimalFactory))]
-public class AnimalManager : MonoBehaviour, IRandomEventObserver
+public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManager, IPlaceableManager
 {
     // Singleton
     public static AnimalManager Instance { get; private set; }
@@ -15,6 +15,9 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
     [SerializeField] private AnimalFactory factory;
     [SerializeField] private AnimalPreviewSystem previewSystem;
     private IBuildingState BuildingState;
+
+    public event Action OnPlaced;
+    public event Action OnStopped;
 
     public void Awake()
     {
@@ -51,7 +54,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
 
     }
 
-    public void StartPlacingAnimal(int animalID)
+    public void StartPlacing(int animalID)
     {
         InputManager.Instance.SetState(InputState.AnimalPlacementMode);
         InputEventChannel.OnClick += TryPlacement;
@@ -69,7 +72,8 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
 
         Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
 
-        BuildingState.OnAction(mousePosition);
+        bool placed = BuildingState.OnAction(mousePosition);
+        if (placed) OnPlaced?.Invoke();
     }
 
     public void StopPlacement()
@@ -77,6 +81,8 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
         if (BuildingState == null) return;
         BuildingState.EndState();
         BuildingState = null;
+
+        OnStopped?.Invoke();
 
         InputManager.Instance.SetState(InputState.NormalMode);
         InputEventChannel.OnClick -= TryPlacement;
@@ -146,6 +152,9 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver
         if (ActiveAnimals.Contains(prey))
             prey.Model.GetKilled();
     }
+
+    public bool CanBuy() => true;
+
 }
 
 // Most csak ilyen állatok vannak

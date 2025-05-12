@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -58,16 +56,21 @@ public class AnimalFactory : MonoBehaviour
     }
 
     /// <summary>
+    /// Get animal data by ID
+    /// </summary>
+    /// <param name="ID"></param>
+    /// <returns></returns>
+    public AnimalType GetAnimalTypeByID(int ID)
+    {
+        return animalDatabase.Find(t => t.AnimalID == ID).Type;
+    }
+
+    /// <summary>
     /// Betölti az összes AnimalData ScriptableObject-et a Resources/Animals mappából.
     /// </summary>
     private void LoadAllAnimals()
     {
         animalDatabase = new List<AnimalData>(Resources.LoadAll<AnimalData>("Animals"));
         Debug.Log($"Betöltve {animalDatabase.Count} állat.");
-    }
-
-    public AnimalType GetAnimalTypeByID(int ID)
-    {
-        return animalDatabase.Find(t => t.animalID == ID).Type;
     }
 }
