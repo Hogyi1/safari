@@ -18,6 +18,7 @@ public class AnimalModel
     private float hp = 100;
     private int maxAge;
 
+    public int Price;
     public int Age = 0;
     public bool IsHungry => hunger <= 40f;
     public bool IsThirsty => thirst <= 40f;
@@ -51,6 +52,7 @@ public class AnimalModel
         this.Speed = data.Speed;
         this.maxAge = data.MaxAge;
         this.Age = Age;
+        this.Price = data.Price / 2;
     }
     // Egyszerű számítások az igényekhez
     public void CalculateHunger(float multiplier)

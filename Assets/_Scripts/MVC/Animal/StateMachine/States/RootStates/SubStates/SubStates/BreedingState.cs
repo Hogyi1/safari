@@ -22,6 +22,8 @@ public class BreedingState : AnimalBaseState
             ExitState();
             return;
         }
+
+        timer = cooldown;
     }
 
     public override void UpdateState()
