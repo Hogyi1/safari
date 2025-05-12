@@ -57,25 +57,6 @@ public class AnimalPopup : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the popup UI each frame with the animal's age, state, and HP.
-    /// Automatically hides if the animal is flagged for removal.
-    /// </summary>
-    void Update()
-    {
-        if (Data != null)
-        {
-            info1.text = Data.Model.Age.ToString();
-            info2.text = Data.Brain.RootState.ToString();
-            healthbar.fillAmount = Data.Model.Hp / 100f;
-        }
-
-        if (Data.CanRemove)
-        {
-            InputManager.Instance.DisableView();
-        }
-    }
-
-    /// <summary>
     /// Initializes the popup with the given animal's data and binds button actions.
     /// </summary>
     /// <param name="animal">The animal whose data should be shown.</param>
@@ -88,7 +69,29 @@ public class AnimalPopup : MonoBehaviour
         _name.text = animal.Model.Type.ToString();
 
         setTarget.onClick.RemoveAllListeners();
-        setTarget.onClick.AddListener(() => { AnimalManager.Instance.KillAnimal(animal); });
+        setTarget.onClick.AddListener(() => { RangerManager.Instance.HuntDownAnimal(animal.ID); });
         close.onClick.AddListener(() => { InputManager.Instance.DisableView(); });
     }
+
+    /// <summary>
+    /// Updates the popup UI each frame with the animal's age, state, and HP.
+    /// Automatically hides if the animal is flagged for removal.
+    /// </summary>
+    void Update()
+    {
+        if (Data != null)
+        {
+            info1.text = Data.Model.Age.ToString();
+            info2.text = Data.Brain.RootState.ToString();
+            healthbar.fillAmount = Data.Model.Hp / 100f;
+
+            setTarget.enabled = RangerManager.Instance.CanHunt(Data.ID);
+        }
+
+        if (Data.CanRemove)
+        {
+            InputManager.Instance.DisableView();
+        }
+    }
+
 }
