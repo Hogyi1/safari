@@ -133,6 +133,17 @@ public class StructureManager : MonoBehaviour, IBuyableManager
     }
 
     public bool CanBuy() => true;
+
+    /// <summary>
+    /// Returns a list of all currently placed IPlaceable views.
+    /// </summary>
+    public List<IPlaceable> GetPlaceables()
+    {
+        // IInteractables holds every IPlaceable by its unique ID
+        return new List<IPlaceable>(IInteractables.Values);
+    }
+
+
 }
 
 // Interfész IStructureManager

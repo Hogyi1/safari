@@ -50,6 +50,12 @@ public class GameData
 
     public int RangerCount;
     public int RangerMaxCapacity;
+
+
+    public List<AnimalSaveData> animalSaveDatas;
+    
+    public List<SaveMapData> saveMapDatas;
+    
     /// <summary>
     /// Initializes a new GameData instance with default values.
     /// Called when no previous save exists for a profile.
@@ -68,7 +74,8 @@ public class GameData
         this.vehicleData = new VehicleSaveData();
         this.RangerCount = 0;
         this.RangerMaxCapacity = 3;
-    }
+        this.saveMapDatas = new();
+}
     /// <summary>
     /// Returns the overall completion percentage of the game.
     /// Currently returns a fixed value of 0%.

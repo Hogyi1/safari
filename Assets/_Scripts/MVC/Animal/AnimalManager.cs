@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AnimalFactory))]
-public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManager, IPlaceableManager
+public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManager, IPlaceableManager , IDataPersistence
 {
     // Singleton
     public static AnimalManager Instance { get; private set; }
@@ -159,6 +160,34 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     }
 
     public bool CanBuy() => true;
+
+    
+
+    public void SaveData(GameData data)
+    {
+
+        data.animalSaveDatas.Clear();
+        foreach (var a in activeAnimals)
+        {
+            data.animalSaveDatas.Add(new AnimalSaveData(a.Model.Type,a.View.gameObject.transform.position,a.Model.Age));
+        }
+    }
+
+    public void LoadData(GameData data)
+    {
+        StartCoroutine(SpawnAnimalWithDelay(data));
+    }
+
+    private IEnumerator SpawnAnimalWithDelay(GameData data)
+    {
+        yield return new WaitForEndOfFrame();
+
+        foreach (AnimalSaveData a in data.animalSaveDatas)
+        {
+            SpawnAnimal(a.type, a.position, a.Age);
+        }
+
+    }
 
 }
 
