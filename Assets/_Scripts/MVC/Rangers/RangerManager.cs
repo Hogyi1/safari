@@ -153,10 +153,10 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
 }
 public enum RangerState
 {
-    Busy, // ha épp vadászik
-    At_target, // ha odaért
-    Resting, // ha már nem busy és tul faradt
-    Available, // ha már nem busy és nem tul faradt
+    Busy, // ha pp vadszik
+    At_target, // ha odart
+    Resting, // ha mr nem busy s tul faradt
+    Available, // ha mr nem busy s nem tul faradt
     Finished,
     On_target
 }
