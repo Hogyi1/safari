@@ -23,6 +23,8 @@ public class RoadManager : MonoBehaviour, IStructureManager
     private Node GarageNode;
     private Node ExitNode;
     private Node DrivewayNode;
+
+    public int NodeCount => ActiveRoads.Count;
     // Irányok amerre kapcsolódhat két út, ha akarjuk akkor az oldal irányt is belerakhatjuk
     private static readonly List<Vector2Int> directions = new()
     {

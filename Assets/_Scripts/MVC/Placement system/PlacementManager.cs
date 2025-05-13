@@ -11,7 +11,7 @@ using UnityEngine.UIElements;
 
 [RequireComponent(typeof(TerrainController))]
 [RequireComponent(typeof(PreviewSystem))]
-public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersistence
+public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersistence
 {
     public static PlacementManager Instance;
 
@@ -207,7 +207,7 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersiste
             Vector2Int nodePosition = new Vector2Int(roadPosition.x, roadPosition.z); // Csak azért, hogyha később az utakat is betöltjük
 
             MapData.AddObjectAt(mapPosition, data.SpaceTaken, data.BuildingID, iD);
-            
+
             success = StructureManager.Instance.RegisterStructures(data, iD, placeable, nodePosition) && success;
         }
 
@@ -268,7 +268,8 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersiste
 
         List<IPlaceable> pla = StructureManager.Instance.GetPlaceables();
         data.saveMapDatas.Clear();
-        foreach (IPlaceable placeable in pla) {
+        foreach (IPlaceable placeable in pla)
+        {
 
             data.saveMapDatas.Add(new SaveMapData(
                     placeable.GetID(),
@@ -276,7 +277,7 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersiste
                     placeable.GetGameObject().transform.position
                 )
             );
-               
+
         }
     }
 
@@ -315,16 +316,20 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersiste
 
             if (Buildingdata.Type == BuildingType.Road)
             {
+                Debug.Log("Utat rakok le");
                 Vector3 middle = view.GetGameObject().transform.Find("Middle").position;
                 roadPosition = roadGrid.WorldToCell(middle);
                 Vector3 normalPosition = roadGrid.CellToWorld(roadPosition);
                 Vector3Int newGridPosition = normalGrid.WorldToCell(normalPosition);
                 mapPosition = new Vector2Int(newGridPosition.x, newGridPosition.z);
-                
+                nodePosition = new Vector2Int(roadPosition.x, roadPosition.z);
+                Debug.Log("Middle " + middle);
+                Debug.Log("Roadpos " + normalPosition);
             }
+
             MapData.AddObjectAt(mapPosition, Buildingdata.SpaceTaken, Buildingdata.BuildingID, iD);
             StructureManager.Instance.RegisterStructures(Buildingdata, iD, view, nodePosition);
-            RoadManager.Instance.AddNode(mapPosition,iD);
+            RoadManager.Instance.AddNode(mapPosition, iD);
             roadNavMesh.BuildNavMesh();
             newStructureGO.transform.SetParent(roadNavMesh.transform, true);
         }
@@ -336,7 +341,7 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersiste
         return buildingDatabase.FirstOrDefault(t => t.BuildingID == buildingID);
     }
 
-  
+
 }
 
 public interface IBuildingState

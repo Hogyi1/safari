@@ -10,7 +10,7 @@ using static VehicleState;
 /// and manages tour start and finish in an MVC architecture.
 /// </summary>
 [RequireComponent(typeof(VehicleFactory))]
-public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager , IDataPersistence
+public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the VehicleManager.
@@ -27,7 +27,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager , IDa
     [SerializeField] private const float maxWaitingTime = 15f;
 
     private List<Vehicle> activeVehicles = new List<Vehicle>();
-    [SerializeField]private int maxCapacity = 5; //kiszedni
+    [SerializeField] private int maxCapacity = 5; //kiszedni
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -269,14 +269,15 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager , IDa
     {
         this.maxCapacity = data.vehicleData.maxCapacity;
 
-             StartCoroutine(SpawnTouristsWithDelay(data.vehicleData.activevehicle));
+        StartCoroutine(SpawnTouristsWithDelay(data.vehicleData.activevehicle));
     }
 
     public void SaveData(GameData data)
     {
         data.vehicleData.maxCapacity = this.maxCapacity;
         data.vehicleData.activevehicle.Clear();
-        foreach (var vehicle in this.activeVehicles) {
+        foreach (var vehicle in this.activeVehicles)
+        {
             data.vehicleData.activevehicle.Add(vehicle.Model.Type);
         }
     }
@@ -289,7 +290,6 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager , IDa
         {
             SpawnVehicle(v);
         }
-        Debug.LogError("beoltott");
     }
 
 }
