@@ -79,4 +79,9 @@ public class SeekWaterState : AnimalBaseState, IRootState
         context.animal.Model.CalculateHunger(1f);
         context.animal.Model.CalculateThirst(1.2f);
     }
+
+    public override string ToString()
+    {
+        return "Thirsty";
+    }
 }

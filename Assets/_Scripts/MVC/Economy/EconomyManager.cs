@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -14,7 +15,11 @@ public class EconomyManager : MonoBehaviour
     /// <summary>
     /// The underlying economy data object.
     /// </summary>
-    private Economy Economy { get; set; }
+    private Economy Economy = new Economy();
+
+    [SerializeField] private int maxTicketPrice = 50;
+
+    public bool Incoming;
 
     /// <summary>
     /// Ensures only one instance exists and persists across scenes.
@@ -36,7 +41,8 @@ public class EconomyManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        Economy = new Economy();
+        if (Economy.IsUnityNull())
+            Economy = new Economy();
     }
 
     /// <summary>
@@ -50,6 +56,7 @@ public class EconomyManager : MonoBehaviour
         {
             Economy.CurrentMoney -= amount;
             Economy.OverallExpense += amount;
+            Incoming = false;
             return true;
         }
         return false;
@@ -63,6 +70,7 @@ public class EconomyManager : MonoBehaviour
     {
         Economy.CurrentMoney += amount;
         Economy.OverallIncome += amount;
+        Incoming = true;
     }
 
     /// <summary>
@@ -70,7 +78,7 @@ public class EconomyManager : MonoBehaviour
     /// </summary>
     public void CalculateExpenses()
     {
-        var Rangers = 0; // NPCManager.GetRangers().Count();
+        int Rangers = RangerManager.Instance.Capacity;
         Economy.CurrentExpenses = Rangers * Economy.RangerSalary;
     }
 
@@ -80,7 +88,7 @@ public class EconomyManager : MonoBehaviour
     public void PayForTicket()
     {
         AddMoney(Economy.TicketPrice);
-        // Economy.OverallIncome += Economy.TicketPrice;
+        Economy.OverallIncome += Economy.TicketPrice;
     }
 
     /// <summary>
@@ -89,6 +97,7 @@ public class EconomyManager : MonoBehaviour
     /// <returns>True if the payment succeeded; otherwise false.</returns>
     public bool PaySalary()
     {
+        CalculateExpenses();
         return RemoveMoney(Economy.RangerSalary);
     }
 
@@ -98,11 +107,7 @@ public class EconomyManager : MonoBehaviour
     /// <param name="price">The new ticket price.</param>
     public void ChangeTicketPrice(int price)
     {
-        if (price > 50 || price < 1)
-        {
-            return;
-        }
-
+        if (price > maxTicketPrice || price < 1) return;
         Economy.TicketPrice = price;
     }
 
@@ -119,4 +124,9 @@ public class EconomyManager : MonoBehaviour
     /// <returns>The underlying Economy object.</returns>
     public Economy GetEconomy() => Economy;
 
+    /// <summary>
+    /// The influence of the ticket price regarding the tourist spawning
+    /// </summary>
+    /// <returns>Ticket influence</returns>
+    public float GetTicketInfluence() => Mathf.Clamp01(1f - Economy.TicketPrice / maxTicketPrice) + 0.5f;
 }

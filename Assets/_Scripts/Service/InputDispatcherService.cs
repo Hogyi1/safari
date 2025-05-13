@@ -81,7 +81,8 @@ public class InputDispatcherService : MonoBehaviour
     {
         var top = UIStackService.Peek();
 
-        if (top == PauseController.Instance.PauseMenuUI
+        if (top != null
+            && top == PauseController.Instance.PauseMenuUI
             && InputManager.Instance.State == InputState.NormalMode)
         {
             TogglePause();

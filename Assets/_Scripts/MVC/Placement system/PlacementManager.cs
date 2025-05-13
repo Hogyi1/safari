@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(TerrainController))]
@@ -198,7 +199,6 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager
                 Vector3Int newGridPosition = normalGrid.WorldToCell(normalPosition); // cell pos az 1x1-ben
                 mapPosition = new Vector2Int(newGridPosition.x, newGridPosition.z);
             }
-
             Vector2Int nodePosition = new Vector2Int(roadPosition.x, roadPosition.z); // Csak azért, hogyha később az utakat is betöltjük
 
             MapData.AddObjectAt(mapPosition, data.SpaceTaken, data.BuildingID, iD);

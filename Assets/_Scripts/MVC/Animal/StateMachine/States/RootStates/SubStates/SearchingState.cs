@@ -150,4 +150,9 @@ public class SearchingState : AnimalBaseState
             context.animal.Model.SetPrey(preyView.Model);
         }
     }
+
+    public override string ToString()
+    {
+        return "Searching";
+    }
 }

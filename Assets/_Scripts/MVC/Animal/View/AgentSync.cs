@@ -38,6 +38,7 @@ public class AgentSync : MonoBehaviour
     /// </summary>
     private void OnAnimatorMove()
     {
+        if (!Agent.enabled || !Agent.hasPath) return;
         Vector3 rootPos = Animator.rootPosition;
         rootPos.y = Mathf.Max(Agent.nextPosition.y, Terrain.activeTerrain.SampleHeight(transform.position));
         transform.position = rootPos;
@@ -50,6 +51,7 @@ public class AgentSync : MonoBehaviour
     /// </summary>
     private void UpdateAnimatorParameters()
     {
+        if (!Agent.enabled) return;
         Vector3 worldDelta = Agent.nextPosition - transform.position;
         worldDelta.y = 0f;
 

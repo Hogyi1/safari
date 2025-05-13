@@ -18,3 +18,4 @@ MonoBehaviour:
   LockState: 1
   Image: {fileID: 21300000, guid: 010a6459b01003b4f9fa9771b6b41679, type: 3}
   ItemData: {fileID: 11400000, guid: a67c8184bc828fb4cab02ecf6ee97be3, type: 2}
+  Placeable: 1

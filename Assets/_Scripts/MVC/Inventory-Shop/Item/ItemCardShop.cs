@@ -30,7 +30,7 @@ public class ItemCardShop : MonoBehaviour
     /// <param name="item">The item to display in the UI element.</param>
     public void SetItemData(Item item)
     {
-        this.itemName.text = item.GetPrice().ToString() + ".0 $";
+        this.itemName.text = "$" + item.GetPrice().ToString() + ",00";
         this.itemImage.sprite = item.Image;
 
         itemButton.onClick.RemoveAllListeners();

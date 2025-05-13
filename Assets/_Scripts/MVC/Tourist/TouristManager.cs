@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static TouristState;
 
 [RequireComponent(typeof(TouristFactory))]
@@ -18,11 +19,16 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
     // Az átlag kedv
     public float OverallMood = 50f;
     public float OverallWaitingMood = 50f;
-
     public bool Incoming;
+
+    public AnimalType FavouriteAnimal => animalChart.Count == 0 ? default : animalChart.OrderByDescending(kvp => kvp.Value).Last().Key;
+    public int AllTimeVisitors;
+    public float OverallFeeMood => (OverallMood * 0.7f + OverallWaitingMood * 0.3f) / 2;
     public int Count => activeTourists.Count;
 
     [SerializeField] private float moodSensitivity = 0.5f;
+
+    private Dictionary<AnimalType, int> animalChart = new();
 
     public void Awake()
     {
@@ -46,8 +52,14 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
         int ID = IDGenerator.GenerateID();
         Tourist newTourist = factory.CreateTourist(ID);
 
-        if (newTourist != null)
-            activeTourists.Add(newTourist);
+        if (newTourist == null) return;
+        AllTimeVisitors++;
+        activeTourists.Add(newTourist);
+        AnimalType key = newTourist.Model.FavouriteAnimalType;
+        if (animalChart.ContainsKey(key))
+            animalChart[key]++;
+        else
+            animalChart[key] = 1;
         Incoming = true;
     }
 
@@ -117,7 +129,7 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver
         {
             Debug.Log("Spawn tourist Event");
             float chance = UnityEngine.Random.Range(0f, 1f);
-            if (chance <= (OverallMood / 100f)) SpawnTourist();
+            if (chance <= (OverallMood / 100f) * EconomyManager.Instance.GetTicketInfluence()) SpawnTourist();
         }
     }
 

@@ -96,7 +96,8 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
     public List<Vector3> FindNewPath(Vector3 from, bool toExit)
     {
-        Node fromNode = Nodes[PlacementManager.Instance.GetRoadCellByPosition(from)];
+        Nodes.TryGetValue(PlacementManager.Instance.GetRoadCellByPosition(from), out Node fromNode);
+        if (fromNode == null) return new();
         Node dest = toExit ? ExitNode : GarageNode;
         List<Node> nodes = AStar(fromNode, dest);
 

@@ -61,6 +61,6 @@ Material:
     - _EmissionStrength: 1
     - _Speed: 3
     m_Colors:
-    - _Color: {r: 0.003921569, g: 0.28235295, b: 0.63529414, a: 0}
+    - _Color: {r: 0.59607846, g: 0.09019608, b: 0.09019608, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

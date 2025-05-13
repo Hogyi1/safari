@@ -226,3 +226,4 @@ public interface IPlaceableManager
     /// </summary>
     event Action OnStopped;
 }
+

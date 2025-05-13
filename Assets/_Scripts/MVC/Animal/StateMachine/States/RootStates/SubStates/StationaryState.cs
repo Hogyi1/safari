@@ -34,4 +34,9 @@ public class StationaryState : AnimalBaseState
     }
     public override void ExitState() { return; }
     public override void InitializeSubState() { return; }
+
+    public override string ToString()
+    {
+        return "Chilling";
+    }
 }
