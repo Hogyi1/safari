@@ -33,4 +33,9 @@ public class SleepingState : AnimalBaseState
     }
     public override void ExitState() { context.animal.View.Animator.SetBool(AnimalView.IsSleeping, false); }
     public override void InitializeSubState() { return; }
+
+    public override string ToString()
+    {
+        return "Sleeping";
+    }
 }

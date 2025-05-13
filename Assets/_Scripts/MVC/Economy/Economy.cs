@@ -10,22 +10,22 @@ public class Economy
     /// <summary>
     /// The player's current money balance.
     /// </summary>
-    public int CurrentMoney;
+    public int CurrentMoney = 0;
 
     /// <summary>
     /// The player's current calculated expenses.
     /// </summary>
-    public int CurrentExpenses;
+    public int CurrentExpenses = 0;
 
     /// <summary>
     /// The price charged per ticket.
     /// </summary>
-    public int TicketPrice;
+    public int TicketPrice = 0;
 
     /// <summary>
     /// The salary paid to each ranger.
     /// </summary>
-    public int RangerSalary;
+    public int RangerSalary = 0;
 
     /// <summary>
     /// The total income accumulated since the start.

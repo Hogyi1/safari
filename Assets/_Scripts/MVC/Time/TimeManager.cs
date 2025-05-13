@@ -179,8 +179,5 @@ public class TimeManager : MonoBehaviour
     /// Gets the current global GameTime instance.
     /// </summary>
     /// <returns>Current GameTime.</returns>
-    public GameTime GetCurrentTime()
-    {
-        return GlobalGameTime;
-    }
+    public GameTime GetCurrentTime() => GlobalGameTime;
 }

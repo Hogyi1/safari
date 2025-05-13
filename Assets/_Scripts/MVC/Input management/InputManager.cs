@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// Centralizes low-level input handling, click events, and placement mode state.
@@ -18,8 +19,7 @@ public class InputManager : MonoBehaviour
     /// <summary>
     /// Layer mask to determine valid placement surfaces.
     /// </summary>
-    [SerializeField]
-    private LayerMask PlacementLayermask;
+    [SerializeField] private LayerMask PlacementLayermask;
 
     private VirtualCursorView vcv;
 
@@ -122,7 +122,7 @@ public class InputManager : MonoBehaviour
         Vector3 mousePos = GetUDCPosition();
         Ray ray = SceneCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 100, PlacementLayermask))
+        if (Physics.Raycast(ray, out hit, 100f, PlacementLayermask))
         {
             LastPosition = hit.point;
         }

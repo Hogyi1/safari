@@ -15,7 +15,7 @@ public class RangerHouse : Facility, ISelectable
             { Upgradeprice_button, new Func<float>(() => GetUpgradePrice()) },
             { Level, new Func<int>(() => GetCurrentLevel()) },
             { Value_slider, new Func<float>(() => RangerManager.Instance.Capacity) },
-            { MaxValue_slider, new Func<float>(() => Capacity) }
+            { MaxValue_slider, new Func<float>(() => RangerManager.Instance.MaxCapacity) }
         };
     }
 }

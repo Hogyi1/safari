@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(AnimalFactory))]
@@ -22,6 +24,8 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
     public bool Incoming;
     public int Count => activeAnimals.Count;
+    public int HerbivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Herbivore).Count();
+    public int CarnivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Carnivore).Count();
 
     public void Awake()
     {
@@ -55,7 +59,6 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
             }
         }
         catch { }
-
     }
 
     public void StartPlacing(int animalID)
@@ -99,8 +102,9 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         int ID = IDGenerator.GenerateID();
         Animal newAnimal = factory.CreateAnimal(animalType, SpawningLocation, ID, Age);
 
-        if (newAnimal != null)
-            activeAnimals.Add(newAnimal);
+        if (newAnimal.IsUnityNull()) return;
+
+        activeAnimals.Add(newAnimal);
         Incoming = true;
     }
 
