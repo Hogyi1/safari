@@ -24,6 +24,14 @@ public class CameraView : MonoBehaviour , IDataPersistence
     }
 
     /// <summary>
+    /// Directly set the camera’s world position.
+    /// </summary>
+    public void SetPosition(Vector3 newWorldPos)
+    {
+        transform.position = newWorldPos;
+    }
+
+    /// <summary>
     /// Rotate the camera around the global up axis.
     /// </summary>
     /// <param name="delta">Rotation in degrees.</param>

@@ -16,7 +16,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver , IDataPersistence
     /// <summary>
     /// List of all level configurations, including required experience and unlock data.
     /// </summary>
-    [SerializeField] private List<LevelData> levels = new();
+    private List<LevelData> levels = new();
 
     /// <summary>
     /// The player's current level, starting at 1.
@@ -80,6 +80,8 @@ public class LevelManager : MonoBehaviour, ILevelObserver , IDataPersistence
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        levels = new List<LevelData>(Resources.LoadAll<LevelData>(""));
     }
 
 

@@ -17412,6 +17412,7 @@ MonoBehaviour:
   zoomAmount: 3
   followOffsetMin: 13
   followOffsetMax: 35
+  terrain: {fileID: 1361285685}
   followOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &1024424965
 MonoBehaviour:
