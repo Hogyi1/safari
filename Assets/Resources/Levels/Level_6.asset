@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a7faa3a6fe681ba4d977ae366bbf6253, type: 3}
-  m_Name: Level_3
+  m_Name: Level_6
   m_EditorClassIdentifier: 
-  levelNumber: 3
-  expRequired: 50
-  unlockChallenges: []
+  levelNumber: 6
+  expRequired: 400
+  unlockChallenges:
+  - 'On the Hunt: Hunt down 5 animals'
   unlockItemIds: 
