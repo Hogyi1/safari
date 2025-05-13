@@ -41,9 +41,11 @@ public class GameData
 
     public Economy Economy;
 
+    public int idSeed;
+
     public Vector3 CameraPosition;
     public Vector3 CameraRotation;
-    
+
     public TouristData touristData;
 
     public VehicleSaveData vehicleData;
@@ -53,9 +55,9 @@ public class GameData
 
 
     public List<AnimalSaveData> animalSaveDatas;
-    
+
     public List<SaveMapData> saveMapDatas;
-    
+
     /// <summary>
     /// Initializes a new GameData instance with default values.
     /// Called when no previous save exists for a profile.
@@ -67,15 +69,15 @@ public class GameData
         this.inventoryData = new InventoryData();
         this.levelSaveData = new LevelSaveData();
         this.settingsModel = new GameSettingsModel();
-        this.CameraPosition = new Vector3(0,35,0);
-        this.CameraPosition = new Vector3(68.199f,0,0);
+        this.CameraPosition = new Vector3(0, 35, 0);
+        this.CameraPosition = new Vector3(68.199f, 0, 0);
         this.Economy = new Economy();
         this.touristData = new TouristData();
         this.vehicleData = new VehicleSaveData();
         this.RangerCount = 0;
         this.RangerMaxCapacity = 3;
         this.saveMapDatas = new();
-}
+    }
     /// <summary>
     /// Returns the overall completion percentage of the game.
     /// Currently returns a fixed value of 0%.

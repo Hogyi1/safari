@@ -277,8 +277,9 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
                     placeable.GetGameObject().transform.position
                 )
             );
-
         }
+
+        data.idSeed = IDGenerator.GetSeed();
     }
 
 
@@ -316,15 +317,12 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
 
             if (Buildingdata.Type == BuildingType.Road)
             {
-                Debug.Log("Utat rakok le");
                 Vector3 middle = view.GetGameObject().transform.Find("Middle").position;
                 roadPosition = roadGrid.WorldToCell(middle);
                 Vector3 normalPosition = roadGrid.CellToWorld(roadPosition);
                 Vector3Int newGridPosition = normalGrid.WorldToCell(normalPosition);
                 mapPosition = new Vector2Int(newGridPosition.x, newGridPosition.z);
                 nodePosition = new Vector2Int(roadPosition.x, roadPosition.z);
-                Debug.Log("Middle " + middle);
-                Debug.Log("Roadpos " + normalPosition);
             }
 
             MapData.AddObjectAt(mapPosition, Buildingdata.SpaceTaken, Buildingdata.BuildingID, iD);

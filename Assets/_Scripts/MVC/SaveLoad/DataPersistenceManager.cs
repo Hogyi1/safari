@@ -56,14 +56,16 @@ public class DataPersistenceManager : MonoBehaviour
     /// </summary>
     public void LoadGame()
     {
-            dataPersistenceObjects = FindAllDataPersistenceObjects();
-            this.gameData = dataHandler.Load(selectedProfileId);
+        dataPersistenceObjects = FindAllDataPersistenceObjects();
+        this.gameData = dataHandler.Load(selectedProfileId);
 
-            foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects)
-            {
-                dataPersistenceObj.LoadData(gameData);
-            }
-           // SaveGame();
+        IDGenerator.SetSeed(gameData.idSeed);
+
+        foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects)
+        {
+            dataPersistenceObj.LoadData(gameData);
+        }
+        // SaveGame();
     }
 
 
@@ -153,5 +155,5 @@ public class DataPersistenceManager : MonoBehaviour
     private void OnApplicationQuit()
     {
         SaveGame();
-    } 
+    }
 }
