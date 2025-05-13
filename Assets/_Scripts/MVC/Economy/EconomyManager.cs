@@ -70,6 +70,7 @@ public class EconomyManager : MonoBehaviour, IDataPersistence
     {
         Economy.CurrentMoney += amount;
         Economy.OverallIncome += amount;
+        GameEvents.Instance.NotifyObservers(EventType.MONEY_GAIN, amount);
         Incoming = true;
     }
 
@@ -126,15 +127,15 @@ public class EconomyManager : MonoBehaviour, IDataPersistence
 
     public void LoadData(GameData data)
     {
-       this.Economy = data.Economy;
-    }
-   
-    public void SaveData(GameData data)
-    {
-       data.Economy = this.Economy;
+        this.Economy = data.Economy;
     }
 
-    
+    public void SaveData(GameData data)
+    {
+        data.Economy = this.Economy;
+    }
+
+
     /// <summary>
     /// The influence of the ticket price regarding the tourist spawning
     /// </summary>

@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(AnimalFactory))]
-public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManager, IPlaceableManager , IDataPersistence
+public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManager, IPlaceableManager, IDataPersistence
 {
     // Singleton
     public static AnimalManager Instance { get; private set; }
@@ -104,6 +104,8 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
         if (newAnimal.IsUnityNull()) return;
 
+        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 10);
+        GameEvents.Instance.NotifyObservers(EventType.ANIMAL_PLACE, 1);
         activeAnimals.Add(newAnimal);
         Incoming = true;
     }
@@ -113,6 +115,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         Animal toRemove = activeAnimals.Find(t => t.ID == ID);
         if (toRemove != null)
         {
+            GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 20);
             Incoming = false;
             activeAnimals.Remove(toRemove);
             Destroy(toRemove.View.gameObject);
@@ -148,6 +151,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         // Opció evoluciora
         Animal animal = activeAnimals.Find(t => t.ID == mate1.ID);
         SpawnAnimal(animal.Model.Type, animal.View.transform.position, 1);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 50);
     }
 
     public Animal GetAnimal(int iD)
@@ -165,7 +169,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
     public bool CanBuy() => true;
 
-    
+
 
     public void SaveData(GameData data)
     {
@@ -173,7 +177,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         data.animalSaveDatas.Clear();
         foreach (var a in activeAnimals)
         {
-            data.animalSaveDatas.Add(new AnimalSaveData(a.Model.Type,a.View.gameObject.transform.position,a.Model.Age));
+            data.animalSaveDatas.Add(new AnimalSaveData(a.Model.Type, a.View.gameObject.transform.position, a.Model.Age));
         }
     }
 

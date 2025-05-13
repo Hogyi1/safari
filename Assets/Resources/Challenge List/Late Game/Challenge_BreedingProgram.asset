@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Challenge_BreedingProgram
   m_EditorClassIdentifier: 
   prize: 10000
-  eventType: 3
+  eventType: 4
   state: 0
   description: 'Breeding Program: Breed 10 baby animals'
   goal: 10

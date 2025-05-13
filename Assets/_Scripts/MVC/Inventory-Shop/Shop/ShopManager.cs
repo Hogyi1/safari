@@ -48,7 +48,7 @@ public class ShopManager : MonoBehaviour
         shopView.GenerateShopItems(items);
     }
 
-   /// <summary>
+    /// <summary>
     /// Attempts to purchase a given item. Deducts money, adds to inventory, or triggers spawn depending on category.
     /// </summary>
     /// <param name="item">The item to purchase.</param>
@@ -66,6 +66,7 @@ public class ShopManager : MonoBehaviour
 
             case Category.Vehicle:
                 VehicleManager.Instance.SpawnVehicle(ID);
+                GameEvents.Instance.NotifyObservers(EventType.JEEP_BUY, 1);
                 break;
 
             case Category.Structure:

@@ -5,6 +5,8 @@ public enum EventType
 {
     /// <summary>An animal has been purchased.</summary>
     ANIMAL_BUY,
+    /// <summary>An animal has been placed.</summary>
+    ANIMAL_PLACE,
     /// <summary>An animal has been killed.</summary>
     ANIMAL_KILL,
     /// <summary>An animal ate something.</summary>

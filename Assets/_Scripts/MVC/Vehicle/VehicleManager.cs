@@ -92,6 +92,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         Vehicle newVehicle = factory.CreateVehicle(id, type);
         if (newVehicle != null)
             activeVehicles.Add(newVehicle);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 20);
     }
 
     /// <summary>
@@ -188,6 +189,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
 
             vehicle.View.gameObject.SetActive(true);
             vehicle.View.MoveOnRoute(FindRoute(), Finished);
+            GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 5);
         }
     }
 

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Challenge_WelcomeToTheWild
   m_EditorClassIdentifier: 
   prize: 150
-  eventType: 9
-  state: 1
+  eventType: 10
+  state: 0
   description: 'Welcome to the Wild: Buy your first jeep'
   goal: 1
   progress: 0
