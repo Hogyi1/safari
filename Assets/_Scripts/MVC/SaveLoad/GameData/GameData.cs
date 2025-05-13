@@ -47,6 +47,9 @@ public class GameData
     public TouristData touristData;
 
     public VehicleSaveData vehicleData;
+
+    public int RangerCount;
+    public int RangerMaxCapacity;
     /// <summary>
     /// Initializes a new GameData instance with default values.
     /// Called when no previous save exists for a profile.
@@ -63,6 +66,8 @@ public class GameData
         this.Economy = new Economy();
         this.touristData = new TouristData();
         this.vehicleData = new VehicleSaveData();
+        this.RangerCount = 0;
+        this.RangerMaxCapacity = 3;
     }
     /// <summary>
     /// Returns the overall completion percentage of the game.

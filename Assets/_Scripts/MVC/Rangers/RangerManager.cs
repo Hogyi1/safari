@@ -1,11 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static RangerState;
 
 [RequireComponent(typeof(RangerFactory))]
-public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITimeEventObserver
+public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITimeEventObserver, IDataPersistence
 {
     public static RangerManager Instance { get; private set; }
 
@@ -14,7 +15,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
     [SerializeField] private ManagerType myType = ManagerType.Ranger;
     [SerializeField] private GameObject house;
 
-    private int maxCapacity = 3;
+    private int maxCapacity;
     private List<Ranger> activeRangers = new();
     private HashSet<int> animalIDs = new();
 
@@ -149,6 +150,26 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         bool isHunted = animalIDs.Contains(animalID);
 
         return availableranger && !isHunted;
+    }
+
+    public void LoadData(GameData data)
+    {
+        maxCapacity = data.RangerMaxCapacity;
+        StartCoroutine(SpawnRangerWithDelay(data.RangerCount));
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.RangerMaxCapacity = maxCapacity;
+        data.RangerCount= activeRangers.Count;
+    }
+    private IEnumerator SpawnRangerWithDelay(int count)
+    {
+        yield return new WaitForEndOfFrame();
+        for (int i = 0; i < count; i++)
+        {
+            SpawnRanger(0);
+        }
     }
 }
 public enum RangerState
