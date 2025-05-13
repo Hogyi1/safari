@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a28b4bccbfcc07e4cb13f22696b40440, type: 3}
-  m_Name: Challenge_KingOfTheWild
+  m_Script: {fileID: 11500000, guid: a7faa3a6fe681ba4d977ae366bbf6253, type: 3}
+  m_Name: Level_3
   m_EditorClassIdentifier: 
-  prize: 20000
-  eventType: 14
-  state: 0
-  description: 'King of the Wild: Reach the maximum player level'
-  goal: 10
-  progress: 0
+  levelNumber: 3
+  expRequired: 200
+  unlockChallenges:
+  - Place 10 feeders or water dispensers
+  - 'Herd Mentality: Own 5 animals at once'
+  unlockItemIds: 
