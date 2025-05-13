@@ -148,7 +148,6 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersiste
             roadNavMesh.BuildNavMesh();
             newStructureGO.transform.SetParent(roadNavMesh.transform, true);
         }
-
         return view;
     }
 
@@ -268,7 +267,7 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersiste
     {
 
         List<IPlaceable> pla = StructureManager.Instance.GetPlaceables();
-
+        data.saveMapDatas.Clear();
         foreach (IPlaceable placeable in pla) {
 
             data.saveMapDatas.Add(new SaveMapData(
@@ -280,7 +279,6 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersiste
                
         }
     }
-
 
 
     private IEnumerator LoadBuildingLate(GameData data)
@@ -322,14 +320,13 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersiste
                 Vector3 normalPosition = roadGrid.CellToWorld(roadPosition);
                 Vector3Int newGridPosition = normalGrid.WorldToCell(normalPosition);
                 mapPosition = new Vector2Int(newGridPosition.x, newGridPosition.z);
+                
             }
-
             MapData.AddObjectAt(mapPosition, Buildingdata.SpaceTaken, Buildingdata.BuildingID, iD);
-
+            StructureManager.Instance.RegisterStructures(Buildingdata, iD, view, nodePosition);
+            roadNavMesh.BuildNavMesh();
+            newStructureGO.transform.SetParent(roadNavMesh.transform, true);
         }
-
-
-
     }
 
 

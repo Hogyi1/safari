@@ -22534,6 +22534,7 @@ MonoBehaviour:
   factory: {fileID: 1298116367}
   myType: 1
   garage: {fileID: 1531696308}
+  maxCapacity: 5
 --- !u!114 &1298116367
 MonoBehaviour:
   m_ObjectHideFlags: 0

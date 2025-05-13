@@ -47,8 +47,12 @@ public class Park : MonoBehaviour, IDataPersistence
     /// <param name="data">The GameData object containing saved park information.</param>
     public void LoadData(GameData data)
     {
-        this.ParkName = data.parkData.parkName;
-        this.difficulty = data.parkData.difficulty;
+        if (DataPersistenceManager.Instance.HasGameData()) {
+
+            this.ParkName = data.parkData.parkName;
+            this.difficulty = data.parkData.difficulty;
+        }
+        
     }
 
     /// <summary>

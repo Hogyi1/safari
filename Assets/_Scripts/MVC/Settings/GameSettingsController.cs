@@ -184,9 +184,12 @@ public class GameSettingsController : MonoBehaviour, IDataPersistence
 
     public void LoadData(GameData data)
     {
-        this.CurrentSettings = data.settingsModel;
-        ApplyGraphicsSettings();
-        ApplyDisplaySettings();
+        if (DataPersistenceManager.Instance.HasGameData()) {
+
+            this.CurrentSettings = data.settingsModel;
+            ApplyGraphicsSettings();
+            ApplyDisplaySettings();
+        }
     }
 
     public void SaveData(GameData data)
