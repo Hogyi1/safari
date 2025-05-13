@@ -16,5 +16,5 @@ MonoBehaviour:
   eventType: 14
   state: 0
   description: 'King of the Wild: Reach the maximum player level'
-  goal: 15
+  goal: 10
   progress: 0
