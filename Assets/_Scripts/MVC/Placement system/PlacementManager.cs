@@ -324,6 +324,7 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager , IDataPersiste
             }
             MapData.AddObjectAt(mapPosition, Buildingdata.SpaceTaken, Buildingdata.BuildingID, iD);
             StructureManager.Instance.RegisterStructures(Buildingdata, iD, view, nodePosition);
+            RoadManager.Instance.AddNode(mapPosition,iD);
             roadNavMesh.BuildNavMesh();
             newStructureGO.transform.SetParent(roadNavMesh.transform, true);
         }

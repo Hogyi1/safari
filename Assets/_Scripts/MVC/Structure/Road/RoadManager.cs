@@ -247,7 +247,7 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
     // Hozzáadjuk a Dictionarybe a Node-ot, 
     // majd beállítjuk a szomszédjait illetve önmagát
-    private Node AddNode(Vector2Int position, int ID)
+    public Node AddNode(Vector2Int position, int ID)
     {
         if (Nodes.ContainsKey(position)) { Debug.LogWarning(" A pozíció foglalt: " + position); return null; }
 
