@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Challenge_TourDeSafari
   m_EditorClassIdentifier: 
   prize: 2500
-  eventType: 12
+  eventType: 13
   state: 0
   description: 'Tour de Safari: Transport 100 visitors using cars'
   goal: 100

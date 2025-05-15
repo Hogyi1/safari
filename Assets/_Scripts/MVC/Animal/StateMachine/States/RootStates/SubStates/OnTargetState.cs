@@ -33,4 +33,8 @@ public class OnTargetState : AnimalBaseState
     public override void ExitState() { }
     public override void InitializeSubState() { }
 
+    public override string ToString()
+    {
+        return "On target";
+    }
 }

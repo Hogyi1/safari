@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Assets/MiniMapTextures.meta.orig.meta
+guid: 61542a03a63b1994ba49e1b03b43e6d3
+========
 guid: d70fe08306406b04c9feaa8362d18025
+>>>>>>>> development:Assets/Scenes/Loading.unity.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

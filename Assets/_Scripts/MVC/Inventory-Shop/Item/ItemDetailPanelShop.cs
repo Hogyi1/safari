@@ -78,7 +78,7 @@ public class ItemDetailPanelShop : MonoBehaviour
         otherInfo2.text = detail.Info2;
 
         inInventoryInfo.text = InventoryManager.Instance.GetItemCount(item).ToString();
-        sellingPriceInfo.text = item.CalculateSellingPrice().ToString() + " $";
+        sellingPriceInfo.text = "$" + item.CalculateSellingPrice().ToString() + ",00";
 
         buyButton.onClick.RemoveAllListeners();
         buyButton.onClick.AddListener(() => ShopManager.Instance.PurchaseItem(item));

@@ -21,6 +21,9 @@ public static class IDGenerator
     // Ensures only one thread can access at a time to prevent race conditions.
     private static readonly object LockObject = new object();
 
+    public static void SetSeed(int newSeed) => seed = newSeed;
+    public static int GetSeed() => seed;
+
     /// <summary>
     /// Generates a new unique ID in the range [0, m).
     /// </summary>

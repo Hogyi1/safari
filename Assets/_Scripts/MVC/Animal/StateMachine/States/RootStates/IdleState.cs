@@ -110,4 +110,11 @@ public class IdleState : AnimalBaseState, IRootState
             GroupManager.Instance.EnterGroup(animal.Group, context.animal);
         }
     }
+
+    public override string ToString()
+    {
+        if (currentSubState != null)
+            return currentSubState?.ToString();
+        return "Chilling";
+    }
 }

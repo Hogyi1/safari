@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(AnimalFactory))]
-public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManager, IPlaceableManager
+public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManager, IPlaceableManager, IDataPersistence
 {
     // Singleton
     public static AnimalManager Instance { get; private set; }
@@ -21,6 +24,8 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
     public bool Incoming;
     public int Count => activeAnimals.Count;
+    public int HerbivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Herbivore).Count();
+    public int CarnivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Carnivore).Count();
 
     public void Awake()
     {
@@ -54,7 +59,6 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
             }
         }
         catch { }
-
     }
 
     public void StartPlacing(int animalID)
@@ -98,8 +102,11 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         int ID = IDGenerator.GenerateID();
         Animal newAnimal = factory.CreateAnimal(animalType, SpawningLocation, ID, Age);
 
-        if (newAnimal != null)
-            activeAnimals.Add(newAnimal);
+        if (newAnimal.IsUnityNull()) return;
+
+        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 10);
+        GameEvents.Instance.NotifyObservers(EventType.ANIMAL_PLACE, 1);
+        activeAnimals.Add(newAnimal);
         Incoming = true;
     }
 
@@ -108,6 +115,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         Animal toRemove = activeAnimals.Find(t => t.ID == ID);
         if (toRemove != null)
         {
+            GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 20);
             Incoming = false;
             activeAnimals.Remove(toRemove);
             Destroy(toRemove.View.gameObject);
@@ -143,6 +151,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         // Opció evoluciora
         Animal animal = activeAnimals.Find(t => t.ID == mate1.ID);
         SpawnAnimal(animal.Model.Type, animal.View.transform.position, 1);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 50);
     }
 
     public Animal GetAnimal(int iD)
@@ -159,6 +168,34 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     }
 
     public bool CanBuy() => true;
+
+
+
+    public void SaveData(GameData data)
+    {
+
+        data.animalSaveDatas.Clear();
+        foreach (var a in activeAnimals)
+        {
+            data.animalSaveDatas.Add(new AnimalSaveData(a.Model.Type, a.View.gameObject.transform.position, a.Model.Age));
+        }
+    }
+
+    public void LoadData(GameData data)
+    {
+        StartCoroutine(SpawnAnimalWithDelay(data));
+    }
+
+    private IEnumerator SpawnAnimalWithDelay(GameData data)
+    {
+        yield return new WaitForEndOfFrame();
+
+        foreach (AnimalSaveData a in data.animalSaveDatas)
+        {
+            SpawnAnimal(a.type, a.position, a.Age);
+        }
+
+    }
 
 }
 

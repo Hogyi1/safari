@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(TerrainController))]
 [RequireComponent(typeof(PreviewSystem))]
-public class PlacementManager : MonoBehaviour, IPlaceableManager
+public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersistence
 {
     public static PlacementManager Instance;
 
@@ -24,6 +27,9 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager
     [SerializeField] private GameObject preplacedStructures;
     [SerializeField] private GameObject preplacedObjects;
     [SerializeField] private GameObject structureParent;
+
+
+    private HashSet<Vector3> preplacedPositions = new();
 
     private Grid activeGrid;
     private Vector3Int LastDetectedPosition = Vector3Int.zero;
@@ -142,7 +148,6 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager
             roadNavMesh.BuildNavMesh();
             newStructureGO.transform.SetParent(roadNavMesh.transform, true);
         }
-
         return view;
     }
 
@@ -185,6 +190,7 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager
             int iD = IDGenerator.GenerateID();
 
             Vector3 worldPosition = placeable.GetGameObject().transform.position;
+            preplacedPositions.Add(worldPosition);
             Vector3Int gridPosition = normalGrid.WorldToCell(worldPosition);
             Vector2Int mapPosition = new Vector2Int(gridPosition.x, gridPosition.z);
             Vector3Int roadPosition = Vector3Int.zero;
@@ -198,7 +204,6 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager
                 Vector3Int newGridPosition = normalGrid.WorldToCell(normalPosition); // cell pos az 1x1-ben
                 mapPosition = new Vector2Int(newGridPosition.x, newGridPosition.z);
             }
-
             Vector2Int nodePosition = new Vector2Int(roadPosition.x, roadPosition.z); // Csak azért, hogyha később az utakat is betöltjük
 
             MapData.AddObjectAt(mapPosition, data.SpaceTaken, data.BuildingID, iD);
@@ -252,6 +257,89 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager
         buildingDatabase = new List<BuildingData>(Resources.LoadAll<BuildingData>("Buildings"));
         Debug.Log($"Betöltve {buildingDatabase.Count} épület.");
     }
+
+    public void LoadData(GameData data)
+    {
+        StartCoroutine(LoadBuildingLate(data));
+    }
+
+    public void SaveData(GameData data)
+    {
+
+        List<IPlaceable> pla = StructureManager.Instance.GetPlaceables();
+        data.saveMapDatas.Clear();
+        foreach (IPlaceable placeable in pla)
+        {
+
+            data.saveMapDatas.Add(new SaveMapData(
+                    placeable.GetID(),
+                    placeable.GetData().BuildingID,
+                    placeable.GetGameObject().transform.position
+                )
+            );
+        }
+
+        data.idSeed = IDGenerator.GetSeed();
+    }
+
+
+    private IEnumerator LoadBuildingLate(GameData data)
+    {
+        yield return new WaitForEndOfFrame();
+
+        List<int> buildingIDs = new();
+        List<int> uniqueID = new();
+        List<Vector3> positions = new();
+        foreach (SaveMapData s in data.saveMapDatas)
+        {
+            buildingIDs.Add(s.buildid);
+            uniqueID.Add(s.uniqid);
+            positions.Add(s.pos);
+        }
+
+        for (int i = 0; i < buildingIDs.Count; i++)
+        {
+            BuildingData Buildingdata = GetBuildingDataByBuildingID(buildingIDs[i]);
+            int iD = uniqueID[i];
+            Vector3 worldPosition = positions[i];
+
+            if (preplacedPositions.Contains(worldPosition))
+                continue;
+
+            Vector3Int gridPosition = normalGrid.WorldToCell(worldPosition);
+            Vector2Int mapPosition = new Vector2Int(gridPosition.x, gridPosition.z);
+            Vector3Int roadPosition = Vector3Int.zero;
+            Vector2Int nodePosition = new Vector2Int(roadPosition.x, roadPosition.z);
+
+            GameObject newStructureGO = Instantiate(Buildingdata.BuildingPrefab, worldPosition, Quaternion.identity);
+            newStructureGO.transform.SetParent(structureParent.transform, true);
+            IPlaceable view = newStructureGO.GetComponent<IPlaceable>();
+
+            if (Buildingdata.Type == BuildingType.Road)
+            {
+                Vector3 middle = view.GetGameObject().transform.Find("Middle").position;
+                roadPosition = roadGrid.WorldToCell(middle);
+                Vector3 normalPosition = roadGrid.CellToWorld(roadPosition);
+                Vector3Int newGridPosition = normalGrid.WorldToCell(normalPosition);
+                mapPosition = new Vector2Int(newGridPosition.x, newGridPosition.z);
+                nodePosition = new Vector2Int(roadPosition.x, roadPosition.z);
+            }
+
+            MapData.AddObjectAt(mapPosition, Buildingdata.SpaceTaken, Buildingdata.BuildingID, iD);
+            StructureManager.Instance.RegisterStructures(Buildingdata, iD, view, nodePosition);
+            RoadManager.Instance.AddNode(mapPosition, iD);
+            roadNavMesh.BuildNavMesh();
+            newStructureGO.transform.SetParent(roadNavMesh.transform, true);
+        }
+    }
+
+
+    private BuildingData GetBuildingDataByBuildingID(int buildingID)
+    {
+        return buildingDatabase.FirstOrDefault(t => t.BuildingID == buildingID);
+    }
+
+
 }
 
 public interface IBuildingState

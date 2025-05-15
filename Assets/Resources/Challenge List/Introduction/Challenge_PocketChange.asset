@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Challenge_PocketChange
   m_EditorClassIdentifier: 
   prize: 250
-  eventType: 10
-  state: 1
+  eventType: 11
+  state: 0
   description: 'Pocket Change: Earn $500'
   goal: 500
   progress: 0

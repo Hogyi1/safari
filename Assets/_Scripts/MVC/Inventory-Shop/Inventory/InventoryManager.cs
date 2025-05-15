@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Linq;
 /// Manages the player's inventory logic, including item placement, filtering, selling, and UI updates.
 /// Acts as a bridge between the inventory data, UI, and placement systems.
 /// </summary>
-public class InventoryManager : MonoBehaviour
+public class InventoryManager : MonoBehaviour , IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the InventoryManager.
@@ -41,6 +41,12 @@ public class InventoryManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        if (inventory == null)
+        {
+            inventory = new Inventory();
+
+        }
+        inventoryView.GenerateInventoryUI(inventory.Items);
     }
 
     /// <summary>
@@ -122,6 +128,7 @@ public class InventoryManager : MonoBehaviour
         inventoryView.gameObject.SetActive(true);
     }
 
+
     /// <summary>
     /// Callback method invoked when the current item has been placed.
     /// Updates the inventory and re-enables the UI if needed.
@@ -140,6 +147,37 @@ public class InventoryManager : MonoBehaviour
             inventoryView.gameObject.SetActive(true);
         }
     }
+
+    public void LoadData(GameData data)
+    {
+        if (inventory == null) inventory = new Inventory();
+
+
+        inventory.Items.Clear();
+        if (data.inventoryData == null || data.inventoryData.items == null)
+            return;
+        foreach (var pair in data.inventoryData.items)
+        {
+            Item item = ItemManager.Instance.GetItemById(pair.Key);
+            if (item != null)
+            {
+                inventory.Items[item] = pair.Value;
+            }
+        }
+        Debug.Log("Inventory betöltve.");
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.inventoryData.items.Clear();
+
+        foreach (var pair in inventory.Items)
+        {
+            data.inventoryData.items[pair.Key.ID] = pair.Value;
+        }
+        Debug.Log("Inventory elmentve.");
+    }
+
 
     /// <summary>
     /// Sells the given item if possible, adds money, and updates the UI.
@@ -226,3 +264,4 @@ public interface IPlaceableManager
     /// </summary>
     event Action OnStopped;
 }
+

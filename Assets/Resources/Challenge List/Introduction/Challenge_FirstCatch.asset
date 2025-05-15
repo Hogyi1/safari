@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Challenge_FirstCatch
   m_EditorClassIdentifier: 
   prize: 300
-  eventType: 0
-  state: 1
-  description: 'First Catch: Buy your first animal'
+  eventType: 1
+  state: 0
+  description: 'First Catch: Place your first animal'
   goal: 1
   progress: 0

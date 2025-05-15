@@ -79,4 +79,9 @@ public class WanderingState : AnimalBaseState
             return;
         }
     }
+
+    public override string ToString()
+    {
+        return "Wandering";
+    }
 }
