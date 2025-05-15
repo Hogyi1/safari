@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using UnityEngine.Playables;
 using Unity.VisualScripting;
 
 public class TerrainController : MonoBehaviour
@@ -37,7 +36,6 @@ public class TerrainController : MonoBehaviour
 
     // xStart, yStart, Index - heightMap
     private Dictionary<Vector3Int, float[,]> storedHeights = new Dictionary<Vector3Int, float[,]>();
-
     private void Start()
     {
         // Terrain

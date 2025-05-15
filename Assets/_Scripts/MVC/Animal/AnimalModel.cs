@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+[System.Serializable]
 public class AnimalModel
 {
     // Csak olvasható property, privát setterrel
@@ -82,7 +84,7 @@ public class AnimalModel
         // Ha van valami baja akkor szépen csökken az életereje, ha nem és még van "ereje" akkor regenerálódik
         if (IsHungry || IsThirsty)
         {
-            change = -10f * Time.deltaTime;
+            change = -10f * Time.deltaTime * 2;
         }
         else
         {
@@ -187,12 +189,14 @@ public class AnimalModel
         if (mate.hp > 40 && UnityEngine.Random.Range(0f, 1f) <= 0.5f)
         {
             // Smash
+            Debug.Log("Smash");
             lastBreedingTime = breedingCooldown;
             IsBreeding = false;
             return true;
         }
 
         // Pass
+        Debug.Log("Pass");
         IsBreeding = false;
         return false;
     }

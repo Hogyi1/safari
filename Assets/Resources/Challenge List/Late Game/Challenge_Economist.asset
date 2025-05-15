@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Challenge_Economist
   m_EditorClassIdentifier: 
   prize: 50000
-  eventType: 10
+  eventType: 11
   state: 0
   description: 'Economist: Earn a total of $100,000'
   goal: 100000

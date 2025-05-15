@@ -77,7 +77,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SerializedVersion: 0
   m_Size: {x: 2.5, y: 10, z: 12}
-  m_Center: {x: -13.78, y: 3, z: 9.5}
+  m_Center: {x: -13.33, y: 3, z: 9.5}
   m_Area: 1
   m_AffectedAgents: f46d2d58c3c0608d
 --- !u!1 &6590238297328568905
@@ -270,7 +270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SerializedVersion: 0
   m_Size: {x: 2.3, y: 10, z: 12}
-  m_Center: {x: -6.84, y: 3, z: 9.5}
+  m_Center: {x: -7.64, y: 3, z: 9.5}
   m_Area: 1
   m_AffectedAgents: f46d2d58c3c0608d
 --- !u!1 &8757666420634567580

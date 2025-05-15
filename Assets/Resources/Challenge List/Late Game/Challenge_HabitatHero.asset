@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Challenge_HabitatHero
   m_EditorClassIdentifier: 
   prize: 9500
-  eventType: 5
+  eventType: 6
   state: 0
   description: 'Habitat Hero: Place 50 trees'
   goal: 50

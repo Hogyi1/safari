@@ -4,37 +4,38 @@ using UnityEngine;
 /// <summary>
 /// Represents a vehicle in the system, managing passenger assignments and waiting time.
 /// </summary>
+[System.Serializable]
 public class VehicleModel
 {
     /// <summary>
     /// Unique identifier of the vehicle.
     /// </summary>
-    private int iD;
+    [SerializeField] private int iD;
 
     /// <summary>
     /// Current operational state of the vehicle.
     /// </summary>
-    private VehicleState state;
+    [SerializeField] private VehicleState state;
 
     /// <summary>
     /// Type of the vehicle (e.g., Jeep, Bus, Van).
     /// </summary>
-    private VehicleType type;
+    [SerializeField] private VehicleType type;
 
     /// <summary>
     /// Maximum number of passengers the vehicle can hold.
     /// </summary>
-    private int capacity;
+    [SerializeField] private int capacity;
 
     /// <summary>
     /// Space already taken by existing passengers.
     /// </summary>
-    private int spaceTaken;
+    [SerializeField] private int spaceTaken;
 
     /// <summary>
     /// Accumulated waiting time in seconds.
     /// </summary>
-    private float waitingTime;
+    [SerializeField] private float waitingTime;
 
     /// <summary>
     /// IDs of tourists assigned to this vehicle.
@@ -124,6 +125,7 @@ public class VehicleModel
         AssignedTouristIDs.Clear();
         waitingTime = 0f;
     }
+
 }
 
 /// <summary>

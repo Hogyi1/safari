@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Challenge_HerdMentality
   m_EditorClassIdentifier: 
   prize: 3000
-  eventType: 4
+  eventType: 5
   state: 0
   description: 'Herd Mentality: Own 5 animals at once'
   goal: 5

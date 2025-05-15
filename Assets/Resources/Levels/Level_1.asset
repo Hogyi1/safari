@@ -17,5 +17,5 @@ MonoBehaviour:
   unlockChallenges:
   - 'Welcome to the Wild: Buy your first jeep'
   - 'Pocket Change: Earn $500'
-  - 'First Catch: Buy your first animal'
+  - 'First Catch: Place your first animal'
   unlockItemIds: 

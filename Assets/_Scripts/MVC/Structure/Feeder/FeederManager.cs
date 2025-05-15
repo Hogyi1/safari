@@ -51,6 +51,8 @@ public class FeederManager : MonoBehaviour, IStructureManager
         if (EconomyManager.Instance.HasEnoughMoney(Price))
             ActiveFeeders.Find(t => t.GetID() == ID).Refill();
         else Debug.LogWarning("Nincs elegendő pénzed újratölteni!");
+
+        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 20);
     }
 
     public void SetView(IPlaceable view, int ID)

@@ -66,6 +66,7 @@ public class ShopManager : MonoBehaviour
 
             case Category.Vehicle:
                 VehicleManager.Instance.SpawnVehicle(ID);
+                GameEvents.Instance.NotifyObservers(EventType.JEEP_BUY, 1);
                 break;
 
             case Category.Structure:
@@ -78,6 +79,7 @@ public class ShopManager : MonoBehaviour
                 break;
         }
     }
+
 
     /// <summary>
     /// Displays all available items in the shop without filtering.

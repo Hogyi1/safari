@@ -60,6 +60,11 @@ public class ItemManager : MonoBehaviour
         Items = new HashSet<Item>(Resources.LoadAll<Item>("Items"));
         Debug.Log($"Betöltve {Items.Count} Item.");
     }
+
+    public Item GetItemById(int id)
+    {
+        return Items.FirstOrDefault(item => item.ID == id);
+    }
 }
 
 /// <summary>

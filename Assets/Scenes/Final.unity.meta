@@ -1,5 +1,10 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/_Scripts/MVC/SaveLoad.meta
+guid: d07bb92d6bbabd842b4381712af2913e
+folderAsset: yes
+========
 guid: 016fa9477f2073a4489634619e4ef2a7
+>>>>>>>> development:Assets/Scenes/Final.unity.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

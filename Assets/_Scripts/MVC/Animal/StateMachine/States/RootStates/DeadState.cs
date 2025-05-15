@@ -37,4 +37,9 @@ public class DeadState : AnimalBaseState, IRootState
     {
         return;
     }
+
+    public override string ToString()
+    {
+        return "Dead";
+    }
 }

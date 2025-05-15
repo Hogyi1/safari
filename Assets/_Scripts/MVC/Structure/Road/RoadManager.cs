@@ -23,6 +23,8 @@ public class RoadManager : MonoBehaviour, IStructureManager
     private Node GarageNode;
     private Node ExitNode;
     private Node DrivewayNode;
+
+    public int NodeCount => ActiveRoads.Count;
     // Irányok amerre kapcsolódhat két út, ha akarjuk akkor az oldal irányt is belerakhatjuk
     private static readonly List<Vector2Int> directions = new()
     {
@@ -96,7 +98,8 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
     public List<Vector3> FindNewPath(Vector3 from, bool toExit)
     {
-        Node fromNode = Nodes[PlacementManager.Instance.GetRoadCellByPosition(from)];
+        Nodes.TryGetValue(PlacementManager.Instance.GetRoadCellByPosition(from), out Node fromNode);
+        if (fromNode == null) return new();
         Node dest = toExit ? ExitNode : GarageNode;
         List<Node> nodes = AStar(fromNode, dest);
 
@@ -246,7 +249,7 @@ public class RoadManager : MonoBehaviour, IStructureManager
 
     // Hozzáadjuk a Dictionarybe a Node-ot, 
     // majd beállítjuk a szomszédjait illetve önmagát
-    private Node AddNode(Vector2Int position, int ID)
+    public Node AddNode(Vector2Int position, int ID)
     {
         if (Nodes.ContainsKey(position)) { Debug.LogWarning(" A pozíció foglalt: " + position); return null; }
 

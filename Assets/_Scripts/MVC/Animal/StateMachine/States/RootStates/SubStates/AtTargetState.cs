@@ -59,4 +59,9 @@ public class AtTargetState : AnimalBaseState, IRootState
     public override void InitializeSubState() { }
 
     public void CalculateModelData() { }
+
+    public override string ToString()
+    {
+        return "At target";
+    }
 }

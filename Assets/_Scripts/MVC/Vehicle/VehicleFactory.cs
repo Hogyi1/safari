@@ -49,6 +49,24 @@ public class VehicleFactory : MonoBehaviour
         return new Vehicle(id, model, view);
     }
 
+    public Vehicle CreateVehicle(int id, VehicleType type)
+    {
+        var data = FindVehicleData(type);
+        if (data == null)
+            return null;
+        Vector3 position = VehicleManager.Instance.GetParkingSpot();
+        var instance = Instantiate(data.VehiclePrefab, position, Quaternion.identity);
+        instance.transform.SetParent(VehicleParent.transform, true);
+
+        var view = instance.GetComponent<VehicleView>();
+        view.SetSpeed(data.Speed);
+        view.gameObject.SetActive(false);
+
+        var model = new VehicleModel(id, data);
+        return new Vehicle(id, model, view);
+    }
+
+
     /// <summary>
     /// Finds the VehicleData asset matching the given ID in the loaded cache.
     /// </summary>
@@ -59,6 +77,12 @@ public class VehicleFactory : MonoBehaviour
     private VehicleData FindVehicleData(int vehicleDataId)
     {
         return vehicleDatabase.Find(v => v.VehicleID == vehicleDataId);
+    }
+
+
+    private VehicleData FindVehicleData(VehicleType type)
+    {
+        return vehicleDatabase.Find(v => v.Type == type);
     }
 
     /// <summary>
