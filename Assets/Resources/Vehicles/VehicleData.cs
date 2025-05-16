@@ -46,6 +46,11 @@ public class VehicleData : ScriptableObject, IDetails
     public int Price;
 
     /// <summary>
+    /// The icon of the vehicle
+    /// </summary>
+    public Sprite Icon;
+
+    /// <summary>
     /// Returns the vehicle's unique identifier.
     /// </summary>
     /// <returns>The VehicleID of this vehicle.</returns>
