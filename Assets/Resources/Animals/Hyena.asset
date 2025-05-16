@@ -19,3 +19,4 @@ MonoBehaviour:
   AnimalID: 3
   Price: 450
   AnimalPrefab: {fileID: 7688860683303307212, guid: 39fd5e6b9eeb66740970cb42d049b621, type: 3}
+  Icon: {fileID: 21300000, guid: e34c6a6fa26e0fe4099b60e60dc78918, type: 3}
