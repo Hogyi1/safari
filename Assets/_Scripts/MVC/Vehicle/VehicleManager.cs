@@ -148,7 +148,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         {
             pos = garage.transform.Find("Garage").position;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Debug.LogWarning("Nincsen beállítva Garage az alap beállításokat fogom használni");
             pos = garage.GetComponent<Renderer>().bounds.center;

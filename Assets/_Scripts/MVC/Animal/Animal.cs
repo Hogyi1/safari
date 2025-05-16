@@ -1,7 +1,9 @@
-using Unity.VisualScripting;
+using System.Collections.Generic;
+using System;
 using UnityEngine;
+using static PopupKeys;
 
-public class Animal
+public class Animal : ISelectable
 {
     public int ID;
     public bool CanRemove;
@@ -54,5 +56,25 @@ public class Animal
         else
             group = newGroup;
     }
+
+    public Dictionary<PopupKeys, object> GetUIData()
+    {
+        return new Dictionary<PopupKeys, object> {
+            { Name_text, Model.Type.ToString() },
+            { Sprite_icon, Model.Icon },
+            { Animalmood_text, new Func<string>(() => brain.RootState.ToString()) },
+            { Animaltype_text, new Func<string>(() => Model.Diet.ToString()) },
+            { Animalage_text, new Func<string>(() => Model.Age.ToString()) },
+            { Value_slider, new Func<float>(() => Model.Hp) },
+            { MaxValue_slider, 100f },
+            { Healthbar, true },
+            { Hunt_action, new Action(() => { RangerManager.Instance.HuntDownAnimal(ID); })},
+            { Hunt_interact, new Func<bool>(() => RangerManager.Instance.CanHunt(ID)) }
+        };
+    }
+
+    public BuildingType GetBuildingType() => BuildingType.None;
+
+    public int GetID() => ID;
 }
 

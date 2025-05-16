@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static StructureUIValues;
+using static PopupKeys;
 public class Feeder : Structure, ISelectable, IRefillable, IFoodSource
 {
     private int Capacity;
@@ -16,15 +16,23 @@ public class Feeder : Structure, ISelectable, IRefillable, IFoodSource
         this.RefillPrice = Data.Price;
     }
 
-    public Dictionary<StructureUIValues, object> GetUIData()
+    public Dictionary<PopupKeys, object> GetUIData()
     {
-        return new Dictionary<StructureUIValues, object> {
+        return new Dictionary<PopupKeys, object> {
             { Name_text, Name },
-            { StructureUIValues.ID, ID },
             { Sprite_icon, Icon },
+            { Refill_action, new Action(() => FeederManager.Instance.Refill(ID, CalculateRefillPrice())) },
+            { Refill_interact, new Func<bool>(() => {
+                int price = CalculateRefillPrice();
+                bool canAfford = EconomyManager.Instance.HasEnoughMoney(price);
+                return price > 0 && canAfford; }) },
+            { Refill_text, new Func<string>(() => {
+                int price = CalculateRefillPrice();
+                return price > 0 ? "Refill $" + price.ToString() : "Full"; }) },
             { Value_slider, new Func<float>(() => GetCapacity()) },
-            { MaxValue_slider, MaxCapacity},
-            { Refillprice_button, new Func<float>(() => CalculateRefillPrice()) } };
+            { MaxValue_slider, MaxCapacity },
+            { Pickup_action, new Action(() => { StructureManager.Instance.RemoveStructure(ID); PopupManager.Instance.HidePopup();})}
+        };
     }
 
     public void Refill()

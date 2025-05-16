@@ -37,7 +37,7 @@ public interface ISelectable
 {
     public BuildingType GetBuildingType();
     public int GetID();
-    public Dictionary<StructureUIValues, object> GetUIData();
+    public Dictionary<PopupKeys, object> GetUIData();
 }
 
 //Interfész IRefillable

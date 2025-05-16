@@ -239,7 +239,7 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
             {
                 MapData.AddObjectAt(mapPosition, spaceTaken, -999, -999);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 success = false;
             }

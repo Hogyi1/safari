@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections.Generic;
+using static PopupKeys;
 public class Road : Structure, ISelectable
 {
     public Road(BuildingData Data, int iD) : base(iD, Data.Name, Data.Icon, Data.Type) { }
-    public Dictionary<StructureUIValues, object> GetUIData()
+    public Dictionary<PopupKeys, object> GetUIData()
     {
-        return new Dictionary<StructureUIValues, object> {
-            { StructureUIValues.Name_text, Name },
-            { StructureUIValues.ID, ID },
-            { StructureUIValues.Sprite_icon, Icon },
+        return new Dictionary<PopupKeys, object> {
+            { Name_text, Name },
+            { Sprite_icon, Icon },
+            { Pickup_action, new Action(() => { StructureManager.Instance.RemoveStructure(ID); PopupManager.Instance.HidePopup();})}
         };
     }
 }
