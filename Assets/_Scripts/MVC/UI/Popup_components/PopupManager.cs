@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -40,28 +41,26 @@ public class PopupManager : MonoBehaviour
     /// </summary>
     /// <param name="Data">The UI data to populate the popup with.</param>
     /// <param name="go">The target GameObject the popup belongs to.</param>
-    public void ActivatePopup(Dictionary<PopupKeys, object> Data, GameObject go)
+    public void ActivatePopup(Dictionary<UIKeys, object> Data, GameObject go)
     {
-        if (Data != null)
-        {
-            worldSpaceUI.gameObject.SetActive(true);
-            worldSpaceUI.Show();
-        }
-        else return;
+        if (Data.IsUnityNull()) return;
 
         try
         {
             Transform UIPos = go.transform.Find("Popup");
+            if (worldSpaceUI.CheckDistance(UIPos.transform.position)) { InputManager.Instance.DisableView(); return; }// If too far away or too close
             worldSpaceUI.SetPopupData(Data, UIPos);
-            Debug.Log(UIPos.position);
         }
         catch (Exception)
         {
             Debug.LogWarning("Nincsen Popup pozici� be�ll�tva, az alap be�ll�t�sokat fogom haszn�lni.");
             Bounds bounds = go.GetComponentInChildren<Renderer>().bounds;
             Vector3 UIPos = new Vector3(bounds.center.x, bounds.max.y + 1f, bounds.center.z);
+            if (worldSpaceUI.CheckDistance(UIPos)) { InputManager.Instance.DisableView(); return; } // If too far away or too close
             worldSpaceUI.SetPopupData(Data, UIPos);
         }
+
+        worldSpaceUI.Show();
     }
 
     /// <summary>
@@ -79,7 +78,7 @@ public class PopupManager : MonoBehaviour
 /// </summary>
 public interface IPopupComponent
 {
-    public void TrySetup(Dictionary<PopupKeys, object> data);
+    public void TrySetup(Dictionary<UIKeys, object> data);
     public void OnPopupUpdate();
 }
 

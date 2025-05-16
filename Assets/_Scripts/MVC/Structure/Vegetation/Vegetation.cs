@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Properties;
 using UnityEngine;
-using static PopupKeys;
+using static UIKeys;
 public class Vegetation : Structure, ISelectable, IFoodSource
 {
     private DietType Diet;
@@ -48,9 +48,9 @@ public class Vegetation : Structure, ISelectable, IFoodSource
     }
 
     // Minden ami a UI-hoz szükséges adat
-    public Dictionary<PopupKeys, object> GetUIData()
+    public Dictionary<UIKeys, object> GetUIData()
     {
-        return new Dictionary<PopupKeys, object> {
+        return new Dictionary<UIKeys, object> {
             { Name_text, Name },
             { Sprite_icon, Icon },
             { Value_slider, new Func<float>(() => GetCapacity()) },

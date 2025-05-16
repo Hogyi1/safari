@@ -1,7 +1,7 @@
 /// <summary>
 /// Enum listing all UI value keys that can be passed to structure popup components.
 /// </summary>
-public enum PopupKeys
+public enum UIKeys
 {
     /// <summary>The name of the structure</summary>
     Name_text,
@@ -30,4 +30,5 @@ public enum PopupKeys
     Animalmood_text,
     Animalage_text,
     Healthbar,
+    Vehicle,
 }

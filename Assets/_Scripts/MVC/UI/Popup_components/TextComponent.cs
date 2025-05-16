@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class TextComponent : MonoBehaviour, IPopupComponent
 {
     [SerializeField] private TextMeshProUGUI textField;
-    [SerializeField] private PopupKeys textKey;
+    [SerializeField] private UIKeys textKey;
 
     [Header("Optional Wrapping")]
     [SerializeField] private string prefix = "";
@@ -14,7 +14,7 @@ public class TextComponent : MonoBehaviour, IPopupComponent
 
     private Func<string> getText;
 
-    public void TrySetup(Dictionary<PopupKeys, object> data)
+    public void TrySetup(Dictionary<UIKeys, object> data)
     {
         if (data.TryGetValue(textKey, out var val))
         {

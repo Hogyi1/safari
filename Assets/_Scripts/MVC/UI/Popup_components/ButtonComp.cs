@@ -10,12 +10,12 @@ public class ButtonComp : MonoBehaviour, IPopupComponent
     /// <summary>
     /// Keys for handling the interactions with the button
     /// </summary>
-    [SerializeField] private PopupKeys eventKey;
-    [SerializeField] private PopupKeys interactKey;
+    [SerializeField] private UIKeys eventKey;
+    [SerializeField] private UIKeys interactKey;
 
     private Func<bool> predicate;
 
-    public void TrySetup(Dictionary<PopupKeys, object> data)
+    public void TrySetup(Dictionary<UIKeys, object> data)
     {
         if (data.TryGetValue(eventKey, out var myFunc) && myFunc is Action action)
         {

@@ -241,28 +241,12 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         }
     }
 
-    public List<AnimalType> GetAnimalsInSight(int vehicleID)
-    {
-        return activeVehicles.Find(t => t.ID == vehicleID).View.animalsInView;
-    }
-
-    public Vector3 GetGaragePosition(int ID)
-    {
-        return FacilityManager.Instance.GetInteractingPosition(myType);
-    }
-
-    public void LevelUp(int amount)
-    {
-        maxCapacity += amount;
-    }
-
-    public void LevelDown(int amount)
-    {
-        maxCapacity -= amount;
-    }
-
+    public Vehicle GetVehicle(int ID) => activeVehicles.Find(t => t.ID == ID);
+    public List<AnimalType> GetAnimalsInSight(int vehicleID) => activeVehicles.Find(t => t.ID == vehicleID).View.animalsInView;
+    public Vector3 GetGaragePosition(int ID) => FacilityManager.Instance.GetInteractingPosition(myType);
+    public void LevelUp(int amount) => maxCapacity += amount;
+    public void LevelDown(int amount) => maxCapacity -= amount;
     public bool CanBuy() => Capacity < MaxCapacity;
-
     public int MaxCapacity => maxCapacity;
     public int Capacity => activeVehicles.Count;
 

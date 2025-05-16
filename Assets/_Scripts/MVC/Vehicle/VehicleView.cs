@@ -9,12 +9,15 @@ using static VehicleState;
 /// Handles navigation to positions and along routes without direct NavMeshAgent or animations.
 /// </summary>
 [RequireComponent(typeof(NavigatorComponent))]
-public class VehicleView : MonoBehaviour, INavigatable
+public class VehicleView : MonoBehaviour, INavigatable, IInteractable
 {
     private int iD;
     private VehicleModel model;
+    private bool isActive = false;
+
     [SerializeField] private NavigatorComponent navigator;
     [SerializeField] private GameObject door;
+    [SerializeField] private FadeEffect fadeEffect;
 
     [SerializeField] LayerMask animalLayermask;
     public List<AnimalType> animalsInView = new();
@@ -134,4 +137,44 @@ public class VehicleView : MonoBehaviour, INavigatable
 
     // === Érkezés logika ===
     public bool Arrived => navigator.Arrived;
+
+    private void OnDestroy()
+    {
+        if (isActive) PopupManager.Instance.HidePopup();
+    }
+
+    private void OnDisable()
+    {
+        if (isActive) PopupManager.Instance.HidePopup();
+    }
+
+    // Egér rámutatás esemény kezelése (fade in effekt)
+    public void OnHover()
+    {
+        fadeEffect.FadeIn();
+    }
+
+    // Egér elhagyás esemény, ha nem aktív (fade out)
+    public void OnExit()
+    {
+        if (!isActive)
+        {
+            fadeEffect.FadeOut();
+        }
+    }
+
+    // Kattintás vagy aktiválás kezelése (fade in)
+    public void OnAction()
+    {
+        isActive = true;
+        fadeEffect.FadeIn();
+        PopupManager.Instance.ActivatePopup(VehicleManager.Instance.GetVehicle(iD).GetUIData(), gameObject);
+    }
+
+    // Interakció megszüntetése, állapot alaphelyzetbe (fade out)
+    public void OnCancel()
+    {
+        isActive = false;
+        fadeEffect.FadeOut();
+    }
 }

@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using static PopupKeys;
+using static UIKeys;
 
 public class RangerHouse : Facility, ISelectable
 {
     public RangerHouse(BuildingData Data, int iD) : base(Data, iD) { }
 
-    public Dictionary<PopupKeys, object> GetUIData()
+    public Dictionary<UIKeys, object> GetUIData()
     {
-        return new Dictionary<PopupKeys, object> {
+        return new Dictionary<UIKeys, object> {
             { Name_text, Name },
             { Sprite_icon, Icon },
             { Upgrade_action, new Action(() => FacilityManager.Instance.HandleUpgrade(ID, GetUpgradePrice())) },

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static PopupKeys;
+using static UIKeys;
 public class Feeder : Structure, ISelectable, IRefillable, IFoodSource
 {
     private int Capacity;
@@ -16,9 +16,9 @@ public class Feeder : Structure, ISelectable, IRefillable, IFoodSource
         this.RefillPrice = Data.Price;
     }
 
-    public Dictionary<PopupKeys, object> GetUIData()
+    public Dictionary<UIKeys, object> GetUIData()
     {
-        return new Dictionary<PopupKeys, object> {
+        return new Dictionary<UIKeys, object> {
             { Name_text, Name },
             { Sprite_icon, Icon },
             { Refill_action, new Action(() => FeederManager.Instance.Refill(ID, CalculateRefillPrice())) },

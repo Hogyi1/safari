@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using static PopupKeys;
+using static UIKeys;
 
 public class Animal : ISelectable
 {
@@ -57,9 +57,9 @@ public class Animal : ISelectable
             group = newGroup;
     }
 
-    public Dictionary<PopupKeys, object> GetUIData()
+    public Dictionary<UIKeys, object> GetUIData()
     {
-        return new Dictionary<PopupKeys, object> {
+        return new Dictionary<UIKeys, object> {
             { Name_text, Model.Type.ToString() },
             { Sprite_icon, Model.Icon },
             { Animalmood_text, new Func<string>(() => brain.RootState.ToString()) },

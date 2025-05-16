@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static PopupKeys;
+using static UIKeys;
 
 /// <summary>
 /// Component displaying a progress slider and text
@@ -26,13 +26,15 @@ public class SliderComponent : MonoBehaviour, IPopupComponent
     /// </summary>
     [SerializeField] private GameObject parent;
 
-    [SerializeField] private PopupKeys maxKey = MaxValue_slider;
-    [SerializeField] private PopupKeys capKey = Value_slider;
-    [SerializeField] private PopupKeys healthbar = Healthbar;
+    [SerializeField] private UIKeys maxKey = MaxValue_slider;
+    [SerializeField] private UIKeys capKey = Value_slider;
+    [SerializeField] private UIKeys healthbar = Healthbar;
+    [SerializeField] private UIKeys vehicles = UIKeys.Vehicle;
 
     [SerializeField] private Image fill;
     [SerializeField] private Color health;
     [SerializeField] private Color normal;
+    [SerializeField] private Color vehicle;
 
     private Func<float> getCurrentValue;
     private Func<float> getMaxValue;
@@ -42,9 +44,10 @@ public class SliderComponent : MonoBehaviour, IPopupComponent
     /// based on provided popup data dictionary.
     /// </summary>
     /// <param name="data">Dictionary mapping UI value keys to dynamic data.</param>
-    public void TrySetup(Dictionary<PopupKeys, object> data)
+    public void TrySetup(Dictionary<UIKeys, object> data)
     {
-        if (data.TryGetValue(healthbar, out var asd)) fill.color = health;
+        if (data.TryGetValue(healthbar, out var hp)) fill.color = health;
+        else if (data.TryGetValue(vehicles, out var car)) fill.color = vehicle;
         else fill.color = normal;
 
         if (data.TryGetValue(capKey, out var cap) && data.TryGetValue(maxKey, out var maxcap))
@@ -83,8 +86,8 @@ public class SliderComponent : MonoBehaviour, IPopupComponent
             slider.value = current;
             Debug.Log("Max: " + max + " Current: " + current);
 
-            if (fill.color == normal) ProgressText.text = $"{(int)current}/{(int)max}";
-            else ProgressText.text = "";
+            if (fill.color == health) ProgressText.text = "";
+            else ProgressText.text = $"{(int)current}/{(int)max}";
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 using static Unity.Burst.Intrinsics.X86.Avx;
 
 /// <summary>
@@ -113,7 +114,7 @@ public class WorldSpaceUI : MonoBehaviour
     /// Passes dynamic data to the popup UI components for setup. With strict transform.
     /// </summary>
     /// <param name="Data">Dictionary containing UI values for the structure.</param>
-    public void SetPopupData(Dictionary<PopupKeys, object> Data, Transform target)
+    public void SetPopupData(Dictionary<UIKeys, object> Data, Transform target)
     {
         if (Data == null) return;
         this.target = target;
@@ -128,7 +129,7 @@ public class WorldSpaceUI : MonoBehaviour
     /// Passes dynamic data to the popup UI components for setup. With strict position.
     /// </summary>
     /// <param name="Data">Dictionary containing UI values for the structure.</param>
-    public void SetPopupData(Dictionary<PopupKeys, object> Data, Vector3 position)
+    public void SetPopupData(Dictionary<UIKeys, object> Data, Vector3 position)
     {
         if (Data == null) return;
         target = null;
@@ -149,6 +150,9 @@ public class WorldSpaceUI : MonoBehaviour
             StopCoroutine(currentRoutine);
 
         gameObject.SetActive(true);
+
+        canvas.GetComponentsInChildren<RectTransform>().ToList().ForEach(t => LayoutRebuilder.ForceRebuildLayoutImmediate(t));
+
         currentRoutine = StartCoroutine(FadeScaleRoutine(true));
     }
 
@@ -169,6 +173,7 @@ public class WorldSpaceUI : MonoBehaviour
     /// <param name="show">True to animate showing; false to animate hiding.</param>
     private IEnumerator FadeScaleRoutine(bool show)
     {
+        yield return new WaitForEndOfFrame();
         float duration = 0.25f;
         float time = 0f;
 
@@ -201,5 +206,11 @@ public class WorldSpaceUI : MonoBehaviour
             canvasGroup.interactable = false;
             gameObject.SetActive(false);
         }
+    }
+
+    public bool CheckDistance(Vector3 goPos)
+    {
+        float Distance = Vector3.Distance(goPos, cam.transform.position);
+        return (Distance >= maxDistance || Distance <= minDistance);
     }
 }

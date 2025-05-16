@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using static PopupKeys;
+using static UIKeys;
 
 [System.Serializable]
 public class AnimalModel
