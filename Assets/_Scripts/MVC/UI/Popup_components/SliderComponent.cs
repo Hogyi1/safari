@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static StructureUIValues;
+using static UIKeys;
 
 /// <summary>
 /// Component displaying a progress slider and text
 /// within a structure popup UI, handling dynamic values.
 /// </summary>
-public class SliderComponent : MonoBehaviour, IStructureUIComponent
+public class SliderComponent : MonoBehaviour, IPopupComponent
 {
     /// <summary>
     /// Slider UI element showing current progress.
@@ -26,36 +26,40 @@ public class SliderComponent : MonoBehaviour, IStructureUIComponent
     /// </summary>
     [SerializeField] private GameObject parent;
 
-    private StructureUIValues maxKey = MaxValue_slider;
-    private StructureUIValues capKey = Value_slider;
+    [SerializeField] private UIKeys maxKey = MaxValue_slider;
+    [SerializeField] private UIKeys capKey = Value_slider;
+    [SerializeField] private UIKeys healthbar = Healthbar;
+    [SerializeField] private UIKeys vehicles = UIKeys.Vehicle;
+
+    [SerializeField] private Image fill;
+    [SerializeField] private Color health;
+    [SerializeField] private Color normal;
+    [SerializeField] private Color vehicle;
 
     private Func<float> getCurrentValue;
     private Func<float> getMaxValue;
-    private float maxValue;
 
     /// <summary>
     /// Configures slider maximum value and data retrieval
     /// based on provided popup data dictionary.
     /// </summary>
     /// <param name="data">Dictionary mapping UI value keys to dynamic data.</param>
-    public void TrySetup(Dictionary<StructureUIValues, object> data)
+    public void TrySetup(Dictionary<UIKeys, object> data)
     {
+        if (data.TryGetValue(healthbar, out var hp)) fill.color = health;
+        else if (data.TryGetValue(vehicles, out var car)) fill.color = vehicle;
+        else fill.color = normal; // Ez nagyon ronda megoldás, ha van rá mód, hogy a visual studioban színeket vizuálisan ki lehessen választani akkor lecserélhetjük Slider_colorra
+
         if (data.TryGetValue(capKey, out var cap) && data.TryGetValue(maxKey, out var maxcap))
         {
-            if (cap is Func<float> capFunc)
-            {
-                getCurrentValue = capFunc;
-            }
+            if (cap is Func<float> capFunc) getCurrentValue = capFunc;
             else
             {
                 float fixedValue = Convert.ToSingle(cap);
                 getCurrentValue = () => fixedValue;
             }
 
-            if (maxcap is Func<float> maxcapFunc)
-            {
-                getMaxValue = maxcapFunc;
-            }
+            if (maxcap is Func<float> maxcapFunc) getMaxValue = maxcapFunc;
             else
             {
                 float fixedMax = Convert.ToSingle(maxcap);
@@ -64,17 +68,14 @@ public class SliderComponent : MonoBehaviour, IStructureUIComponent
 
             parent.gameObject.SetActive(true);
         }
-        else
-        {
-            parent.gameObject.SetActive(false);
-        }
+        else parent.gameObject.SetActive(false);
     }
 
     /// <summary>
     /// Updates slider value and progress text each frame
     /// based on current value function.
     /// </summary>
-    private void Update()
+    public void OnPopupUpdate()
     {
         if (getCurrentValue != null && getMaxValue != null)
         {
@@ -84,7 +85,8 @@ public class SliderComponent : MonoBehaviour, IStructureUIComponent
             slider.maxValue = max;
             slider.value = current;
 
-            ProgressText.text = $"{(int)current}/{(int)max}";
+            if (fill.color == health) ProgressText.text = "";
+            else ProgressText.text = $"{(int)current}/{(int)max}";
         }
     }
 }

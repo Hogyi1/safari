@@ -43,6 +43,11 @@ public class AnimalData : ScriptableObject, IDetails
     public GameObject AnimalPrefab;
 
     /// <summary>
+    ///  The icon that represents animals
+    /// </summary>
+    public Sprite Icon;
+
+    /// <summary>
     /// Returns the unique data ID for this animal (used in IDetails).
     /// </summary>
     public int GetDataID()

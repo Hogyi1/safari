@@ -102,7 +102,7 @@ public class AnimalStateMachine : MonoBehaviour
             if (suBsuBState != null) subsubState = suBsuBState.ToString();
             else subsubState = "null";
         }
-        catch (Exception ex) { }
+        catch (Exception) { }
 
         RootState.UpdateStates();
     }

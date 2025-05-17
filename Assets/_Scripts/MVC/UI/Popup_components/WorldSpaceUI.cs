@@ -1,33 +1,53 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
+using static Unity.Burst.Intrinsics.X86.Avx;
 
 /// <summary>
 /// Manages a world-space popup UI for buildings, handling initialization, orientation,
 /// scaling, and smooth fade/scale animations.
 /// </summary>
-public class BuildingPopup : MonoBehaviour
+public class WorldSpaceUI : MonoBehaviour
 {
     /// <summary>
     /// Reference to the scene camera transform for orienting and scaling the popup.
     /// </summary>
-    public Transform cam;
+    [SerializeField] private Transform cam;
 
     /// <summary>
-    /// List of UI components within the popup that implement IStructureUIComponent.
+    /// List of UI components within the popup that contains the scripts.
     /// </summary>
-    private List<IStructureUIComponent> UIComponents = new();
+    [SerializeField] private List<MonoBehaviour> PopupComponents;
+
+    /// <summary>
+    /// List of popup components
+    /// </summary>
+    private List<IPopupComponent> Components = new();
+
+    /// <summary>
+    /// Max distance when the popup closes automatically
+    /// </summary>
+    [SerializeField] private float maxDistance;
+
+    /// <summary>
+    /// Min distance when the popup closes automatically
+    /// </summary>
+    [SerializeField] private float minDistance;
 
     /// <summary>
     /// Canvas component for controlling the popup's scale.
     /// </summary>
-    private Canvas canvas;
+    [SerializeField] private Canvas canvas;
 
     /// <summary>
     /// CanvasGroup component for controlling the popup's transparency and interactivity.
     /// </summary>
-    private CanvasGroup canvasGroup;
+    [SerializeField] private CanvasGroup canvasGroup;
 
     /// <summary>
     /// Currently running coroutine for fade/scale animations.
@@ -40,53 +60,84 @@ public class BuildingPopup : MonoBehaviour
     private const float InitialDistance = 10.44f;
 
     /// <summary>
+    /// The Transform to follow
+    /// </summary>
+    private Transform target;
+
+    /// <summary>
     /// Initializes UI components, canvas, and canvas group, then hides the popup.
     /// </summary>
     private void Start()
     {
-        ButtonComponent bc = GetComponent<ButtonComponent>();
-        UIComponents.Add(bc);
-        SliderComponent sc = GetComponent<SliderComponent>();
-        UIComponents.Add(sc);
-        BaseComponent bsc = GetComponent<BaseComponent>();
-        UIComponents.Add(bsc);
-
         canvas = GetComponentInChildren<Canvas>();
         canvasGroup = canvas.GetComponent<CanvasGroup>();
 
         if (canvasGroup == null)
             canvasGroup = canvas.gameObject.AddComponent<CanvasGroup>();
 
+        foreach (var mono in PopupComponents)
+        {
+            var allBehaviours = mono.GetComponentsInChildren<MonoBehaviour>(true);
+
+            foreach (var comp in allBehaviours.OfType<IPopupComponent>())
+            {
+                Components.Add(comp);
+            }
+        }
+
         gameObject.SetActive(false);
     }
 
     /// <summary>
-    /// Orients the popup to face the camera, adjusts scale based on distance,
+    /// Orients the popup to face the camera, adjusts scale based on distance, adjusts position based on target's position,
     /// and hides the popup if outside visible range.
     /// </summary>
     void LateUpdate()
     {
+        if (target != null) transform.position = Vector3.Lerp(transform.position, target.position, Time.deltaTime * 10f);
         transform.LookAt(transform.position + cam.forward);
         float Distance = Vector3.Distance(canvas.transform.position, cam.transform.position);
         if (currentRoutine.IsUnityNull()) canvas.transform.localScale = Vector3.Lerp(canvas.transform.localScale, Vector3.one * Mathf.Max(Distance / InitialDistance, 0.75f), Time.deltaTime * 10f);
 
-        if (Distance >= 30 || Distance <= 2)
+        if (Distance >= maxDistance || Distance <= minDistance)
         {
             InputManager.Instance.DisableView();
-            Hide();
+        }
+
+        foreach (var comp in Components)
+        {
+            comp.OnPopupUpdate();
         }
     }
 
     /// <summary>
-    /// Passes dynamic data to the popup UI components for setup.
+    /// Passes dynamic data to the popup UI components for setup. With strict transform.
     /// </summary>
     /// <param name="Data">Dictionary containing UI values for the structure.</param>
-    public void SetPopupData(Dictionary<StructureUIValues, object> Data)
+    public void SetPopupData(Dictionary<UIKeys, object> Data, Transform target)
     {
         if (Data == null) return;
-        foreach (IStructureUIComponent component in UIComponents)
+        this.target = target;
+
+        foreach (var comp in Components)
         {
-            component.TrySetup(Data);
+            if (comp is IPopupComponent component) component.TrySetup(Data);
+        }
+    }
+
+    /// <summary>
+    /// Passes dynamic data to the popup UI components for setup. With strict position.
+    /// </summary>
+    /// <param name="Data">Dictionary containing UI values for the structure.</param>
+    public void SetPopupData(Dictionary<UIKeys, object> Data, Vector3 position)
+    {
+        if (Data == null) return;
+        target = null;
+        transform.position = position;
+
+        foreach (var comp in Components)
+        {
+            if (comp is IPopupComponent component) component.TrySetup(Data);
         }
     }
 
@@ -99,6 +150,9 @@ public class BuildingPopup : MonoBehaviour
             StopCoroutine(currentRoutine);
 
         gameObject.SetActive(true);
+
+        canvas.GetComponentsInChildren<RectTransform>().ToList().ForEach(t => LayoutRebuilder.ForceRebuildLayoutImmediate(t));
+
         currentRoutine = StartCoroutine(FadeScaleRoutine(true));
     }
 
@@ -119,6 +173,7 @@ public class BuildingPopup : MonoBehaviour
     /// <param name="show">True to animate showing; false to animate hiding.</param>
     private IEnumerator FadeScaleRoutine(bool show)
     {
+        yield return new WaitForEndOfFrame();
         float duration = 0.25f;
         float time = 0f;
 
@@ -144,11 +199,18 @@ public class BuildingPopup : MonoBehaviour
         canvasGroup.alpha = endAlpha;
 
         currentRoutine = null;
+
         if (!show)
         {
             canvasGroup.blocksRaycasts = false;
             canvasGroup.interactable = false;
             gameObject.SetActive(false);
         }
+    }
+
+    public bool CheckDistance(Vector3 goPos)
+    {
+        float Distance = Vector3.Distance(goPos, cam.transform.position);
+        return (Distance >= maxDistance || Distance <= minDistance);
     }
 }

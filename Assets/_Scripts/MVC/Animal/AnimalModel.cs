@@ -1,9 +1,8 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-
+using static UIKeys;
 
 [System.Serializable]
 public class AnimalModel
@@ -13,6 +12,7 @@ public class AnimalModel
     public DietType Diet { get; private set; }
     public AnimalType Type { get; private set; }
     public float Speed { get; private set; } = 5f;
+    public Sprite Icon;
 
     // Élettani jellemzők - csak olvashatók kívülről
     private float hunger = 100;
@@ -55,6 +55,7 @@ public class AnimalModel
         this.maxAge = data.MaxAge;
         this.Age = Age;
         this.Price = data.Price / 2;
+        this.Icon = data.Icon;
     }
     // Egyszerű számítások az igényekhez
     public void CalculateHunger(float multiplier)

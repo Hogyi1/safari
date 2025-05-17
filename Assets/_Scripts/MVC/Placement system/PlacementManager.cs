@@ -87,11 +87,11 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
 
     public void StartPlacing(int StructureID)
     {
+        StopPlacement();
+
         InputManager.Instance.SetState(InputState.PlacementMode);
         InputEventChannel.OnClick += TryPlacement;
         InputManager.Instance.StopPlacement += StopPlacement;
-
-        StopPlacement();
 
         BuildingData Data = buildingDatabase.FirstOrDefault(t => t.BuildingID == StructureID);
 
@@ -239,7 +239,7 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
             {
                 MapData.AddObjectAt(mapPosition, spaceTaken, -999, -999);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 success = false;
             }
