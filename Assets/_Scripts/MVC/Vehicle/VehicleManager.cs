@@ -222,17 +222,13 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
 
     private void HandleRedirect()
     {
-        Debug.Log("Redirecting rn");
         var vehiclesOnTour = activeVehicles.FindAll(t => t.Model.State == On_tour || t.Model.State == Busy);
 
         foreach (var vehicle in vehiclesOnTour)
         {
             bool toExit = vehicle.Model.State == On_tour;
-            Debug.Log("ToExit? " + toExit);
             List<Vector3> newPath = RoadManager.Instance.FindNewPath(vehicle.View.transform.position, toExit);
             vehicle.View.StopAllCoroutines();
-            Debug.Log("current state " + vehicle.Model.State);
-            Debug.Log("do i have a path " + (newPath.Count != 0));
 
             if (newPath.Count == 0 && toExit) vehicle.Model.State = Finished;
             else if (newPath.Count == 0 && !toExit) vehicle.View.ResetVehicle();

@@ -123,7 +123,7 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
     {
         transform.position = VehicleManager.Instance.GetParkingSpot();
         VehicleManager.Instance.SetVehicleState(iD, Empty);
-        gameObject.SetActive(false);
+        if (isActive) InputManager.Instance.DisableView();
     }
 
     /// <summary>
@@ -139,11 +139,6 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
     public bool Arrived => navigator.Arrived;
 
     private void OnDestroy()
-    {
-        if (isActive) PopupManager.Instance.HidePopup();
-    }
-
-    private void OnDisable()
     {
         if (isActive) PopupManager.Instance.HidePopup();
     }
