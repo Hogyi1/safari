@@ -48,7 +48,7 @@ public class SliderComponent : MonoBehaviour, IPopupComponent
     {
         if (data.TryGetValue(healthbar, out var hp)) fill.color = health;
         else if (data.TryGetValue(vehicles, out var car)) fill.color = vehicle;
-        else fill.color = normal;
+        else fill.color = normal; // Ez nagyon ronda megoldás, ha van rá mód, hogy a visual studioban színeket vizuálisan ki lehessen választani akkor lecserélhetjük Slider_colorra
 
         if (data.TryGetValue(capKey, out var cap) && data.TryGetValue(maxKey, out var maxcap))
         {
@@ -84,7 +84,6 @@ public class SliderComponent : MonoBehaviour, IPopupComponent
 
             slider.maxValue = max;
             slider.value = current;
-            Debug.Log("Max: " + max + " Current: " + current);
 
             if (fill.color == health) ProgressText.text = "";
             else ProgressText.text = $"{(int)current}/{(int)max}";
