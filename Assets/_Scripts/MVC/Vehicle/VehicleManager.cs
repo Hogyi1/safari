@@ -148,7 +148,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         {
             pos = garage.transform.Find("Garage").position;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             Debug.LogWarning("Nincsen beállítva Garage az alap beállításokat fogom használni");
             pos = garage.GetComponent<Renderer>().bounds.center;
@@ -222,17 +222,13 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
 
     private void HandleRedirect()
     {
-        Debug.Log("Redirecting rn");
         var vehiclesOnTour = activeVehicles.FindAll(t => t.Model.State == On_tour || t.Model.State == Busy);
 
         foreach (var vehicle in vehiclesOnTour)
         {
             bool toExit = vehicle.Model.State == On_tour;
-            Debug.Log("ToExit? " + toExit);
             List<Vector3> newPath = RoadManager.Instance.FindNewPath(vehicle.View.transform.position, toExit);
             vehicle.View.StopAllCoroutines();
-            Debug.Log("current state " + vehicle.Model.State);
-            Debug.Log("do i have a path " + (newPath.Count != 0));
 
             if (newPath.Count == 0 && toExit) vehicle.Model.State = Finished;
             else if (newPath.Count == 0 && !toExit) vehicle.View.ResetVehicle();
@@ -241,28 +237,12 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         }
     }
 
-    public List<AnimalType> GetAnimalsInSight(int vehicleID)
-    {
-        return activeVehicles.Find(t => t.ID == vehicleID).View.animalsInView;
-    }
-
-    public Vector3 GetGaragePosition(int ID)
-    {
-        return FacilityManager.Instance.GetInteractingPosition(myType);
-    }
-
-    public void LevelUp(int amount)
-    {
-        maxCapacity += amount;
-    }
-
-    public void LevelDown(int amount)
-    {
-        maxCapacity -= amount;
-    }
-
+    public Vehicle GetVehicle(int ID) => activeVehicles.Find(t => t.ID == ID);
+    public List<AnimalType> GetAnimalsInSight(int vehicleID) => activeVehicles.Find(t => t.ID == vehicleID).View.animalsInView;
+    public Vector3 GetGaragePosition(int ID) => FacilityManager.Instance.GetInteractingPosition(myType);
+    public void LevelUp(int amount) => maxCapacity += amount;
+    public void LevelDown(int amount) => maxCapacity -= amount;
     public bool CanBuy() => Capacity < MaxCapacity;
-
     public int MaxCapacity => maxCapacity;
     public int Capacity => activeVehicles.Count;
 

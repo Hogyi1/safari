@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using static StructureUIValues;
+﻿using System;
+using System.Collections.Generic;
+using static UIKeys;
 
 public class Water : Structure, ISelectable, IWaterSource
 {
@@ -14,12 +15,12 @@ public class Water : Structure, ISelectable, IWaterSource
         return dietType;
     }
 
-    public Dictionary<StructureUIValues, object> GetUIData()
+    public Dictionary<UIKeys, object> GetUIData()
     {
-        return new Dictionary<StructureUIValues, object> {
+        return new Dictionary<UIKeys, object> {
             { Name_text, Name },
-            { StructureUIValues.ID, ID },
             { Sprite_icon, Icon },
+            { Pickup_action, new Action(() => { StructureManager.Instance.RemoveStructure(ID); PopupManager.Instance.HidePopup();})}
         };
     }
 

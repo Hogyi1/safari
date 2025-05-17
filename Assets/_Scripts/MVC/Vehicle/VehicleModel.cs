@@ -10,32 +10,32 @@ public class VehicleModel
     /// <summary>
     /// Unique identifier of the vehicle.
     /// </summary>
-    [SerializeField] private int iD;
+    private int iD;
 
     /// <summary>
     /// Current operational state of the vehicle.
     /// </summary>
-    [SerializeField] private VehicleState state;
+    private VehicleState state;
 
     /// <summary>
     /// Type of the vehicle (e.g., Jeep, Bus, Van).
     /// </summary>
-    [SerializeField] private VehicleType type;
+    private VehicleType type;
 
     /// <summary>
     /// Maximum number of passengers the vehicle can hold.
     /// </summary>
-    [SerializeField] private int capacity;
+    private int capacity;
 
     /// <summary>
-    /// Space already taken by existing passengers.
+    /// Space taken up in garage
     /// </summary>
-    [SerializeField] private int spaceTaken;
+    private int spaceTaken;
 
     /// <summary>
     /// Accumulated waiting time in seconds.
     /// </summary>
-    [SerializeField] private float waitingTime;
+    private float waitingTime;
 
     /// <summary>
     /// IDs of tourists assigned to this vehicle.
@@ -67,7 +67,7 @@ public class VehicleModel
     public int Capacity => capacity;
 
     /// <summary>
-    /// Gets the space already taken in the vehicle.
+    /// Gets the space taken in the garage
     /// </summary>
     public int SpaceTaken => spaceTaken;
 
@@ -75,6 +75,11 @@ public class VehicleModel
     /// Gets the total waiting time accumulated.
     /// </summary>
     public float WaitingTime => waitingTime;
+
+    /// <summary>
+    /// Icon of vehicles
+    /// </summary>
+    public Sprite Icon;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleModel"/> class.
@@ -89,6 +94,7 @@ public class VehicleModel
         spaceTaken = data.SpaceTaken;
         state = VehicleState.Empty;
         waitingTime = 0f;
+        this.Icon = data.Icon;
     }
 
     /// <summary>

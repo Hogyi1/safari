@@ -62,7 +62,7 @@ public class FacilityView : MonoBehaviour, IPlaceable, IInteractable, IUpgradeab
     {
         isActive = true;
         fadeEffect.FadeIn();
-        PopupManager.Instance.ActivateStructurePopup(((ISelectable)MySelectable).GetUIData(), GetGameObject());
+        PopupManager.Instance.ActivatePopup(((ISelectable)MySelectable).GetUIData(), GetGameObject());
     }
 
     // Interakció megszüntetése, állapot alaphelyzetbe (fade out)
@@ -85,7 +85,7 @@ public class FacilityView : MonoBehaviour, IPlaceable, IInteractable, IUpgradeab
         {
             pos = gameObject.transform.Find("InteractPoint").position;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             Debug.LogWarning("Nincsen beállítva InteractPoint az alap beállításokat fogom használni");
             pos = gameObject.GetComponent<Renderer>().bounds.center;
