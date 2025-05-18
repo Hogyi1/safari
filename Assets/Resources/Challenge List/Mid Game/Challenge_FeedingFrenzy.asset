@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28b4bccbfcc07e4cb13f22696b40440, type: 3}
   m_Name: Challenge_FeedingFrenzy
   m_EditorClassIdentifier: 
+  id: 11
   prize: 3500
   eventType: 3
   state: 0
