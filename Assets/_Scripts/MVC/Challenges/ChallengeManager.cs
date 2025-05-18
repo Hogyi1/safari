@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -50,10 +51,11 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
     }
 
     /// <summary>
-    /// Called when a subscribed event occurs; updates progress on matching challenges.
+    /// Handles game events by updating progress for any challenges that match the given event type.
+    /// Also triggers the ALL_CHALLENGES_COMPLETED event if all challenges (except one) are completed or collected.
     /// </summary>
-    /// <param name="eventType">The type of event that occurred.</param>
-    /// <param name="amount">The value associated with the event.</param>
+    /// <param name="eventType">The type of game event that occurred.</param>
+    /// <param name="amount">The numerical value associated with the event, used to update challenge progress.</param>
     public void OnNotify(EventType eventType, int amount)
     {
         foreach (var challenge in challenges)
@@ -63,6 +65,9 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
                 challenge.CalculateProgress(amount);
             }
         }
+
+        // Check challenge state: Trophy Collector
+        if (AllChallengesCompletedExceptOne(8)) GameEvents.Instance.NotifyObservers(EventType.ALL_CHALLENGES_COMPLETED, 1);
     }
 
     /// <summary>
@@ -94,8 +99,7 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
             {
                 if (challenge.CollectReward())
                 {
-                    // TODO: Add prize to currency
-                    Debug.Log($"Collected {challenge.prize} coins from: {challenge.description}");
+                    EconomyManager.Instance.AddMoney(challenge.prize);
                     return true;
                 }
             }
@@ -113,6 +117,16 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
         return challenges;
     }
 
+    public Challenge GetChallengeById(int id)
+    {
+        foreach(var challenge in challenges)
+        {
+            if (!challenge.id.Equals(id)) return null;
+            else return challenge;
+        }
+        return null;
+    }
+
     /// <summary>
     /// Retrieves challenges filtered by a specific state.
     /// </summary>
@@ -122,4 +136,22 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
     {
         return challenges.FindAll(c => c.state == state);
     }
+
+    /// <summary>
+    /// Determines whether all challenges - excluding the one with the specified ID - are either completed or collected.
+    /// Used to check near-completion conditions for triggering related achievements or events.
+    /// </summary>
+    /// <param name="excludedChallengeId">The ID of the challenge to exclude from the completion check.</param>
+    /// <returns>True if all other challenges are completed or collected; otherwise, false.</returns>
+    public bool AllChallengesCompletedExceptOne(int excludedChallengeId)
+    {
+        List<Challenge> otherChallenges = challenges.Where(ch => ch.id != excludedChallengeId).ToList();
+
+        int completedCount = otherChallenges.Count(ch => 
+            ch.state == ChallengeState.COMPLETED 
+            || ch.state == ChallengeState.COLLECTED);
+
+        return completedCount == otherChallenges.Count;
+    }
+
 }
