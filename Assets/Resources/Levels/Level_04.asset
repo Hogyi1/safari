@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a7faa3a6fe681ba4d977ae366bbf6253, type: 3}
-  m_Name: Level_7
+  m_Name: Level_04
   m_EditorClassIdentifier: 
-  levelNumber: 7
-  expRequired: 500
+  levelNumber: 4
+  expRequired: 250
   unlockChallenges:
-  - 'Habitat Hero: Place 50 trees'
+  - 'Tour de Safari: Transport 100 visitors using cars'
   unlockItemIds: 
