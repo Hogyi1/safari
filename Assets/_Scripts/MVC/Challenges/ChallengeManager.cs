@@ -119,10 +119,10 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
 
     public Challenge GetChallengeById(int id)
     {
-        foreach(var challenge in challenges)
+        foreach (var challenge in challenges)
         {
-            if (!challenge.id.Equals(id)) return null;
-            else return challenge;
+            if (challenge.id == id)
+                return challenge;
         }
         return null;
     }
