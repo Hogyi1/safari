@@ -11,17 +11,6 @@ public class TouristView : MonoBehaviour, INavigatable
     [SerializeField] private Animator animator;
     [SerializeField] private NavigatorComponent navigator;
 
-    public Vector3 destination;
-    public bool hasPath;
-    public float Loco;
-    public bool isWalking;
-    public bool arrived;
-
-    public float waitingmood;
-    public float mood;
-    public AnimalType fav;
-
-
     [Header("Animations")]
     // Animator paraméterek (hash-ek)
     public static readonly int IsWalking = Animator.StringToHash("IsWalking");
@@ -33,6 +22,17 @@ public class TouristView : MonoBehaviour, INavigatable
     {
         this.model = model;
         this.iD = model.ID;
+    }
+
+    public int ID;
+    public int vehicleID;
+    public TouristState State;
+
+    private void Update()
+    {
+        State = model.State;
+        vehicleID = model.VehicleID;
+        ID = model.ID;
     }
 
     // Elindítja a NavMesh-t az autóhoz
@@ -67,4 +67,5 @@ public class TouristView : MonoBehaviour, INavigatable
 
     // === Érkezés logika ===
     public bool Arrived => navigator.Arrived;
+    public Vector3 CurrentDestination => navigator.CurrentDestination;
 }

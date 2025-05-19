@@ -1,4 +1,4 @@
-public class Tourist
+﻿public class Tourist : ISaveable<TouristSaveData>
 {
     public int ID;
     private TouristModel model;
@@ -15,5 +15,23 @@ public class Tourist
         this.view = view;
 
         this.view.Init(this.model);
+    }
+
+    public TouristSaveData GetSaveData()
+    {
+        return new TouristSaveData
+        {
+            ID = model.ID,
+            State = model.State,
+            WaitingMood = model.WaitingMood,
+            TourMood = model.TourMood,
+            TotalMood = model.TotalMood,
+            ElapsedTime = model.ElapsedTime,
+            PatienceLevel = model.PatienceLevel,
+            VehicleID = model.VehicleID,
+            FavouriteAnimal = model.FavouriteAnimalType,
+            CurrentPosition = view.transform.position,
+            CurrentDestination = view.CurrentDestination
+        };
     }
 }

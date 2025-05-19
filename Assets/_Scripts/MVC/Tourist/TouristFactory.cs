@@ -29,10 +29,45 @@ public class TouristFactory : MonoBehaviour
         float x = Random.Range(entranceBounds.min.x, entranceBounds.max.x);
         float z = Random.Range(entranceBounds.min.z, entranceBounds.max.z);
         float y = entranceBounds.center.y;
+        Vector3 spawnPosition = new Vector3(x, y, z);
 
-        GameObject instance = Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity);
+        TouristView view = CreateTouristVisual(spawnPosition);
+        TouristModel model = new TouristModel(ID);
+
+        return new Tourist(ID, model, view);
+    }
+
+    public Tourist CreateTourist(TouristSaveData touristData)
+    {
+        Vector3 spawnPosition = touristData.CurrentPosition;
+
+        TouristView view = CreateTouristVisual(spawnPosition);
+        TouristModel model = new TouristModel(touristData);
+
+        switch (model.State)
+        {
+            case TouristState.Walking:
+                view.StartWalkingToCar(touristData.CurrentDestination);
+                break;
+            case TouristState.In_car:
+            case TouristState.On_tour:
+            case TouristState.Finished:
+                view.gameObject.SetActive(false);
+                break;
+            default:
+                break;
+        }
+
+        return new Tourist(touristData.ID, model, view);
+    }
+
+    private TouristView CreateTouristVisual(Vector3 position)
+    {
+        GameObject prefab = GetRandomPrefab();
+        GameObject instance = Instantiate(prefab, position, Quaternion.identity);
         instance.transform.SetParent(TouristParent.transform, true);
 
+        // Színek beállítása
         SetMaterials(GetMaterials(instance, clothes));
 
         Color selectedColor = skinColors[Random.Range(0, skinColors.Count)];
@@ -42,12 +77,9 @@ public class TouristFactory : MonoBehaviour
         }
         GetMaterial(instance, "Hair").color = hairColors[Random.Range(0, hairColors.Count)];
 
-
-        TouristView view = instance.GetComponent<TouristView>();
-        TouristModel model = new TouristModel(ID);
-
-        return new Tourist(ID, model, view);
+        return instance.GetComponent<TouristView>();
     }
+
 
     public List<Material> GetMaterials(GameObject prefab, List<string> names)
     {

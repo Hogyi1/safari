@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 using static TouristState;
 
 [RequireComponent(typeof(TouristFactory))]
-public class TouristManager : MonoBehaviour, IRandomEventObserver , IDataPersistence
+public class TouristManager : MonoBehaviour, IRandomEventObserver, IDataPersistence
 {
     // Singleton pattern
     public static TouristManager Instance { get; private set; }
@@ -32,6 +32,8 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver , IDataPersist
 
     private Dictionary<AnimalType, int> animalChart = new();
 
+    public bool IsLoaded = false;
+
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -42,12 +44,15 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver , IDataPersist
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        DataPersistenceManager.Instance.OnAllLoaded += AllLoaded;
     }
 
     public void Start()
     {
         RandomEvents.Instance.AddObserver(this);
     }
+
+    private void AllLoaded() => IsLoaded = true;
 
     public void SpawnTourist()
     {
@@ -78,6 +83,8 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver , IDataPersist
 
     public void Update()
     {
+        if (!IsLoaded) return;
+
         List<AnimalType> AnimalsInRange = new();
         activeTourists.Where(t => t.Model.State == Finished).ToList().ForEach(t => RemoveTourist(t.ID));
 
@@ -143,30 +150,29 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver , IDataPersist
 
     public void LoadData(GameData data)
     {
-         OverallMood = data.touristData.OverallMood ;
-        OverallWaitingMood = data.touristData.OverallWaitingMood ;
-        Incoming =data.touristData.Incoming  ;
-        StartCoroutine(SpawnTouristsWithDelay(data.touristData.TouristCount));
-        moodSensitivity = data.touristData.moodSensitivity;
-        Debug.Log(Count);
+        OverallMood = data.touristManagerSaveData.OverallMood;
+        OverallWaitingMood = data.touristManagerSaveData.OverallWaitingMood;
+        Incoming = data.touristManagerSaveData.Incoming;
+        moodSensitivity = data.touristManagerSaveData.MoodSensitivity;
+
+        StartCoroutine(Register(data.touristDatas));
     }
 
     public void SaveData(GameData data)
     {
-        Debug.Log("save");
-        data.touristData.OverallMood = OverallMood;
-        data.touristData.OverallWaitingMood = OverallWaitingMood;
-        data.touristData.Incoming = Incoming;
-        data.touristData.TouristCount = Count;
-        data.touristData.moodSensitivity = moodSensitivity;
+        data.touristManagerSaveData.OverallMood = OverallMood;
+        data.touristManagerSaveData.OverallWaitingMood = OverallWaitingMood;
+        data.touristManagerSaveData.Incoming = Incoming;
+        data.touristManagerSaveData.TouristCount = Count;
+        data.touristManagerSaveData.MoodSensitivity = moodSensitivity;
+
+        data.touristDatas.Clear();
+        activeTourists.ForEach(t => data.touristDatas.Add(t.GetSaveData()));
     }
-    private IEnumerator SpawnTouristsWithDelay(int count)
+    private IEnumerator Register(List<TouristSaveData> data)
     {
-        yield return new WaitForEndOfFrame(); 
-        for (int i = 0; i < count; i++)
-        {
-            SpawnTourist();
-        }
+        yield return new WaitForEndOfFrame();
+        data.ForEach(t => activeTourists.Add(factory.CreateTourist(t)));
     }
 }
 

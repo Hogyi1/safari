@@ -65,6 +65,11 @@ public class TouristModel
     }
 
     /// <summary>
+    /// Gets the patience level of the tourist
+    /// </summary>
+    public float PatienceLevel => patienceLevel;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="TouristModel"/> class.
     /// </summary>
     /// <param name="id">Unique identifier for the tourist.</param>
@@ -81,6 +86,18 @@ public class TouristModel
         waitingMood = 100f;
         tourMood = 50f;
         vehicleID = -1;
+    }
+
+    public TouristModel(TouristSaveData touristData)
+    {
+        iD = touristData.ID;
+        patienceLevel = touristData.PatienceLevel;
+        favouriteAnimal = touristData.FavouriteAnimal;
+        elapsedTime = touristData.ElapsedTime;
+        state = touristData.State;
+        waitingMood = touristData.WaitingMood;
+        tourMood = touristData.TourMood;
+        vehicleID = touristData.VehicleID;
     }
 
 
