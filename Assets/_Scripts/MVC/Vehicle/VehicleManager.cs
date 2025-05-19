@@ -28,6 +28,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
 
     private List<Vehicle> activeVehicles = new List<Vehicle>();
     [SerializeField] private int maxCapacity = 5; //kiszedni
+    private bool IsLoaded = false;
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -38,6 +39,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        DataPersistenceManager.Instance.OnAllLoaded += AllLoaded;
     }
 
     private void Start()
@@ -45,8 +47,11 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         RoadManager.Instance.OnRoadRemoved += HandleRedirect;
     }
 
+    private void AllLoaded() => IsLoaded = true;
+
     private void Update()
     {
+        if (!IsLoaded) return;
         float delta = Time.deltaTime;
 
         foreach (var vehicle in activeVehicles)
@@ -81,18 +86,6 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         Vehicle newVehicle = factory.CreateVehicle(id, vehicleTypeIndex);
         if (newVehicle != null)
             activeVehicles.Add(newVehicle);
-    }
-
-
-    public void SpawnVehicle(VehicleType type)
-    {
-        if (maxCapacity <= activeVehicles.Count) return;
-        int id = IDGenerator.GenerateID();
-
-        Vehicle newVehicle = factory.CreateVehicle(id, type);
-        if (newVehicle != null)
-            activeVehicles.Add(newVehicle);
-        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 20);
     }
 
     /// <summary>
@@ -159,10 +152,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
     /// <summary>
     /// Finds a random route via the RoadManager.
     /// </summary>
-    private List<Vector3> FindRoute()
-    {
-        return RoadManager.Instance.SearchForRandomPath();
-    }
+    private List<Vector3> FindRoute() => RoadManager.Instance.SearchForRandomPath();
 
     /// <summary>
     /// Checks if all passengers of a vehicle have arrived by querying TouristManager.
@@ -215,11 +205,6 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         }
     }
 
-    public void SetVehicleState(int iD, VehicleState newState)
-    {
-        activeVehicles.Find(t => t.ID == iD).Model.State = newState;
-    }
-
     private void HandleRedirect()
     {
         var vehiclesOnTour = activeVehicles.FindAll(t => t.Model.State == On_tour || t.Model.State == Busy);
@@ -237,8 +222,9 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         }
     }
 
+    public void SetVehicleState(int iD, VehicleState newState) => activeVehicles.Find(t => t.ID == iD).Model.State = newState;
     public Vehicle GetVehicle(int ID) => activeVehicles.Find(t => t.ID == ID);
-    public List<AnimalType> GetAnimalsInSight(int vehicleID) => activeVehicles.Find(t => t.ID == vehicleID).View.animalsInView;
+    public List<AnimalType> GetAnimalsInSight(int vehicleID) => activeVehicles.Find(t => t.ID == vehicleID).View.AnimalsInView;
     public Vector3 GetGaragePosition(int ID) => FacilityManager.Instance.GetInteractingPosition(myType);
     public void LevelUp(int amount) => maxCapacity += amount;
     public void LevelDown(int amount) => maxCapacity -= amount;
@@ -249,31 +235,22 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
 
     public void LoadData(GameData data)
     {
-        this.maxCapacity = data.vehicleData.maxCapacity;
-
-        StartCoroutine(SpawnTouristsWithDelay(data.vehicleData.activevehicle));
+        maxCapacity = data.vehicleManagerSaveData.MaxCapacity;
+        StartCoroutine(Register(data.vehicleDatas));
     }
 
     public void SaveData(GameData data)
     {
-        data.vehicleData.maxCapacity = this.maxCapacity;
-        data.vehicleData.activevehicle.Clear();
-        foreach (var vehicle in this.activeVehicles)
-        {
-            data.vehicleData.activevehicle.Add(vehicle.Model.Type);
-        }
+        data.vehicleDatas.Clear();
+        activeVehicles.ForEach(t => data.vehicleDatas.Add(t.GetSaveData()));
+        data.vehicleManagerSaveData.MaxCapacity = maxCapacity;
     }
 
-
-    private IEnumerator SpawnTouristsWithDelay(List<VehicleType> list)
+    private IEnumerator Register(List<VehicleSaveData> data)
     {
         yield return new WaitForEndOfFrame();
-        foreach (var v in list)
-        {
-            SpawnVehicle(v);
-        }
+        data.ForEach(t => activeVehicles.Add(factory.CreateVehicle(t)));
     }
-
 }
 
 /// <summary>

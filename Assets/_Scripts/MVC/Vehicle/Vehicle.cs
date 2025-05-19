@@ -5,7 +5,7 @@ using static UIKeys;
 /// <summary>
 /// Data model representing a vehicle, including capacity, assigned tourists, and state.
 /// </summary>
-public class Vehicle : ISelectable
+public class Vehicle : ISelectable, ISaveable<VehicleSaveData>
 {
     public int ID;
     private VehicleModel model;
@@ -33,6 +33,24 @@ public class Vehicle : ISelectable
             { MaxValue_slider, Model.Capacity },
             { UIKeys.Vehicle, true },
             // { Pickup_action, new Action(() => { VehicleManager.Instance.RemoveVehicle(ID); PopupManager.Instance.HidePopup(); })}, Ide ki lehetne találni, hogy felvegyük-e vagy sem
+        };
+    }
+
+    public VehicleSaveData GetSaveData()
+    {
+        return new VehicleSaveData
+        {
+            ID = ID,
+            Type = Model.Type,
+            Capacity = Model.Capacity,
+            SpaceTaken = Model.SpaceTaken,
+            WaitingTime = Model.WaitingTime,
+            AssignedTourists = Model.AssignedTouristIDs,
+            State = Model.State,
+            CurrentRoute = View.CurrentRoute,
+            NextState = View.NextState,
+            CurrentPosition = View.transform.position,
+            AnimalsInView = View.AnimalsInView
         };
     }
 }

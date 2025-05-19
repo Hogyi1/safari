@@ -97,6 +97,18 @@ public class VehicleModel
         this.Icon = data.Icon;
     }
 
+    public VehicleModel(VehicleSaveData vehicleData, VehicleData data)
+    {
+        iD = vehicleData.ID;
+        type = data.Type;
+        capacity = data.Capacity;
+        spaceTaken = data.SpaceTaken;
+        state = vehicleData.State;
+        waitingTime = vehicleData.WaitingTime;
+        AssignedTouristIDs = vehicleData.AssignedTourists;
+        Icon = data.Icon;
+    }
+
     /// <summary>
     /// Attempts to add a passenger by their tourist ID.
     /// </summary>

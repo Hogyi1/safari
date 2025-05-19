@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -49,21 +50,27 @@ public class VehicleFactory : MonoBehaviour
         return new Vehicle(id, model, view);
     }
 
-    public Vehicle CreateVehicle(int id, VehicleType type)
+    public Vehicle CreateVehicle(VehicleSaveData vehicleData)
     {
-        var data = FindVehicleData(type);
+        var data = FindVehicleData(vehicleData.Type);
         if (data == null)
             return null;
-        Vector3 position = VehicleManager.Instance.GetParkingSpot();
+        Vector3 position = vehicleData.CurrentPosition;
         var instance = Instantiate(data.VehiclePrefab, position, Quaternion.identity);
         instance.transform.SetParent(VehicleParent.transform, true);
 
         var view = instance.GetComponent<VehicleView>();
         view.SetSpeed(data.Speed);
-        view.gameObject.SetActive(false);
+        if (vehicleData.CurrentRoute.Count > 0)
+        {
+            view.MoveOnRoute(vehicleData.CurrentRoute, vehicleData.NextState);
+            // view.AnimalsInView = vehicleData.AnimalsInView; Nem szükséges mert az ontrigger ujraregisztralja
+        }
+        else view.gameObject.SetActive(false);
 
-        var model = new VehicleModel(id, data);
-        return new Vehicle(id, model, view);
+
+        var model = new VehicleModel(vehicleData, data);
+        return new Vehicle(vehicleData.ID, model, view);
     }
 
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
 using static VehicleState;
 
 /// <summary>
@@ -16,21 +15,21 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
     private bool isActive = false;
 
     [SerializeField] private NavigatorComponent navigator;
-    [SerializeField] private GameObject door;
     [SerializeField] private FadeEffect fadeEffect;
 
     [SerializeField] LayerMask animalLayermask;
-    public List<AnimalType> animalsInView = new();
+    public List<AnimalType> AnimalsInView = new();
+    private VehicleState nextState;
 
-    public float waitingTime;
-    public VehicleState state;
-    public List<int> tourstIDS;
+    public int ID;
+    public List<int> assignedtourists;
+    public VehicleState State;
 
     private void Update()
     {
-        waitingTime = model.WaitingTime;
-        state = model.State;
-        tourstIDS = model.AssignedTouristIDs;
+        State = model.State;
+        assignedtourists = model.AssignedTouristIDs;
+        ID = model.ID;
     }
 
     /// <summary>
@@ -45,15 +44,6 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
     }
 
     /// <summary>
-    /// Gets the world position of the vehicle's door for tourists to walk to.
-    /// </summary>
-    public Vector3 GetDoorPosition()
-    {
-        if (door != null) return door.transform.position;
-        return Vector3.zero;
-    }
-
-    /// <summary>
     /// Moves the vehicle along a sequence of waypoints in order.
     /// </summary>
     /// <param name="waypoints">Array of world positions defining the route.</param>
@@ -61,6 +51,7 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
     {
         // Delegate setting waypoints to navigator
         navigator.SetWayPoints(waypoints);
+        nextState = newState;
         StartCoroutine(WaitForArrival(newState));
     }
 
@@ -87,7 +78,7 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         if (av != null && av.enabled)
         {
             AnimalType type = av.Model.Type;
-            animalsInView.Add(type);
+            AnimalsInView.Add(type);
         }
     }
 
@@ -103,7 +94,7 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         if (av != null && av.enabled)
         {
             AnimalType type = av.Model.Type;
-            animalsInView.Remove(type);
+            AnimalsInView.Remove(type);
         }
     }
 
@@ -172,4 +163,7 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         isActive = false;
         fadeEffect.FadeOut();
     }
+
+    public List<Vector3> CurrentRoute => navigator.CurrentRoute;
+    public VehicleState NextState => nextState;
 }
