@@ -2,12 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(TerrainController))]
 [RequireComponent(typeof(PreviewSystem))]
@@ -55,8 +52,8 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
 
     void Start()
     {
-        if (MapData == null) MapData = new MapData(); // Change it to load the existing placed objects
         LoadAllStructures();
+        MapData = new MapData();
 
         terrainController = GetComponent<TerrainController>();
         previewSystem = GetComponent<PreviewSystem>();
@@ -68,7 +65,7 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
 
     void Update()
     {
-        if (InputManager.Instance.State != InputState.PlacementMode) return;
+        if (InputManager.Instance.State != InputState.PlacementMode && BuildingState.IsUnityNull()) return;
         Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
         Vector3Int gridPosition = activeGrid.WorldToCell(mousePosition);
 
@@ -260,7 +257,7 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
 
     public void LoadData(GameData data)
     {
-        StartCoroutine(LoadBuildingLate(data));
+        StartCoroutine(PlaceLate(data));
     }
 
     public void SaveData(GameData data)
@@ -282,11 +279,14 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
         data.idSeed = IDGenerator.GetSeed();
     }
 
+    private BuildingData GetBuildingDataByBuildingID(int buildingID)
+    {
+        return buildingDatabase.FirstOrDefault(t => t.BuildingID == buildingID);
+    }
 
-    private IEnumerator LoadBuildingLate(GameData data)
+    private IEnumerator PlaceLate(GameData data)
     {
         yield return new WaitForEndOfFrame();
-
         List<int> buildingIDs = new();
         List<int> uniqueID = new();
         List<Vector3> positions = new();
@@ -332,14 +332,6 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
             newStructureGO.transform.SetParent(roadNavMesh.transform, true);
         }
     }
-
-
-    private BuildingData GetBuildingDataByBuildingID(int buildingID)
-    {
-        return buildingDatabase.FirstOrDefault(t => t.BuildingID == buildingID);
-    }
-
-
 }
 
 public interface IBuildingState

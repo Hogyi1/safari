@@ -5,12 +5,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class SaveSlotsMenu : MonoBehaviour 
-{ 
+public class SaveSlotsMenu : MonoBehaviour
+{
 
     //saveslot lista
-    [SerializeField]private SaveSlot[] saveSlots;
-    private bool isLoadingGame = false;
+    [SerializeField] private SaveSlot[] saveSlots;
+    private bool isLoadingGame = true;
     [SerializeField] private string gameSceneName = "Final";
 
     private void Awake()
@@ -28,7 +28,8 @@ public class SaveSlotsMenu : MonoBehaviour
         {
             DataPersistenceManager.Instance.NewGame();
         }
-        else {
+        else
+        {
             DataPersistenceManager.Instance.LoadGame();
         }
 
@@ -45,7 +46,7 @@ public class SaveSlotsMenu : MonoBehaviour
         Dictionary<string, GameData> profilesGameData = DataPersistenceManager.Instance.GetAllProfilesGameData();
 
         // loop through each save slot in the UI and set the content appropriately
-        
+
 
         foreach (SaveSlot saveSlot in saveSlots)
         {

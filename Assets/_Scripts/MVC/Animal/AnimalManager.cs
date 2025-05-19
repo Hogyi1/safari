@@ -27,6 +27,8 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     public int HerbivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Herbivore).Count();
     public int CarnivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Carnivore).Count();
 
+    private bool IsLoaded = false;
+
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -44,11 +46,15 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         factory = GetComponent<AnimalFactory>();
         StopPlacement();
         RandomEvents.Instance.AddObserver(this);
+        DataPersistenceManager.Instance.OnAllLoaded += AllLoaded;
     }
+
+    private void AllLoaded() => IsLoaded = true;
 
     private void Update()
     {
         // Tudsz ennél biztonságosabb kódot? XDD
+        if (!IsLoaded) return;
         try
         {
             List<Animal> deadAnimals = activeAnimals.FindAll(t => t.CanRemove);

@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,6 +10,7 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
 {
     private NavMeshAgent agent;
     private Vector3 currentDestination;
+    private List<Vector3> currentRoute;
 
     // Publikus hozzáférés az Agenthez (pl. külső ellenőrzéshez)
     public NavMeshAgent Agent => agent;
@@ -37,6 +40,7 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
     /// </summary>
     public void SetWayPoints(List<Vector3> waypoints)
     {
+        currentRoute = new(waypoints);
         StartCoroutine(TraverseWaypoints(waypoints));
     }
 
@@ -93,7 +97,10 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
         {
             SetTarget(point);
             while (!Arrived || Vector3.Distance(transform.position, point) <= agent.stoppingDistance) yield return null;
+            currentRoute.Remove(point);
         }
+
+        currentRoute.Clear();
         StopMovement();
     }
 
@@ -133,4 +140,7 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
             return navArrived || closeEnough;
         }
     }
+
+    public Vector3 CurrentDestination => currentDestination;
+    public List<Vector3> CurrentRoute => currentRoute;
 }
