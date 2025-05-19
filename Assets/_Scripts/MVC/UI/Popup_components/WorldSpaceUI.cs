@@ -1,12 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
-using static Unity.Burst.Intrinsics.X86.Avx;
 
 /// <summary>
 /// Manages a world-space popup UI for buildings, handling initialization, orientation,
