@@ -211,6 +211,11 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
         }
     }
 
+    private void OnDestroy()
+    {
+        if (isActive) PopupManager.Instance.HidePopup();
+    }
+
     // Egér rámutatás esemény kezelése (fade in effekt)
     public void OnHover()
     {
@@ -231,7 +236,7 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
     {
         isActive = true;
         fadeEffect.FadeIn();
-        PopupManager.Instance.ActivateAnimalPopup(iD);
+        PopupManager.Instance.ActivatePopup(AnimalManager.Instance.GetAnimal(ID).GetUIData(), gameObject);
     }
 
     // Interakció megszüntetése, állapot alaphelyzetbe (fade out)

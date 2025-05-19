@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
+using static UIKeys;
 
 /// <summary>
 /// Data model representing a vehicle, including capacity, assigned tourists, and state.
 /// </summary>
-public class Vehicle
+public class Vehicle : ISelectable
 {
     public int ID;
     private VehicleModel model;
@@ -18,6 +20,20 @@ public class Vehicle
         this.view = view;
 
         this.view.Init(this.model);
+    }
+
+    public BuildingType GetBuildingType() => BuildingType.None;
+    public int GetID() => ID;
+    public Dictionary<UIKeys, object> GetUIData()
+    {
+        return new Dictionary<UIKeys, object> {
+            { Name_text, Model.Type.ToString() },
+            { Sprite_icon, Model.Icon },
+            { Value_slider, new Func<float>(() => Model.AssignedTouristIDs.Count) },
+            { MaxValue_slider, Model.Capacity },
+            { UIKeys.Vehicle, true },
+            // { Pickup_action, new Action(() => { VehicleManager.Instance.RemoveVehicle(ID); PopupManager.Instance.HidePopup(); })}, Ide ki lehetne találni, hogy felvegyük-e vagy sem
+        };
     }
 }
 

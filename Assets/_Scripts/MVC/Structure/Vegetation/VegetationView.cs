@@ -58,7 +58,7 @@ public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceab
     {
         isActive = true;
         fadeEffect.FadeIn();
-        PopupManager.Instance.ActivateStructurePopup(((ISelectable)MySelectable).GetUIData(), GetGameObject());
+        PopupManager.Instance.ActivatePopup(((ISelectable)MySelectable).GetUIData(), GetGameObject());
     }
 
     // Interakció megszüntetése, állapot alaphelyzetbe (fade out)

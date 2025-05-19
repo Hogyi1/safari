@@ -28,7 +28,7 @@ public class VehicleModel
     [SerializeField] private int capacity;
 
     /// <summary>
-    /// Space already taken by existing passengers.
+    /// Space taken up in garage
     /// </summary>
     [SerializeField] private int spaceTaken;
 
@@ -67,7 +67,7 @@ public class VehicleModel
     public int Capacity => capacity;
 
     /// <summary>
-    /// Gets the space already taken in the vehicle.
+    /// Gets the space taken in the garage
     /// </summary>
     public int SpaceTaken => spaceTaken;
 
@@ -75,6 +75,11 @@ public class VehicleModel
     /// Gets the total waiting time accumulated.
     /// </summary>
     public float WaitingTime => waitingTime;
+
+    /// <summary>
+    /// Icon of vehicles
+    /// </summary>
+    public Sprite Icon;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleModel"/> class.
@@ -89,6 +94,7 @@ public class VehicleModel
         spaceTaken = data.SpaceTaken;
         state = VehicleState.Empty;
         waitingTime = 0f;
+        this.Icon = data.Icon;
     }
 
     /// <summary>

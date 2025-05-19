@@ -158,7 +158,7 @@ public class TerrainController : MonoBehaviour
         {
             currentHeightMap = terrainData.GetHeights(xStart, zStart, width, depth);
         }
-        catch (Exception e) { Debug.LogWarning("Can't access terrain heights"); return; }
+        catch (Exception) { Debug.LogWarning("Can't access terrain heights"); return; }
 
         float[,] newHeights = new float[depth, width];
 
@@ -237,7 +237,7 @@ public class TerrainController : MonoBehaviour
         {
             originalHeightMap = terrainData.GetHeights(xStart, zStart, width, depth);
         }
-        catch (Exception e) { Debug.LogWarning("Can't access terrain heights"); return; }
+        catch (Exception) { Debug.LogWarning("Can't access terrain heights"); return; }
 
         // A kulcs, xStart, zStart és a StructureIndex-ből áll
         Vector3Int SaveKey = new Vector3Int(xStart, zStart, index);

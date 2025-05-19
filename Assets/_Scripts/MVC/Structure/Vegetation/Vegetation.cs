@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Properties;
 using UnityEngine;
-using static StructureUIValues;
+using static UIKeys;
 public class Vegetation : Structure, ISelectable, IFoodSource
 {
     private DietType Diet;
@@ -48,14 +48,14 @@ public class Vegetation : Structure, ISelectable, IFoodSource
     }
 
     // Minden ami a UI-hoz szükséges adat
-    public Dictionary<StructureUIValues, object> GetUIData()
+    public Dictionary<UIKeys, object> GetUIData()
     {
-        return new Dictionary<StructureUIValues, object> {
+        return new Dictionary<UIKeys, object> {
             { Name_text, Name },
-            { StructureUIValues.ID, ID },
             { Sprite_icon, Icon },
             { Value_slider, new Func<float>(() => GetCapacity()) },
-            { MaxValue_slider, MaxCapacity}
+            { MaxValue_slider, MaxCapacity },
+            { Pickup_action, new Action(() => { StructureManager.Instance.RemoveStructure(ID); PopupManager.Instance.HidePopup();})}
         };
     }
 }

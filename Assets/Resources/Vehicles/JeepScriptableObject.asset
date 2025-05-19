@@ -19,3 +19,4 @@ MonoBehaviour:
   Type: 0
   VehiclePrefab: {fileID: 5763941986872901064, guid: ea164e6e40c75274a83d2bcd0ac47d9c, type: 3}
   Price: 150
+  Icon: {fileID: 21300000, guid: 9d2cbcd257554a049910b10918306647, type: 3}
