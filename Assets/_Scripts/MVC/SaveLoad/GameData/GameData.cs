@@ -46,9 +46,16 @@ public class GameData
     public Vector3 CameraPosition;
     public Vector3 CameraRotation;
 
-    public TouristData touristData;
+    /* REORGANIZE */
+    // Unique Tourist Data
+    public List<TouristSaveData> touristDatas;
+    // TouristManager Data
+    public TouristManagerSaveData touristManagerSaveData = new TouristManagerSaveData(50, 50, false, 0, 0.001f);
 
-    public VehicleSaveData vehicleData;
+    // Unique Vehicle Data
+    public List<VehicleSaveData> vehicleDatas;
+    // VehicleManager Data
+    public VehicleManagerSaveData vehicleManagerSaveData;
 
     public int RangerCount;
     public int RangerMaxCapacity;
@@ -72,11 +79,12 @@ public class GameData
         this.CameraPosition = new Vector3(0, 35, 0);
         this.CameraPosition = new Vector3(68.199f, 0, 0);
         this.Economy = new Economy();
-        this.touristData = new TouristData();
-        this.vehicleData = new VehicleSaveData();
+        this.touristDatas = new();
+        this.vehicleDatas = new();
         this.RangerCount = 0;
         this.RangerMaxCapacity = 3;
         this.saveMapDatas = new();
+        animalSaveDatas = new();
     }
     /// <summary>
     /// Returns the overall completion percentage of the game.
@@ -87,4 +95,29 @@ public class GameData
     {
         return 0;
     }
+}
+
+[System.Serializable]
+public struct TouristManagerSaveData
+{
+    public float OverallMood;
+    public float OverallWaitingMood;
+    public bool Incoming;
+    public int TouristCount;
+    public float MoodSensitivity;
+
+    public TouristManagerSaveData(float overallMood, float overallWaitingMood, bool incoming, int touristCount, float moodSensitivity)
+    {
+        OverallMood = overallMood;
+        OverallWaitingMood = overallWaitingMood;
+        Incoming = incoming;
+        TouristCount = touristCount;
+        MoodSensitivity = moodSensitivity;
+    }
+}
+
+[System.Serializable]
+public struct VehicleManagerSaveData
+{
+    public int MaxCapacity;
 }

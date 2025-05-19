@@ -18,4 +18,6 @@ public interface IDataPersistence
     /// </summary>
     /// <param name="data">The GameData object to store values in.</param>
     void SaveData(GameData data);
+
+    //void Register(T type);
 }

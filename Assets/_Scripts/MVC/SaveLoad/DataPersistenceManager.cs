@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,7 +19,7 @@ public class DataPersistenceManager : MonoBehaviour
     private string selectedProfileId = "";
 
     public static DataPersistenceManager Instance { get; private set; }
-
+    public event Action OnAllLoaded;
 
     private void Awake()
     {
@@ -32,7 +34,7 @@ public class DataPersistenceManager : MonoBehaviour
         this.selectedProfileId = dataHandler.GetMostRecentlyUpdatedProfileId();
         dataPersistenceObjects = FindAllDataPersistenceObjects();
         SceneManager.sceneLoaded += OnSceneLoaded;
-        this.LoadGame();
+        LoadGame();
 
     }
 
@@ -58,14 +60,16 @@ public class DataPersistenceManager : MonoBehaviour
     {
         dataPersistenceObjects = FindAllDataPersistenceObjects();
         this.gameData = dataHandler.Load(selectedProfileId);
-
+        //Debug.Log(gameData.touristDatas[0].ID + " Van benne adat?" + selectedProfileId + " Melyik profile ID?");
         IDGenerator.SetSeed(gameData.idSeed);
 
         foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects)
         {
             dataPersistenceObj.LoadData(gameData);
+            Debug.Log(dataPersistenceObj.GetType().ToString());
         }
-        // SaveGame();
+
+        OnAllLoaded?.Invoke();
     }
 
 
@@ -154,4 +158,9 @@ public class DataPersistenceManager : MonoBehaviour
     {
         SaveGame();
     }
+}
+
+public interface ISaveable<T>
+{
+    public T GetSaveData();
 }
