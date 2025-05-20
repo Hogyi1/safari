@@ -121,7 +121,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
     /// <param name="amount">Amount of experience associated with the event.</param>
     public void OnNotify(EventType eventType, int amount)
     {
-        if (eventType == EventType.EXP_GAIN)
+        if (eventType == EventType.EXP_ADD)
         {
             AddExp(amount);
         }
@@ -138,6 +138,8 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
         Debug.Log("Current exp: " + currentExp);
         Debug.Log("Current progress: " + progress);
 
+        GameEvents.Instance.NotifyObservers(EventType.EXP_GAINED, amount);
+
         if (currentExp >= requiredExp)
         {
             if ((currentLevel - 1) < levels.Count - 1)
@@ -149,7 +151,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
                 if (!isMaxLevel)
                 {
                     isMaxLevel = true;
-                    GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 0);
+                    GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 0);
                 }
 
                 currentExp = requiredExp; // Lock exp to max
