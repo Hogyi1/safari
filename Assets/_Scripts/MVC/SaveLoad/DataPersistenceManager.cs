@@ -59,9 +59,10 @@ public class DataPersistenceManager : MonoBehaviour
     {
         dataPersistenceObjects = FindAllDataPersistenceObjects();
         this.gameData = dataHandler.Load(selectedProfileId);
-
-        IDGenerator.SetSeed(gameData.idSeed);
-
+        if (gameData != null)
+        {
+            IDGenerator.SetSeed(gameData.idSeed);
+        }
         foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects)
         {
             dataPersistenceObj.LoadData(gameData);
