@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 10
   prize: 1000
-  eventType: 12
+  eventType: 17
   state: 0
   description: 'Education Pays: Gain 1000 experience points'
   goal: 1000

@@ -18,4 +18,4 @@ MonoBehaviour:
   state: 0
   description: 'First Catch: Place your first animal'
   goal: 1
-  progress: 1
+  progress: 0
