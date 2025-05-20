@@ -157,8 +157,12 @@ public class DataPersistenceManager : MonoBehaviour
     //    // TODO Add popup
     //    SaveGame();
     //}
-}
 
+    public void DeleteGame()
+    {
+        dataHandler.Delete(selectedProfileId);
+    }
+}
 public interface ISaveable<T>
 {
     T GetSaveData();

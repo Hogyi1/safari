@@ -39573,8 +39573,6 @@ Transform:
   - {fileID: 684384740}
   m_Father: {fileID: 1982004543}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
-=======
 --- !u!1 &1666622412
 GameObject:
   m_ObjectHideFlags: 0
@@ -39628,7 +39626,6 @@ Transform:
   - {fileID: 1992118417}
   m_Father: {fileID: 771144600}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
->>>>>>> e7a0317dcadd0ee92cd68b877266da72abcdc2f0
 --- !u!1 &1668716270
 GameObject:
   m_ObjectHideFlags: 0
@@ -43463,60 +43460,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8306662467876140489, guid: 09457782be4f85245a280e6fbddedebf, type: 3}
   m_PrefabInstance: {fileID: 1835436829}
   m_PrefabAsset: {fileID: 0}
-<<<<<<< HEAD
---- !u!1 &1842081616
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1842081617}
-  m_Layer: 0
-  m_Name: Manager List
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1842081617
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1842081616}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 362508063}
-  - {fileID: 1024424963}
-  - {fileID: 1401246809}
-  - {fileID: 1941180725}
-  - {fileID: 789649303}
-  - {fileID: 1298116368}
-  - {fileID: 1220280342}
-  - {fileID: 1406645885}
-  - {fileID: 240301152}
-  - {fileID: 2073212516}
-  - {fileID: 847803901}
-  - {fileID: 552986758}
-  - {fileID: 1467224999}
-  - {fileID: 1040022376}
-  - {fileID: 1198129222}
-  - {fileID: 290561006}
-  - {fileID: 528436424}
-  - {fileID: 152803839}
-  - {fileID: 591794117}
-  - {fileID: 1137950448}
-  - {fileID: 1847216735}
-  m_Father: {fileID: 771144600}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-=======
 --- !u!1001 &1840964196
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43619,7 +43562,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8306662467876140489, guid: 09457782be4f85245a280e6fbddedebf, type: 3}
   m_PrefabInstance: {fileID: 1840964196}
   m_PrefabAsset: {fileID: 0}
->>>>>>> e7a0317dcadd0ee92cd68b877266da72abcdc2f0
 --- !u!1 &1847216733
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,9 +5,9 @@ using static UIKeys;
 
 /// <summary>
 /// A popup UI component responsible for displaying a sprite (e.g., icon).
-/// Implements the IPopupComponent interface for dynamic UI setup.
+/// Implements the IUIComponent interface for dynamic UI setup.
 /// </summary>
-public class SpriteComponent : MonoBehaviour, IPopupComponent
+public class SpriteComponent : MonoBehaviour, IUIComponent
 {
     /// <summary>
     /// Reference to the UI Image component where the sprite will be rendered.

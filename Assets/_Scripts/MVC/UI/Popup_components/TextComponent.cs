@@ -7,7 +7,7 @@ using System.Collections.Generic;
 /// A popup UI component that displays dynamic or static text.
 /// Supports optional prefix and suffix wrapping, and can use functions for live updates.
 /// </summary>
-public class TextComponent : MonoBehaviour, IPopupComponent
+public class TextComponent : MonoBehaviour, IUIComponent
 {
     /// <summary>
     /// Reference to the TextMeshProUGUI field to display the text.
