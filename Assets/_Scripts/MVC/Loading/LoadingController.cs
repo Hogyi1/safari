@@ -42,8 +42,11 @@ public class LoadingController : MonoBehaviour
         StartCoroutine(view.Spin());
 
         // Warm up all shaders to avoid runtime hitches
-        Shader.WarmupAllShaders();
-
+        try
+        {
+            Shader.WarmupAllShaders();
+        }
+        catch { }
         // Begin loading the target scene asynchronously (additive if desired)
         AsyncOperation op = SceneManager.LoadSceneAsync(sceneToLoad);
         op.allowSceneActivation = false;  // Stall at 90% until we're ready
@@ -63,7 +66,11 @@ public class LoadingController : MonoBehaviour
     {
         StartCoroutine(view.Spin());
 
-        Shader.WarmupAllShaders();
+        try
+        {
+            Shader.WarmupAllShaders();
+        }
+        catch { }
 
         // Load the target scene in additive mode (will not replace the loading scene)
         AsyncOperation op = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);

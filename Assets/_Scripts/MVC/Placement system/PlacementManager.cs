@@ -417,7 +417,6 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
         StructureManager.Instance.GetPlaceables().ForEach(t =>
         {
             var uID = t.GetID();
-            Debug.Log(uID + " ID " + t.GetData().IsUnityNull());
             var bID = t.GetData().BuildingID;
             var go = t.GetGameObject();
             mapSaves.Add(new MapSaveData(uID, bID, go.transform.position, go.transform.rotation));

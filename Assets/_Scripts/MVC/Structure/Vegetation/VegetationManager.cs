@@ -64,6 +64,8 @@ public class VegetationManager : MonoBehaviour, IStructureManager, IRandomEventO
 
         activeVegetations.Add(Vegetation);
 
+        GameEvents.Instance.NotifyObservers(EventType.TREE_PLACE, 1);
+
         return Vegetation;
     }
 

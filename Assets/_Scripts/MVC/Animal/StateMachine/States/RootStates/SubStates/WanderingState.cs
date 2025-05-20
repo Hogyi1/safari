@@ -27,7 +27,7 @@ public class WanderingState : AnimalBaseState
         {
             float roll = Random.Range(0f, 1f);
 
-            if ((roll <= 0.3f && context.animal.Model.Hunger >= 80) || TimeManager.Instance.GetCurrentTime().hours > 22) { SwitchState(factory.Sleeping()); return; }
+            if ((roll <= 0.3f && context.animal.Model.Hunger >= 80) || TimeManager.Instance.GetCurrentTime().Hours > 22) { SwitchState(factory.Sleeping()); return; }
             if (roll <= 0.5f) { SwitchState(factory.Stationary()); return; }
             else GetRandomTarget();
         }

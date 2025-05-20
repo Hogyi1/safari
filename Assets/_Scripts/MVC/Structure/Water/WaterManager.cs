@@ -50,7 +50,8 @@ public class WaterManager : MonoBehaviour, IStructureManager
 
         ActiveWaters.Add(water);
 
-        Debug.Log("Water placed");
+        GameEvents.Instance.NotifyObservers(EventType.FEEDER_PLACE, 1);
+
         return water;
     }
 

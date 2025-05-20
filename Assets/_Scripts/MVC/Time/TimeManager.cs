@@ -178,10 +178,10 @@ public class TimeManager : MonoBehaviour, IDataPersistence
     public RandomEvent GetRandomEvent()
     {
         float roll = UnityEngine.Random.Range(0f, 1f);
-        if (roll < 0.001f && GlobalGameTime.hours >= closingHour && GlobalGameTime.hours <= openingHour) return RandomEvent.Raid;
+        if (roll < 0.001f && GlobalGameTime.Hours >= closingHour && GlobalGameTime.Hours <= openingHour) return RandomEvent.Raid;
         if (roll < 0.01f) return RandomEvent.Breed_animal;
         if (roll < 0.1f) return RandomEvent.Regrow;
-        if (roll < 0.95f && GlobalGameTime.hours <= closingHour && GlobalGameTime.hours >= openingHour) return RandomEvent.Spawn_tourist;
+        if (roll < 0.95f && GlobalGameTime.Hours <= closingHour && GlobalGameTime.Hours >= openingHour) return RandomEvent.Spawn_tourist;
         return RandomEvent.None;
     }
 

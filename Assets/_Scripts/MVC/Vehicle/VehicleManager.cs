@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static VehicleState;
 
@@ -45,6 +46,8 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        factory = GetComponent<VehicleFactory>();
+
         // Events
         OnHandlerResponse = () => gameObject.SetActive(true);
         DataPersistenceManager.Instance.OnAllLoaded += OnHandlerResponse;
@@ -67,6 +70,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
 
         foreach (var vehicle in activeVehicles)
         {
+            if (vehicle.IsUnityNull()) return;
             switch (vehicle.Model.State)
             {
                 case Full:
@@ -139,7 +143,10 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
         foreach (var vehicle in available)
         {
             if (vehicle.Model.AddPassenger(touristID))
+            {
+                GameEvents.Instance.NotifyObservers(EventType.VISITOR_TRANSPORTED, 1);
                 return vehicle.ID;
+            }
         }
 
         return -1;
@@ -191,7 +198,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
 
             vehicle.View.gameObject.SetActive(true);
             vehicle.View.MoveOnRoute(FindRoute(), Finished);
-            GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 5);
+            GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 5);
         }
     }
 
@@ -247,7 +254,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
     /* GETTERS SETTERS */
     public void SetVehicleState(int iD, VehicleState newState) => activeVehicles.Find(t => t.ID == iD).Model.State = newState;
     public Vehicle GetVehicle(int ID) => activeVehicles.Find(t => t.ID == ID);
-    public List<AnimalType> GetAnimalsInSight(int vehicleID) => activeVehicles.Find(t => t.ID == vehicleID).View.AnimalsInView;
+    public List<AnimalType> GetAnimalsInSight(int vehicleID) => activeVehicles.FirstOrDefault(t => t.ID == vehicleID).View.AnimalsInView;
     public void LevelUp(int amount) => maxCapacity += amount;
     public void LevelDown(int amount) => maxCapacity -= amount;
     public bool CanBuy() => Capacity < MaxCapacity;
@@ -297,7 +304,10 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
     private IEnumerator Register(List<VehicleSaveData> data)
     {
         yield return new WaitForEndOfFrame();
+        Debug.Log("Elkezdtem az autokat visszatölteni");
+        Debug.Log("Factory null?" + factory.IsUnityNull());
         data.ForEach(t => activeVehicles.Add(factory.CreateVehicle(t)));
+        yield return new WaitForEndOfFrame();
     }
 }
 

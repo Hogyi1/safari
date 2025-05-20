@@ -124,7 +124,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
     /// <param name="amount">Amount of experience associated with the event.</param>
     public void OnNotify(EventType eventType, int amount)
     {
-        if (eventType == EventType.EXP_GAIN)
+        if (eventType == EventType.EXP_ADD)
         {
             AddExp(amount);
         }
@@ -152,7 +152,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
                 if (!isMaxLevel)
                 {
                     isMaxLevel = true;
-                    GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 0);
+                    GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 0);
                 }
 
                 currentExp = requiredExp; // Lock exp to max
@@ -226,18 +226,18 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
 
     public IEnumerator LoadData(GameData data)
     {
-        currentLevel = data.levelSaveData.currentLevel;
-        currentExp = data.levelSaveData.currentExp;
-        progress = data.levelSaveData.progress;
-        isMaxLevel = data.levelSaveData.isMaxLevel;
+        currentLevel = data.levelSaveData.CurrentLevel;
+        currentExp = data.levelSaveData.CurrentExp;
+        progress = data.levelSaveData.Progress;
+        isMaxLevel = data.levelSaveData.IsMaxLevel;
         yield return null;
     }
 
     public void SaveData(GameData data)
     {
-        data.levelSaveData.currentLevel = this.currentLevel;
-        data.levelSaveData.currentExp = this.currentExp;
-        data.levelSaveData.progress = this.progress;
-        data.levelSaveData.isMaxLevel = this.isMaxLevel;
+        data.levelSaveData.CurrentLevel = this.currentLevel;
+        data.levelSaveData.CurrentExp = this.currentExp;
+        data.levelSaveData.Progress = this.progress;
+        data.levelSaveData.IsMaxLevel = this.isMaxLevel;
     }
 }

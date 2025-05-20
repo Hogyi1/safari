@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// Manages a world-space popup UI for buildings, handling initialization, orientation,
@@ -61,10 +62,11 @@ public class WorldSpaceUI : MonoBehaviour
     /// </summary>
     private Transform target;
 
+
     /// <summary>
     /// Initializes UI components, canvas, and canvas group, then hides the popup.
     /// </summary>
-    private void Start()
+    private void Awake()
     {
         canvas = GetComponentInChildren<Canvas>();
         canvasGroup = canvas.GetComponent<CanvasGroup>();
@@ -85,16 +87,17 @@ public class WorldSpaceUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+
     /// <summary>
     /// Orients the popup to face the camera, adjusts scale based on distance, adjusts position based on target's position,
     /// and hides the popup if outside visible range.
     /// </summary>
     void LateUpdate()
     {
-        if (target != null) transform.position = Vector3.Lerp(transform.position, target.position, Time.deltaTime * 10f);
+        if (target != null && currentRoutine == null) transform.position = Vector3.Lerp(transform.position, target.position, Time.unscaledDeltaTime * 10f);
         transform.LookAt(transform.position + cam.forward);
         float Distance = Vector3.Distance(canvas.transform.position, cam.transform.position);
-        if (currentRoutine.IsUnityNull()) canvas.transform.localScale = Vector3.Lerp(canvas.transform.localScale, Vector3.one * Mathf.Max(Distance / InitialDistance, 0.75f), Time.deltaTime * 10f);
+        if (currentRoutine.IsUnityNull()) canvas.transform.localScale = Vector3.Lerp(canvas.transform.localScale, Vector3.one * Mathf.Max(Distance / InitialDistance, 0.75f), Time.unscaledDeltaTime * 10f);
 
         if (Distance >= maxDistance || Distance <= minDistance)
         {
@@ -115,6 +118,7 @@ public class WorldSpaceUI : MonoBehaviour
     {
         if (Data == null) return;
         this.target = target;
+        transform.position = target.position;
 
         foreach (var comp in Components)
         {
@@ -188,7 +192,7 @@ public class WorldSpaceUI : MonoBehaviour
             float t = time / duration;
             canvas.transform.localScale = Vector3.Lerp(startScale, endScale, t);
             canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             yield return null;
         }
 
@@ -203,6 +207,8 @@ public class WorldSpaceUI : MonoBehaviour
             canvasGroup.interactable = false;
             gameObject.SetActive(false);
         }
+
+        currentRoutine = null;
     }
 
     public bool CheckDistance(Vector3 goPos)

@@ -95,7 +95,8 @@ public class DataPersistenceManager : MonoBehaviour
         dataHandler.Save(gameData, selectedProfileId);
     }
 
-    public void DeletGame() { 
+    public void DeletGame()
+    {
         dataHandler.Delete(selectedProfileId);
     }
 
@@ -147,15 +148,15 @@ public class DataPersistenceManager : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// Callback invoked when the application is quitting. 
-    /// Automatically saves the current game state before exit.
-    /// </summary>
-    private void OnApplicationQuit()
-    {
-        // TODO Add popup
-        SaveGame();
-    }
+    ///// <summary>
+    ///// Callback invoked when the application is quitting. 
+    ///// Automatically saves the current game state before exit.
+    ///// </summary>
+    //private void OnApplicationQuit()
+    //{
+    //    // TODO Add popup
+    //    SaveGame();
+    //}
 }
 
 public interface ISaveable<T>

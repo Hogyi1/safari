@@ -37,14 +37,14 @@ public class SaveSlot : MonoBehaviour
             hasDataContent.SetActive(true);
 
             //itt kell be�ll�tani a k�t sz�veget
-            parkName.text = data.parkData.parkName;
-            perecentComplited.text = "Park level" + data.levelSaveData.currentLevel.ToString();
+            parkName.text = data.parkData.ParkName;
+            //percentageCompleted.text = "Park level" + data.levelSaveData.CurrentLevel.ToString();
         }
     }
 
-    public string GetProfileId() => this.profileId;
+    public string GetProfileID() => this.profileId;
 
-    public void setProfileid(string pid) => profileId = pid;
+    public void SetProfileID(string pid) => profileId = pid;
 
     public void SetInteractable(bool interactable) => saveSlotButton.interactable = interactable;
 }

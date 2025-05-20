@@ -15,20 +15,9 @@ public class GameData
     public long lastUpdated;
 
     /// <summary>
-    /// Example serializable dictionary (int-to-int) for custom data testing or tracking.
-    /// </summary>
-    public SerializableDictionary<int, int> exemple;
-
-    /// <summary>
-    /// Data related to the park state.
-    /// </summary>
-    public ParkData parkData;
-
-    /// <summary>
     /// Data related to the player's inventory (e.g., items, currencies).
     /// </summary>
     public InventoryData inventoryData;
-    public LevelSaveData levelSaveData;
 
 
 
@@ -68,6 +57,9 @@ public class GameData
 
     // Challenges
     public List<ChallengeSaveData> challengeDatas;
+
+    // Level
+    public LevelSaveData levelSaveData;
 
 
     public List<AnimalSaveData> animalSaveDatas;
@@ -111,8 +103,10 @@ public class GameData
         // Challenge
         challengeDatas = new();
 
+        // Level
+        levelSaveData = new();
+
         this.inventoryData = new InventoryData();
-        this.levelSaveData = new LevelSaveData();
 
 
         animalSaveDatas = new();

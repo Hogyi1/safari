@@ -49,6 +49,8 @@ public class FeederManager : MonoBehaviour, IStructureManager
 
         ActiveFeeders.Add(Feeder);
 
+        GameEvents.Instance.NotifyObservers(EventType.FEEDER_PLACE, 1);
+
         return Feeder;
     }
 
@@ -96,7 +98,7 @@ public class FeederManager : MonoBehaviour, IStructureManager
             ActiveFeeders.Find(t => t.GetID() == ID).Refill();
         else Debug.LogWarning("Not enough money to refill!");
 
-        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 20);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 20);
     }
 
 

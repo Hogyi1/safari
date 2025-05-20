@@ -127,6 +127,7 @@ public class FeederModel : Structure, ISelectable, IRefillable, IFoodSource
     {
         int consumed = Mathf.Min(amount, Capacity);
         Capacity -= consumed;
+        if (consumed > 0) GameEvents.Instance.NotifyObservers(EventType.ANIMAL_FED, consumed);
         return consumed;
     }
 

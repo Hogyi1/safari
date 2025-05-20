@@ -188,15 +188,26 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver, IDataPersiste
     /// <summary>
     /// Manually set a tourist's state.
     /// </summary>
-    public void SetTouristState(int id, TouristState state) =>
-        activeTourists.FirstOrDefault(t => t.ID == id).Model.SetState(state);
+    public void SetTouristState(int id, TouristState state)
+    {
+        try { activeTourists.FirstOrDefault(t => t.ID == id).Model.SetState(state); }
+        catch { }
+    }
+
 
 
     /// <summary>
     /// Get the current state of a tourist by ID.
     /// </summary>
-    public TouristState GetTouristState(int id) =>
-        activeTourists.FirstOrDefault(t => t.ID == id).Model.State;
+    public TouristState GetTouristState(int id)
+    {
+        try
+        {
+            return activeTourists.FirstOrDefault(t => t.ID == id).Model.State;
+        }
+        catch { }
+        return In_car;
+    }
 
     // === Save system integration ===
     public IEnumerator LoadData(GameData data)

@@ -42,7 +42,6 @@ public class TouristFactory : MonoBehaviour
         float z = Random.Range(entranceBounds.min.z, entranceBounds.max.z);
         float y = entranceBounds.center.y;
         Vector3 spawnPosition = new Vector3(x, y, z);
-        Debug.Log(spawnPosition);
         TouristView view = CreateTouristVisual(spawnPosition);
         TouristModel model = new TouristModel(ID);
 

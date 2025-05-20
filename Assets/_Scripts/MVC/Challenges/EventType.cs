@@ -28,7 +28,7 @@ public enum EventType
     /// <summary>Money has been gained.</summary>
     MONEY_GAIN,
     /// <summary>Experience points have been gained.</summary>
-    EXP_GAIN,
+    EXP_ADD,
     /// <summary>Visitor has been transported.</summary>
     VISITOR_TRANSPORTED,
     /// <summary>Visitor happiness is high.</summary>
@@ -36,6 +36,8 @@ public enum EventType
     /// <summary>Player leveled up.</summary>
     LEVEL_UP,
     /// <summary>All challenges have been completed.</summary>
-    ALL_CHALLENGES_COMPLETED
+    ALL_CHALLENGES_COMPLETED,
+
+    EXP_GAINED
     // Add more if we need to
 }

@@ -173,6 +173,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         Animal prey = AnimalManager.Instance.GetAnimal(preyID);
         if (prey != null)
         {
+            GameEvents.Instance.NotifyObservers(EventType.ANIMAL_KILL, 1);
             EconomyManager.Instance.AddMoney(prey.Model.Price);
             AnimalManager.Instance.KillAnimal(prey);
             ranger.View.AtTarget();

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-
-/// <summary>
+﻿/// <summary>
 /// Represents in-game time, tracking minutes, hours, days, months, and total days passed.
 /// Provides methods to advance time and notifies observers on day, month, and year transitions.
 /// </summary>
@@ -15,33 +12,33 @@ public class GameTime
     [System.Serializable]
     public enum Months
     {
-        Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
+        Jun, Jul, Aug, Sep, Oct, Nov, Dec, Jan, Feb, Mar, Apr, May,
     }
 
     /// <summary>
     /// Current month index (0-based).
     /// </summary>
-    public int month { get; private set; }
+    public int Month = 0;
 
     /// <summary>
     /// Total days passed since game start.
     /// </summary>
-    public int totalDays { get; private set; }
+    public int TotalDays = 0;
 
     /// <summary>
     /// Day count within the current month (0-based).
     /// </summary>
-    public int days { get; private set; }
+    public int Days = 0;
 
     /// <summary>
     /// Current hour within the day (0-23).
     /// </summary>
-    public int hours { get; private set; }
+    public int Hours = 0;
 
     /// <summary>
     /// Current minute within the hour (0-59).
     /// </summary>
-    public int minutes { get; private set; }
+    public int Minutes = 0;
 
     /// <summary>
     /// Creates a new GameTime instance by copying another instance's values.
@@ -49,17 +46,20 @@ public class GameTime
     /// <param name="gameTime">Existing GameTime to copy.</param>
     public GameTime(GameTime gameTime)
     {
-        this.month = gameTime.month;
-        this.totalDays = gameTime.totalDays;
-        this.days = gameTime.days;
-        this.hours = gameTime.hours;
-        this.minutes = gameTime.minutes;
+        Month = gameTime.Month;
+        TotalDays = gameTime.TotalDays;
+        Days = gameTime.Days;
+        Hours = gameTime.Hours;
+        Minutes = gameTime.Minutes;
     }
 
     /// <summary>
     /// Initializes a new GameTime starting at zero.
     /// </summary>
-    public GameTime() { }
+    public GameTime()
+    {
+        Hours = 8;
+    }
 
     /// <summary>
     /// Advances the time by a specified number of minutes, rolling into hours as needed.
@@ -67,11 +67,11 @@ public class GameTime
     /// <param name="min">Minutes to add.</param>
     public void AddMinutes(int min)
     {
-        minutes += min;
+        Minutes += min;
 
-        if (minutes >= 60)
+        if (Minutes >= 60)
         {
-            minutes -= 60;
+            Minutes -= 60;
             AddHours(1);
         }
 
@@ -83,11 +83,11 @@ public class GameTime
     /// <param name="h">Hours to add.</param>
     public void AddHours(int h)
     {
-        hours += h;
+        Hours += h;
 
-        if (hours >= 24)
+        if (Hours >= 24)
         {
-            hours -= 24;
+            Hours -= 24;
             AddDays(1);
         }
 
@@ -99,13 +99,13 @@ public class GameTime
     /// <param name="d">Days to add.</param>
     public void AddDays(int d)
     {
-        totalDays += d;
-        days += d;
+        TotalDays += d;
+        Days += d;
         TimeEvents.Instance.NotifyObservers(TimeEvent.Day_passed);
 
-        if (days >= 30)
+        if (Days >= 30)
         {
-            days -= 30;
+            Days -= 30;
             AddMonth(1);
         }
 
@@ -117,12 +117,12 @@ public class GameTime
     /// <param name="m">Months to add.</param>
     public void AddMonth(int m)
     {
-        month += m;
+        Month += m;
         TimeEvents.Instance.NotifyObservers(TimeEvent.Month_passed);
 
-        if (month >= 12)
+        if (Month >= 12)
         {
-            month -= 12;
+            Month -= 12;
             TimeEvents.Instance.NotifyObservers(TimeEvent.Year_passed);
         }
 
@@ -134,6 +134,6 @@ public class GameTime
     /// <returns>String in format "{hours}h {(Months)(month / 12)}, Month {month}".</returns>
     public override string ToString()
     {
-        return $"{hours}h {(Months)(month / 12)}, Month {month}";
+        return $"{Hours}h {(Months)(Month / 12)}, Month {Month}";
     }
 }

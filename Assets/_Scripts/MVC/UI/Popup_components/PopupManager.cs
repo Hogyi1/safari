@@ -34,6 +34,13 @@ public class PopupManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    private void Start()
+    {
+        //worldSpaceUI.gameObject.SetActive(true);
+        //worldSpaceUI.gameObject.transform.position = Vector3.one;
+        //worldSpaceUI.gameObject.SetActive(false);
+    }
+
 
     /// <summary>
     /// Activates and displays the structure popup UI (e.g., for a building).
@@ -53,7 +60,7 @@ public class PopupManager : MonoBehaviour
         }
         catch (Exception)
         {
-            Debug.LogWarning("Nincsen Popup pozici� be�ll�tva, az alap be�ll�t�sokat fogom haszn�lni.");
+            Debug.LogWarning("No popup position found using default settings.");
             Bounds bounds = go.GetComponentInChildren<Renderer>().bounds;
             Vector3 UIPos = new Vector3(bounds.center.x, bounds.max.y + 1f, bounds.center.z);
             if (worldSpaceUI.CheckDistance(UIPos)) { InputManager.Instance.DisableView(); return; } // If too far away or too close

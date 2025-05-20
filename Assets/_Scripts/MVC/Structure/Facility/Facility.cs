@@ -65,6 +65,7 @@ public abstract class Facility : Structure, IUpgradeable
         toupgrade = saveData.FacilityType;
         upgradePrice = saveData.UpgradePrice;
         capacity = saveData.FacilityCapacity;
+        upgradeAmount = data.UpgradeAmount;
     }
 
 

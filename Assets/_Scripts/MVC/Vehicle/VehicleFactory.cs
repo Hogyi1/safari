@@ -25,7 +25,7 @@ public class VehicleFactory : MonoBehaviour
     /// Unity Start callback. Loads all VehicleData assets into the cache
     /// at the beginning of the game.
     /// </summary>
-    private void Start()
+    private void Awake()
     {
         LoadAllVehicles();
     }
@@ -43,6 +43,8 @@ public class VehicleFactory : MonoBehaviour
         var data = FindVehicleData(vehicleDataId);
         if (data == null)
             return null;
+
+
 
         Vector3 position = VehicleManager.Instance.GetParkingSpot();
         var instance = Instantiate(data.VehiclePrefab, position, Quaternion.identity);
@@ -64,9 +66,12 @@ public class VehicleFactory : MonoBehaviour
     /// <returns>A fully reconstructed <see cref="Vehicle"/> instance.</returns>
     public Vehicle CreateVehicle(VehicleSaveData vehicleData)
     {
+        LoadAllVehicles();
         var data = FindVehicleData(vehicleData.Type);
         if (data == null)
+        {
             return null;
+        }
 
         Vector3 position = vehicleData.CurrentPosition;
         var instance = Instantiate(data.VehiclePrefab, position, Quaternion.identity);
@@ -84,7 +89,7 @@ public class VehicleFactory : MonoBehaviour
         {
             view.gameObject.SetActive(false);
         }
-
+        Debug.Log(view.AnimalsInView);
         var model = new VehicleModel(vehicleData, data);
         return new Vehicle(vehicleData.ID, model, view);
     }

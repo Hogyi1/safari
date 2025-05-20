@@ -60,7 +60,7 @@ public class StructureManager : MonoBehaviour, IBuyableManager
     {
         IStructureManager manager = GetManager(Data.Type);
         if (manager.IsUnityNull()) throw new Exception("Nem található a következő manager: " + Data.Type + "Manager");
-        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 10);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 10);
 
         int ID = IDGenerator.GenerateID();
 

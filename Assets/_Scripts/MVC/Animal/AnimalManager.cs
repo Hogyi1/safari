@@ -83,7 +83,11 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
 
         bool placed = BuildingState.OnAction(mousePosition);
-        if (placed) OnPlaced?.Invoke();
+        if (placed)
+        {
+            OnPlaced?.Invoke();
+            GameEvents.Instance.NotifyObservers(EventType.ANIMAL_PLACE, 1);
+        }
     }
 
     public void StopPlacement()
@@ -107,8 +111,9 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
         if (newAnimal.IsUnityNull()) return;
 
-        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 10);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 10);
         GameEvents.Instance.NotifyObservers(EventType.ANIMAL_PLACE, 1);
+        GameEvents.Instance.NotifyObservers(EventType.ANIMALS_OWNED, 1);
         activeAnimals.Add(newAnimal);
         Incoming = true;
     }
@@ -118,7 +123,8 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         Animal toRemove = activeAnimals.Find(t => t.ID == ID);
         if (toRemove != null)
         {
-            GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 20);
+            GameEvents.Instance.NotifyObservers(EventType.ANIMALS_OWNED, -1);
+            GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 20);
             Incoming = false;
             activeAnimals.Remove(toRemove);
             Destroy(toRemove.View.gameObject);
@@ -152,9 +158,10 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     public void Breed(AnimalModel mate1, AnimalModel mate2)
     {
         // Opció evoluciora
+        GameEvents.Instance.NotifyObservers(EventType.ANIMAL_BORN, 1);
         Animal animal = activeAnimals.Find(t => t.ID == mate1.ID);
         SpawnAnimal(animal.Model.Type, animal.View.transform.position, 1);
-        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 50);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 50);
     }
 
     public Animal GetAnimal(int iD)
