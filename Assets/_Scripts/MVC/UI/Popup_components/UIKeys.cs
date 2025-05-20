@@ -31,4 +31,22 @@ public enum UIKeys
     Animalage_text,
     Healthbar,
     Vehicle,
+
+    Buy_action, // new
+    Buy_interact, // new
+    Sell_action, // new
+    Sell_interact, // new
+
+    Current_costs_text, // new
+    Max_passengers_text, // new
+    Status_text, // new
+    Bought_for_text, // new
+    Selling_price_text, // new
+    
+    Hire_action, // new
+    Hire_interact, // new
+    Fire_action, // new
+    Fire_interact, // new 
+    Show_action, // new
+    Show_interact, // new
 }

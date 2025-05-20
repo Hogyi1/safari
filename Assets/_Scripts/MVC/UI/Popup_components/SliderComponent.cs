@@ -9,7 +9,7 @@ using static UIKeys;
 /// Component displaying a progress slider and text
 /// within a structure popup UI, handling dynamic values.
 /// </summary>
-public class SliderComponent : MonoBehaviour, IPopupComponent
+public class SliderComponent : MonoBehaviour, IUIComponent
 {
     /// <summary>
     /// Slider UI element showing current progress.

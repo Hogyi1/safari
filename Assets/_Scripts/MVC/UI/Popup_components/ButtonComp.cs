@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ButtonComp : MonoBehaviour, IPopupComponent
+public class ButtonComp : MonoBehaviour, IUIComponent
 {
     [SerializeField] private Button myButton;
 
