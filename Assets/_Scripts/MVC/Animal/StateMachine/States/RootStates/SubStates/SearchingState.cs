@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Linq;
 using UnityEngine;
 using static AnimalView;
 
@@ -153,6 +154,14 @@ public class SearchingState : AnimalBaseState
 
     public override string ToString()
     {
-        return "Searching";
+        if (triggers.Contains(ColliderTrigger.Water))
+            return "Searching for water";
+        if (triggers.Contains(ColliderTrigger.Mate))
+            return "Searching for mate";
+        if (triggers.Contains(ColliderTrigger.Prey))
+            return "Searching for prey";
+        if (triggers.Contains(ColliderTrigger.Food))
+            return "Searching for food";
+        return "Searching for something";
     }
 }

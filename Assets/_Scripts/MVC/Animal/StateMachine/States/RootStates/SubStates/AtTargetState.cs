@@ -62,6 +62,8 @@ public class AtTargetState : AnimalBaseState, IRootState
 
     public override string ToString()
     {
+        if (currentSubState != null)
+            return currentSubState?.ToString();
         return "At target";
     }
 }

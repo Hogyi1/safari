@@ -1,18 +1,44 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Visual representation for vegetation structures that supports interaction,
+/// staging (growth), and data access through placement.
+/// </summary>
 public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceable
 {
+    /// <summary>
+    /// Data describing the building type and attributes.
+    /// </summary>
     [SerializeField] private BuildingData data;
 
+    /// <summary>
+    /// Associated model for this view.
+    /// </summary>
     private Structure MySelectable;
+
+    /// <summary>
+    /// Whether the object is currently selected or active.
+    /// </summary>
     private bool isActive = false;
 
-    // Fade effekt komponens, ami elhalványítja ha rávisszük az egeret
+    /// <summary>
+    /// Handles fade-in/out effects based on interaction.
+    /// </summary>
     private FadeEffect fadeEffect;
+
+    /// <summary>
+    /// Controls the visual stage (e.g. opacity) of this object.
+    /// </summary>
     private StageEffect stageEffect;
 
+    /// <summary>
+    /// Tracks the last known stage value to detect changes.
+    /// </summary>
     private float MyStage = 0f;
 
+    /// <summary>
+    /// Monitors the current stage and updates it if needed.
+    /// </summary>
     private void Update()
     {
         if (GetStage() != MyStage)
@@ -22,14 +48,21 @@ public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceab
         }
     }
 
-    // Lekéri a komponenseket
+
+    /// <summary>
+    /// Gets references to attached visual effect components.
+    /// </summary>
     private void Awake()
     {
         fadeEffect = GetComponent<FadeEffect>();
         stageEffect = GetComponent<StageEffect>();
     }
 
-    // Inicializálja a view-t a kapcsolódó modell adattal
+
+    /// <summary>
+    /// Initializes the view with its model data and sets default visual state.
+    /// </summary>
+    /// <param name="selectable">The model structure this view represents.</param>
     public void Init(Structure selectable)
     {
         this.MySelectable = selectable;
@@ -38,22 +71,25 @@ public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceab
     }
 
 
-    // Egér rámutatás esemény kezelése (fade in effekt)
-    public void OnHover()
-    {
-        fadeEffect.FadeIn();
-    }
+    /// <summary>
+    /// Called when the mouse hovers over this object — fades in visually.
+    /// </summary>
+    public void OnHover() => fadeEffect.FadeIn();
 
-    // Egér elhagyás esemény, ha nem aktív (fade out)
+
+    /// <summary>
+    /// Called when the mouse exits this object — fades out if not active.
+    /// </summary>
     public void OnExit()
     {
         if (!isActive)
-        {
             fadeEffect.FadeOut();
-        }
     }
 
-    // Kattintás vagy aktiválás kezelése (fade in)
+
+    /// <summary>
+    /// Called on click or interaction — activates popup and sets to active state.
+    /// </summary>
     public void OnAction()
     {
         isActive = true;
@@ -61,50 +97,57 @@ public class VegetationView : MonoBehaviour, IInteractable, IStageable, IPlaceab
         PopupManager.Instance.ActivatePopup(((ISelectable)MySelectable).GetUIData(), GetGameObject());
     }
 
-    // Interakció megszüntetése, állapot alaphelyzetbe (fade out)
+
+    /// <summary>
+    /// Called when interaction is canceled — reverts fade and clears active state.
+    /// </summary>
     public void OnCancel()
     {
         isActive = false;
         fadeEffect.FadeOut();
     }
 
-    public GameObject GetGameObject()
-    {
-        return gameObject;
-    }
 
-    // Visszaadja a modell azonosítóját
-    public int GetID()
-    {
-        return MySelectable.GetID();
-    }
+    /// <summary>
+    /// Returns the GameObject associated with this view.
+    /// </summary>
+    public GameObject GetGameObject() => gameObject;
 
-    public BuildingType GetBuildingType()
-    {
-        return MySelectable.GetBuildingType();
-    }
 
-    public float GetStage()
-    {
-        if (MySelectable is Vegetation vegetation)
-        {
-            return vegetation.GetStage();
-        }
-        return 0;
-    }
+    /// <summary>
+    /// Returns the unique ID of the associated structure.
+    /// </summary>
+    public int GetID() => MySelectable.GetID();
 
-    public void SetStage(float stage)
-    {
-        stageEffect.SetMaterialsOpacity(stage);
-    }
 
-    public Structure GetStructure()
-    {
-        return MySelectable;
-    }
+    /// <summary>
+    /// Returns the building type of the associated structure.
+    /// </summary>
+    public BuildingType GetBuildingType() => MySelectable.GetBuildingType();
 
-    public BuildingData GetData()
-    {
-        return data;
-    }
+
+    /// <summary>
+    /// Returns the current stage (growth or visibility) of the structure.
+    /// </summary>
+    public float GetStage() =>
+        MySelectable is VegetationModel vegetation ? vegetation.GetStage() : 0;
+
+
+    /// <summary>
+    /// Applies the given stage value to the visual material system.
+    /// </summary>
+    /// <param name="stage">A float value representing the current stage.</param>
+    public void SetStage(float stage) => stageEffect.SetMaterialsOpacity(stage);
+
+
+    /// <summary>
+    /// Returns the model (Structure) associated with this view.
+    /// </summary>
+    public Structure GetStructure() => MySelectable;
+
+
+    /// <summary>
+    /// Returns the building data used to initialize this view.
+    /// </summary>
+    public BuildingData GetData() => data;
 }

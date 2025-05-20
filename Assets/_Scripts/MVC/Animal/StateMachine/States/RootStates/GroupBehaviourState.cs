@@ -77,6 +77,8 @@ public class GroupBehaviourState : AnimalBaseState, IRootState
 
     public override string ToString()
     {
-        return "In group";
+        if (currentSubState != null)
+            return currentSubState?.ToString();
+        else return "In group";
     }
 }

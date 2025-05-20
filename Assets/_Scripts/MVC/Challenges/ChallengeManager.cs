@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,6 +12,8 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver, IDataPersiste
     /// Singleton instance of the ChallengeManager.
     /// </summary>
     public static ChallengeManager Instance { get; private set; }
+
+    public float Priority => 0f;
 
     private List<Challenge> challenges = new();
 
@@ -117,16 +120,6 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver, IDataPersiste
         return challenges;
     }
 
-    public Challenge GetChallengeById(int id)
-    {
-        foreach (var challenge in challenges)
-        {
-            if (challenge.id == id)
-                return challenge;
-        }
-        return null;
-    }
-
     /// <summary>
     /// Retrieves challenges filtered by a specific state.
     /// </summary>
@@ -137,7 +130,6 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver, IDataPersiste
         return challenges.FindAll(c => c.state == state);
     }
 
-    /// <summary>
     /// Determines whether all challenges - excluding the one with the specified ID - are either completed or collected.
     /// Used to check near-completion conditions for triggering related achievements or events.
     /// </summary>
@@ -147,27 +139,42 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver, IDataPersiste
     {
         List<Challenge> otherChallenges = challenges.Where(ch => ch.id != excludedChallengeId).ToList();
 
-        int completedCount = otherChallenges.Count(ch => 
-            ch.state == ChallengeState.COMPLETED 
+        int completedCount = otherChallenges.Count(ch =>
+            ch.state == ChallengeState.COMPLETED
             || ch.state == ChallengeState.COLLECTED);
 
         return completedCount == otherChallenges.Count;
     }
 
-    public void LoadData(GameData data)
+    /// <summary>
+    /// Gets challenge by its ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>Challenge</returns>
+    public Challenge GetChallengeById(int id)
     {
-        foreach (var challenge in data.challangeDataList) {
-            Challenge c = GetChallengeById(challenge.id);
-            c.SetState(challenge.state);
-            c.progress = challenge.progress;
+        foreach (var challenge in challenges)
+        {
+            if (challenge.id == id)
+                return challenge;
         }
+        return null;
+    }
+
+    public IEnumerator LoadData(GameData data)
+    {
+        data.challengeDatas.ForEach(t =>
+        {
+            Challenge c = GetChallengeById(t.ID);
+            c.SetState(t.State);
+            c.progress = t.Progress;
+        });
+        yield return null;
     }
 
     public void SaveData(GameData data)
     {
-        data.challangeDataList.Clear();
-        foreach (var challenge in challenges) {
-            data.challangeDataList.Add(new ChallangeData(challenge.id,challenge.state,challenge.progress));
-        }
+        data.challengeDatas.Clear();
+        challenges.ForEach(t => data.challengeDatas.Add(new ChallengeSaveData(t.id, t.state, t.progress)));
     }
 }

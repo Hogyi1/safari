@@ -28,7 +28,7 @@ public class StationaryState : AnimalBaseState
         {
             float roll = UnityEngine.Random.Range(0f, 1f);
 
-            if ((roll >= 1.5f && context.animal.Model.Hunger >= 80) || TimeManager.Instance.GetCurrentTime().hours > 22) { SwitchState(factory.Sleeping()); return; }
+            if ((roll >= 1.5f && context.animal.Model.Hunger >= 80) || TimeManager.Instance.GetCurrentTime().Hours > 22) { SwitchState(factory.Sleeping()); return; }
             else { SwitchState(factory.Wandering()); return; }
         }
     }

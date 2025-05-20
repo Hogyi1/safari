@@ -23,4 +23,5 @@ MonoBehaviour:
   Diet: 0
   MaxLevel: 0
   ToUpgrade: 0
-  BuildingPrefab: {fileID: 6221993677471747854, guid: bf0b152245119ee42b45c45cfe38815c, type: 3}
+  BuildingPrefab: {fileID: 6221993677471747854, guid: bdeca907e774cdf4fb8bc25db7725b86, type: 3}
+  UpgradeAmount: 0

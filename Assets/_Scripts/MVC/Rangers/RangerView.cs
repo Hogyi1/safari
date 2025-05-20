@@ -85,7 +85,7 @@ public class RangerView : MonoBehaviour
 
         if (newState == RangerState.Resting)
         {
-            transform.position = RangerManager.Instance.GetSpawnposition();
+            transform.position = RangerManager.Instance.GetSpawnPosition();
             gameObject.SetActive(false);
         }
     }

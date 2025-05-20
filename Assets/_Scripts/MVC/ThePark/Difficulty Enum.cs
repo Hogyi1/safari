@@ -30,15 +30,15 @@ public static class DifficultyExtensions
     /// Returns a multiplier value based on the selected difficulty.
     /// </summary>
     /// <param name="difficulty">The difficulty level.</param>
-    /// <returns>An integer multiplier (1 for Easy, 2 for Normal, 3 for Hard).</returns>
-    public static int GetMultiplier(this DifficultyEnum difficulty)
+    /// <returns>A float multiplier (0.75 for Easy, 1 for Normal, 1.5 for Hard).</returns>
+    public static float GetMultiplier(this DifficultyEnum difficulty)
     {
         return difficulty switch
         {
-            DifficultyEnum.EASY => 1,
-            DifficultyEnum.NORMAL => 2,
-            DifficultyEnum.HARD => 3,
-            _ => 1
+            DifficultyEnum.EASY => 0.75f,
+            DifficultyEnum.NORMAL => 1,
+            DifficultyEnum.HARD => 1.5f,
+            _ => 0.75f
         };
     }
 }

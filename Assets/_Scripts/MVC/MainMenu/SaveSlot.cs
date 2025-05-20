@@ -11,7 +11,7 @@ public class SaveSlot : MonoBehaviour
     [SerializeField] private GameObject noDataContent;
     [SerializeField] private GameObject hasDataContent;
     [SerializeField] private TextMeshProUGUI parkName;
-    [SerializeField] private TextMeshProUGUI perecentComplited;
+    [SerializeField] private TextMeshProUGUI percentageCompleted;
     public bool hasData { get; private set; } = false;
     [SerializeField] private Button saveSlotButton;
 
@@ -36,22 +36,15 @@ public class SaveSlot : MonoBehaviour
             noDataContent.SetActive(false);
             hasDataContent.SetActive(true);
 
-            //itt kell beállítani a két szöveget
-            parkName.text = data.parkData.parkName;
-            perecentComplited.text = "Park level" + data.levelSaveData.currentLevel.ToString();
+            //itt kell beï¿½llï¿½tani a kï¿½t szï¿½veget
+            parkName.text = data.parkData.ParkName;
+            //percentageCompleted.text = "Park level" + data.levelSaveData.CurrentLevel.ToString();
         }
     }
 
-    public string GetProfileId()
-    {
-        return this.profileId;
-    }
-    public void setProfileid(string pid) { 
-    
-        this.profileId = pid;
-    }
-    public void SetInteractable(bool interactable)
-    {
-        saveSlotButton.interactable = interactable;
-    }
+    public string GetProfileID() => this.profileId;
+
+    public void SetProfileID(string pid) => profileId = pid;
+
+    public void SetInteractable(bool interactable) => saveSlotButton.interactable = interactable;
 }

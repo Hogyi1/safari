@@ -82,6 +82,8 @@ public class SeekWaterState : AnimalBaseState, IRootState
 
     public override string ToString()
     {
-        return "Thirsty";
+        if (currentSubState != null)
+            return currentSubState?.ToString();
+        return "Hungry";
     }
 }

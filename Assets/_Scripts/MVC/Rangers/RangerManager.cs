@@ -20,7 +20,6 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
 
     [SerializeField] private RangerFactory factory;
     [SerializeField] private ManagerType myType = ManagerType.Ranger;
-    [SerializeField] private GameObject house;
 
     private int maxCapacity;
     private List<Ranger> activeRangers = new();
@@ -31,6 +30,10 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
 
     /// <summary>Current number of active rangers.</summary>
     public int Capacity => activeRangers.Count;
+    public void SetCapacity(int amount) => maxCapacity = amount;
+
+    public float Priority => 750f;
+
 
     /// <summary>
     /// Initializes the singleton instance.
@@ -47,6 +50,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         DontDestroyOnLoad(gameObject);
     }
 
+
     /// <summary>
     /// Subscribes to time-based events.
     /// </summary>
@@ -54,6 +58,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
     {
         TimeEvents.Instance.AddObserver(this);
     }
+
 
     /// <summary>
     /// Updates all rangers every frame based on their current state.
@@ -90,6 +95,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         }
     }
 
+
     /// <summary>
     /// Spawns a new ranger if there is room in capacity.
     /// </summary>
@@ -109,6 +115,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         EconomyManager.Instance.PaySalary();
     }
 
+
     /// <summary>
     /// Removes a ranger by ID and destroys its GameObject.
     /// </summary>
@@ -120,6 +127,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         activeRangers.Remove(toRemove);
         Destroy(toRemove.View.gameObject);
     }
+
 
     /// <summary>
     /// Attempts to assign an available ranger to hunt a specific animal.
@@ -144,6 +152,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         return true;
     }
 
+
     /// <summary>
     /// Updates a ranger's state by their unique ID.
     /// </summary>
@@ -154,6 +163,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
             ranger.Model.State = newState;
     }
 
+
     /// <summary>
     /// Handles behavior when a ranger reaches their prey target.
     /// </summary>
@@ -163,6 +173,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         Animal prey = AnimalManager.Instance.GetAnimal(preyID);
         if (prey != null)
         {
+            GameEvents.Instance.NotifyObservers(EventType.ANIMAL_KILL, 1);
             EconomyManager.Instance.AddMoney(prey.Model.Price);
             AnimalManager.Instance.KillAnimal(prey);
             ranger.View.AtTarget();
@@ -171,6 +182,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
 
         ranger.Model.State = Finished;
     }
+
 
     /// <summary>
     /// Handles behavior after the ranger finishes hunting.
@@ -181,6 +193,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         ranger.View.ReturnToStation(GetHouseDoorPosition());
     }
 
+
     /// <summary>
     /// Called when a month passes. Removes rangers if their salary couldn't be paid.
     /// </summary>
@@ -190,6 +203,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         toRemove.ForEach(r => RemoveRanger(r.ID));
     }
 
+
     /// <summary>
     /// Handles time-based notifications (e.g. monthly salary events).
     /// </summary>
@@ -198,6 +212,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         if (timeEvent == TimeEvent.Month_passed)
             HandleMonthlySalary();
     }
+
 
     /// <summary>
     /// Returns whether a specific animal can currently be hunted.
@@ -209,16 +224,17 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         return available && !alreadyTargeted;
     }
 
-    public void LoadData(GameData data)
+
+
+    /*REFACTOR*/
+    public IEnumerator LoadData(GameData data)
     {
-        maxCapacity = data.RangerMaxCapacity;
-        StartCoroutine(SpawnRangerWithDelay(data.RangerCount));
+        yield return SpawnRangerWithDelay(data.rangerManagerSaveData.RangerCount);
     }
 
     public void SaveData(GameData data)
     {
-        data.RangerMaxCapacity = maxCapacity;
-        data.RangerCount= activeRangers.Count;
+        data.rangerManagerSaveData.RangerCount = activeRangers.Count;
     }
     private IEnumerator SpawnRangerWithDelay(int count)
     {
@@ -229,7 +245,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         }
     }
 
-    
+
     /// <summary>
     /// Indicates whether a new ranger can be purchased (i.e., capacity is not full).
     /// </summary>
@@ -254,12 +270,13 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
     /// <summary>
     /// Gets the position of the ranger house's door in world space.
     /// </summary>
-    public Vector3 GetHouseDoorPosition() => house.transform.Find("Door").position;
+    public Vector3 GetHouseDoorPosition() => FacilityManager.Instance.GetInteractingPosition(myType);
 
     /// <summary>
     /// Gets the position where new rangers should spawn in world space.
     /// </summary>
-    public Vector3 GetSpawnposition() => house.transform.Find("Spawn").position;
+    public Vector3 GetSpawnPosition() => FacilityManager.Instance.GetSpawnPosition(myType);
+
 }
 
 /// <summary>

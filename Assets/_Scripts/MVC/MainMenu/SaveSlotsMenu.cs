@@ -23,14 +23,15 @@ public class SaveSlotsMenu : MonoBehaviour
     public void OnSaveSlotClicked(SaveSlot saveSlot)
     {
         // update the selected profile id to be used for data persistence
-        DataPersistenceManager.Instance.ChangeSelectedProfileId(saveSlot.GetProfileId());
+        DataPersistenceManager.Instance.ChangeSelectedProfileId(saveSlot.GetProfileID());
 
         //ha a createGamebol jon akkor inicializál
         if (!isLoadingGame)
         {
             DataPersistenceManager.Instance.NewGame();
         }
-        else {
+        else
+        {
             DataPersistenceManager.Instance.LoadGame();
         }
 
@@ -71,7 +72,7 @@ public class SaveSlotsMenu : MonoBehaviour
             newSlotGO.transform.SetParent(saveSlotContainer, false);
 
             SaveSlot slot = newSlotGO.GetComponent<SaveSlot>();
-            slot.setProfileid(profileId);
+            slot.SetProfileID(profileId);
             slot.SetData(profileData);
 
             if (profileData == null && isLoadingGame)
@@ -96,7 +97,7 @@ public class SaveSlotsMenu : MonoBehaviour
         SaveSlot slot = newSlot.GetComponent<SaveSlot>();
         if (slot != null)
         {
-            slot.setProfileid(IDGenerator.GenerateID().ToString());
+            slot.SetProfileID(IDGenerator.GenerateID().ToString());
         }
         Button button = newSlot.GetComponent<Button>();
         if (button != null)

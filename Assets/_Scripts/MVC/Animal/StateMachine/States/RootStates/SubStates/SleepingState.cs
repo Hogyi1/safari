@@ -26,7 +26,7 @@ public class SleepingState : AnimalBaseState
     public override void CheckSwitchStates()
     {
         // Ha felkelt akkor egy kicsit kómás úgyhogy stationary
-        if (sleepTimer <= 0f && TimeManager.Instance.GetCurrentTime().hours < 22 && TimeManager.Instance.GetCurrentTime().hours > 5)
+        if (sleepTimer <= 0f && TimeManager.Instance.GetCurrentTime().Hours < 22 && TimeManager.Instance.GetCurrentTime().Hours > 5)
         {
             SwitchState(factory.Stationary());
         }

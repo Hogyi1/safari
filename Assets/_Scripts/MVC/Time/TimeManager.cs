@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Singleton MonoBehaviour controlling game time progression, pausing, speed, and random event scheduling.
 /// </summary>
-public class TimeManager : MonoBehaviour
+public class TimeManager : MonoBehaviour, IDataPersistence
 {
     /// <summary>
     /// Singleton instance of TimeManager.
@@ -52,6 +52,8 @@ public class TimeManager : MonoBehaviour
     /// </summary>
     [SerializeField] private int openingHour = 8;
 
+    public float Priority => 5000f;
+    private Action OnHandlerResponse;
     public bool IsPaused => isPaused;
 
     /// <summary>
@@ -69,7 +71,14 @@ public class TimeManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         GlobalGameTime = new GameTime();
         GlobalGameTime.AddHours(openingHour);
+
+        OnHandlerResponse = () => gameObject.SetActive(true);
+        DataPersistenceManager.Instance.OnAllLoaded += OnHandlerResponse;
+
+        gameObject.SetActive(false);
     }
+
+    private void OnDestroy() => DataPersistenceManager.Instance.OnAllLoaded -= OnHandlerResponse;
 
     /// <summary>
     /// Starts the time update and random event loops.
@@ -81,6 +90,7 @@ public class TimeManager : MonoBehaviour
 
         // This makes each in-game week correspond to one animal year, which is about 56 minutes
         if (SecondsPerAnimalYear == 0) SecondsPerAnimalYear = (60 * 24) / 15 * 5 * 7;
+        Debug.Log("Gametime loaded in start");
     }
 
     /// <summary>
@@ -96,7 +106,6 @@ public class TimeManager : MonoBehaviour
             if (!isPaused)
             {
                 GlobalGameTime.AddMinutes(15);
-                // Debug.Log(GlobalGameTime.ToString());
             }
         }
     }
@@ -171,10 +180,10 @@ public class TimeManager : MonoBehaviour
     public RandomEvent GetRandomEvent()
     {
         float roll = UnityEngine.Random.Range(0f, 1f);
-        if (roll < 0.001f && GlobalGameTime.hours >= closingHour && GlobalGameTime.hours <= openingHour) return RandomEvent.Raid;
+        if (roll < 0.001f && GlobalGameTime.Hours >= closingHour && GlobalGameTime.Hours <= openingHour) return RandomEvent.Raid;
         if (roll < 0.01f) return RandomEvent.Breed_animal;
         if (roll < 0.1f) return RandomEvent.Regrow;
-        if (roll < 0.95f && GlobalGameTime.hours <= closingHour && GlobalGameTime.hours >= openingHour) return RandomEvent.Spawn_tourist;
+        if (roll < 0.95f && GlobalGameTime.Hours <= closingHour && GlobalGameTime.Hours >= openingHour) return RandomEvent.Spawn_tourist;
         return RandomEvent.None;
     }
 
@@ -183,4 +192,15 @@ public class TimeManager : MonoBehaviour
     /// </summary>
     /// <returns>Current GameTime.</returns>
     public GameTime GetCurrentTime() => GlobalGameTime;
+
+    public IEnumerator LoadData(GameData data)
+    {
+        GlobalGameTime = new GameTime(data.GameTime);
+        yield return null;
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.GameTime = new GameTime(GlobalGameTime);
+    }
 }

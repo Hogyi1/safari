@@ -63,7 +63,7 @@ public class IdleState : AnimalBaseState, IRootState
         // Azt, hogy mennyi ideig tartson azt, maga a State fogja eldönteni
         float roll = UnityEngine.Random.Range(0f, 1f);
 
-        if (roll <= 0.1f || TimeManager.Instance.GetCurrentTime().hours > 22) { SetSubState(factory.Sleeping()); return; }
+        if (roll <= 0.1f || TimeManager.Instance.GetCurrentTime().Hours > 22) { SetSubState(factory.Sleeping()); return; }
         if (roll <= 0.5f) { SetSubState(factory.Stationary()); return; }
         else SetSubState(factory.Wandering());
     }

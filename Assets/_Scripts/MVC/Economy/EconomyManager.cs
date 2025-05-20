@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,6 +14,8 @@ public class EconomyManager : MonoBehaviour, IDataPersistence
     /// </summary>
     public static EconomyManager Instance { get; private set; }
 
+    public float Priority => 0f;
+
     /// <summary>
     /// The underlying economy data object.
     /// </summary>
@@ -20,6 +24,7 @@ public class EconomyManager : MonoBehaviour, IDataPersistence
     [SerializeField] private int maxTicketPrice = 50;
 
     public bool Incoming;
+    private Action OnHandlerResponse;
 
     /// <summary>
     /// Ensures only one instance exists and persists across scenes.
@@ -33,8 +38,13 @@ public class EconomyManager : MonoBehaviour, IDataPersistence
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        OnHandlerResponse = () => gameObject.SetActive(true);
+        DataPersistenceManager.Instance.OnAllLoaded += OnHandlerResponse;
+
+        gameObject.SetActive(false);
     }
+
+    private void OnDestroy() => DataPersistenceManager.Instance.OnAllLoaded -= OnHandlerResponse;
 
     /// <summary>
     /// Initializes the economy data on start.
@@ -125,9 +135,10 @@ public class EconomyManager : MonoBehaviour, IDataPersistence
     /// <returns>The underlying Economy object.</returns>
     public Economy GetEconomy() => Economy;
 
-    public void LoadData(GameData data)
+    public IEnumerator LoadData(GameData data)
     {
-        this.Economy = data.Economy;
+        Economy = data.Economy;
+        yield return null;
     }
 
     public void SaveData(GameData data)
@@ -141,4 +152,5 @@ public class EconomyManager : MonoBehaviour, IDataPersistence
     /// </summary>
     /// <returns>Ticket influence</returns>
     public float GetTicketInfluence() => Mathf.Clamp01(1f - Economy.TicketPrice / maxTicketPrice) + 0.5f;
+
 }

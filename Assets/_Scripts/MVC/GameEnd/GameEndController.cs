@@ -100,7 +100,7 @@ public class GameEndController : MonoBehaviour
     private void HandleClosePark()
     {
         TimeManager.Instance.ResumeTime();
-        // DataPersistenceManager.Instance.DeleteGame();
+        DataPersistenceManager.Instance.DeleteGame();
         SceneLoadManager.LoadScene("MainMenu");
     }
 

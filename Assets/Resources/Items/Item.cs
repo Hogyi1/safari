@@ -62,7 +62,7 @@ public class Item : ScriptableObject
     /// <summary>
     /// Returns the full price of the item in in-game currency.
     /// </summary>
-    public int GetPrice() => ((IDetails)ItemData).GetPrice();
+    public int GetPrice() => (Mathf.RoundToInt(((IDetails)ItemData).GetPrice() * DifficultyExtensions.GetMultiplier(Park.Instance.Difficulty)));
 
     /// <summary>
     /// Returns an additional detail about the item (e.g., diet, lifespan, area).

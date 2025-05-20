@@ -3,6 +3,7 @@ using System;
 using UnityEngine.AI;
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 [RequireComponent(typeof(NavigatorComponent))]
 public class AnimalView : MonoBehaviour, INavigatable, IInteractable
@@ -157,6 +158,7 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
     // === Érzékelt Collider feldolgozása ===
     private void ProcessDetection(Collider other)
     {
+        if (model.IsUnityNull()) return;
         var go = other.gameObject;
         int layer = go.layer;
 
@@ -167,7 +169,6 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
             if (placeable != null)
             {
                 var structure = placeable.GetStructure();
-
                 // Pozíció lekerekítve
                 Vector3 rawPos = placeable.GetGameObject().transform.position;
                 Vector3 roundedPos = new Vector3(
@@ -175,6 +176,11 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
                     Mathf.Round(rawPos.y),
                     rawPos.z
                 );
+
+                if (structure is IFoodSource)
+                {
+                    Debug.Log("Ez egy foodsource");
+                }
 
                 if (structure is IFoodSource food && model.Diet == food.GetDietType())
                     OnFoodSourceFound?.Invoke(food, roundedPos);
