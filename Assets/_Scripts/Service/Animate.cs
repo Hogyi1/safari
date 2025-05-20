@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,6 +32,7 @@ public class Animate : MonoBehaviour
 
     // Keep track of running coroutines per Image so we can cancel them
     private readonly Dictionary<Image, Coroutine> _running = new Dictionary<Image, Coroutine>();
+    private readonly Dictionary<CanvasGroup, Coroutine> _runningFade = new Dictionary<CanvasGroup, Coroutine>();
 
     /// <summary>
     /// Smoothly animates the given Image.fillAmount from its current value
@@ -77,5 +79,61 @@ public class Animate : MonoBehaviour
 
         bar.fillAmount = target;
         _running.Remove(bar);
+    }
+
+    // FadeIn and FadeOut needs more work, it is not functional.
+
+    /// <summary>
+    /// Fades in the specified CanvasGroup over duration seconds.
+    /// Enables the GameObject before fading, then sets interactability.
+    /// </summary>
+    public void FadeIn(CanvasGroup cg, float duration, Action onComplete = null)
+    {
+        if (cg == null) return;
+        cg.gameObject.SetActive(true);
+        cg.alpha = 0f;
+        cg.interactable = false;
+        cg.blocksRaycasts = false;
+
+        if (_runningFade.TryGetValue(cg, out var existing)) StopCoroutine(existing);
+        _runningFade[cg] = StartCoroutine(FadeRoutine(cg, 0f, 1f, duration, () =>
+        {
+            cg.interactable = true;
+            cg.blocksRaycasts = true;
+            onComplete?.Invoke();
+        }));
+    }
+
+    /// <summary>
+    /// Fades out the specified CanvasGroup over duration seconds.
+    /// Disables interactability immediately, then deactivates GameObject on complete.
+    /// </summary>
+    public void FadeOut(CanvasGroup cg, float duration, Action onComplete = null)
+    {
+        if (cg == null) return;
+        cg.interactable = false;
+        cg.blocksRaycasts = false;
+
+        if (_runningFade.TryGetValue(cg, out var existing)) StopCoroutine(existing);
+        _runningFade[cg] = StartCoroutine(FadeRoutine(cg, cg.alpha, 0f, duration, () =>
+        {
+            cg.gameObject.SetActive(false);
+            onComplete?.Invoke();
+        }));
+    }
+
+    private IEnumerator FadeRoutine(CanvasGroup cg, float from, float to, float duration, Action onComplete)
+    {
+        float elapsed = 0f;
+        cg.alpha = from;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            cg.alpha = Mathf.Lerp(from, to, Mathf.Clamp01(elapsed / duration));
+            yield return null;
+        }
+        cg.alpha = to;
+        _runningFade.Remove(cg);
+        onComplete?.Invoke();
     }
 }
