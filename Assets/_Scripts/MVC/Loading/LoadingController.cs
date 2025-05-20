@@ -40,7 +40,11 @@ public class LoadingController : MonoBehaviour
         StartCoroutine(view.Spin());
 
         // Warm up all shaders to avoid runtime hitches
-        Shader.WarmupAllShaders();
+        try 
+        {
+            Shader.WarmupAllShaders();
+        }
+        catch { }
 
         // Begin loading the target scene asynchronously (additive if desired)
         AsyncOperation op = SceneManager.LoadSceneAsync(sceneToLoad);
