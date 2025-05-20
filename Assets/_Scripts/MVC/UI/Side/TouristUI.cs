@@ -3,71 +3,76 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Handles the UI display for tourist-related data including:
-/// - Overall mood values with color transitions (bad → neutral → good)
-/// - Favorite animal display (text)
-/// - Total number of tourists (formatted number)
+/// Handles the visual display of tourist-related data.
 /// </summary>
 public class TouristUI : MonoBehaviour
 {
-    // Serialized UI references
-    [SerializeField] private Image tourMood;       // Mood bar for the tour experience
-    [SerializeField] private Image tourIcon;       // Icon representing tour mood
-    [SerializeField] private Image waitingMood;    // Mood bar for waiting time
-    [SerializeField] private Image waitingIcon;    // Icon representing waiting mood
-    [SerializeField] private Image ticketMood;     // Mood bar for ticket pricing
-    [SerializeField] private Image ticketIcon;     // Icon representing ticket mood
-    [SerializeField] private TextMeshProUGUI favAnimal;            // Displays most popular favorite animal
-    [SerializeField] private TextMeshProUGUI allTimeTouristCount;  // Displays total tourist count (all-time)
+    [Header("UI References")]
+    [SerializeField] private Image tourMood;
+    [SerializeField] private Image tourIcon;
+    [SerializeField] private Image waitingMood;
+    [SerializeField] private Image waitingIcon;
+    [SerializeField] private Image ticketMood;
+    [SerializeField] private Image ticketIcon;
+    [SerializeField] private TextMeshProUGUI favAnimal;
+    [SerializeField] private TextMeshProUGUI allTimeTouristCount;
 
     [Header("Mood Colors")]
-    [SerializeField] private Color badColor = Color.red;                    // Mood color for low mood (0%)
-    [SerializeField] private Color neutralColor = new Color(1f, 0.64f, 0f); // Mood color for 50%
-    [SerializeField] private Color goodColor = Color.green;                // Mood color for high mood (100%)
+    [SerializeField] private Color badColor = Color.red;
+    [SerializeField] private Color neutralColor = new Color(1f, 0.64f, 0f);
+    [SerializeField] private Color goodColor = Color.green;
 
     /// <summary>
-    /// Updates the UI each frame:
-    /// - Sets mood bars and icons based on mood values (0–100)
-    /// - Updates favorite animal and tourist count text
+    /// Updates the favorite animal text in the UI.
     /// </summary>
-    private void LateUpdate()
+    /// <param name="animal">The name of the favorite animal.</param>
+    public void SetFavoriteAnimal(string animal)
     {
-        favAnimal.text = "Favourite animal: " + TouristManager.Instance.FavouriteAnimal.ToString();
-
-        allTimeTouristCount.text = "All time visitors: " +
-            TouristManager.Instance.AllTimeVisitors.ToString("N0"); // Adds thousands separator
-
-        UpdateMood(tourMood, tourIcon, TouristManager.Instance.OverallMood);
-        UpdateMood(waitingMood, waitingIcon, TouristManager.Instance.OverallWaitingMood);
-        UpdateMood(ticketMood, ticketIcon, TouristManager.Instance.OverallFeeMood);
+        favAnimal.text = $"Favourite animal: {animal}";
     }
 
     /// <summary>
-    /// Updates a mood bar and icon with fillAmount and interpolated color.
-    /// Mood transitions:
-    /// - 0% to 50%: badColor → neutralColor
-    /// - 50% to 100%: neutralColor → goodColor
+    /// Updates the total tourist count text in the UI.
     /// </summary>
-    private void UpdateMood(Image moodBar, Image icon, float moodValue)
+    /// <param name="count">The total number of tourists to display.</param>
+    public void SetTouristCount(int count)
+    {
+        allTimeTouristCount.text = $"All time visitors: {count:N0}";
+    }
+
+    /// <summary>
+    /// Updates a specific mood bar and icon color based on the mood value.
+    /// Mood is interpolated between bad, neutral, and good colors.
+    /// </summary>
+    /// <param name="moodBar">The Image component used as the mood bar.</param>
+    /// <param name="icon">The associated mood icon.</param>
+    /// <param name="moodValue">The mood percentage (0–100).</param>
+    public void SetMood(Image moodBar, Image icon, float moodValue)
     {
         float t = Mathf.Clamp01(moodValue / 100f);
         Color moodColor;
 
         if (t < 0.5f)
-        {
-            float blend = t / 0.5f;
-            moodColor = Color.Lerp(badColor, neutralColor, blend);
-        }
+            moodColor = Color.Lerp(badColor, neutralColor, t / 0.5f);
         else
-        {
-            float blend = (t - 0.5f) / 0.5f;
-            moodColor = Color.Lerp(neutralColor, goodColor, blend);
-        }
+            moodColor = Color.Lerp(neutralColor, goodColor, (t - 0.5f) / 0.5f);
 
         moodBar.fillAmount = t;
         moodBar.color = moodColor;
-
         if (icon != null)
             icon.color = moodColor;
+    }
+
+    /// <summary>
+    /// Updates all mood bars and icons (tour experience, waiting time, and ticket pricing).
+    /// </summary>
+    /// <param name="overallMood">Mood for the tour experience.</param>
+    /// <param name="waitingMoodValue">Mood for waiting times.</param>
+    /// <param name="feeMood">Mood for ticket pricing.</param>
+    public void SetAllMoods(float overallMood, float waitingMoodValue, float feeMood)
+    {
+        SetMood(tourMood, tourIcon, overallMood);
+        SetMood(waitingMood, waitingIcon, waitingMoodValue);
+        SetMood(ticketMood, ticketIcon, feeMood);
     }
 }

@@ -102,9 +102,9 @@ public class ActionBarManager : MonoBehaviour
             TimeManager.Instance.ResumeTime();
         });
 
-        forwardTimeButton.onClick.AddListener(() =>
-        {
-            TimeManager.Instance.SpeedUpTime();
-        });
+        //forwardTimeButton.onClick.AddListener(() =>
+        //{
+        //    TimeManager.Instance.SpeedUpTime();
+        //});
     }
 }

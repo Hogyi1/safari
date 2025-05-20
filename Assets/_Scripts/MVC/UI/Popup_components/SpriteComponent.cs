@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using static UIKeys;
 
-public class SpriteComponent : MonoBehaviour, IPopupComponent
+public class SpriteComponent : MonoBehaviour, IUIComponent
 {
     [SerializeField] private Image image;
     [SerializeField] private UIKeys spriteKey = Sprite_icon;
