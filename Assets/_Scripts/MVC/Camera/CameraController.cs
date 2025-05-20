@@ -123,12 +123,15 @@ public class CameraController : MonoBehaviour
     /// </summary>
     private void HandleZoom()
     {
-        float scrollInput = zoomScrollAction.action.ReadValue<float>();
-        float triggerInput = zoomTriggerAction.action.ReadValue<float>();
-        float zoomInput = scrollInput + triggerInput;
+        if (!InputManager.Instance.IsPointerOverUI())
+        {
+            float scrollInput = zoomScrollAction.action.ReadValue<float>();
+            float triggerInput = zoomTriggerAction.action.ReadValue<float>();
+            float zoomInput = scrollInput + triggerInput;
 
-        float newY = Mathf.Clamp(model.followOffset.y - zoomInput * model.zoomAmount, model.followOffsetMin, model.followOffsetMax);
-        model.SetFollowOffsetY(newY);
-        view.SetFollowOffset(model.followOffset, model.zoomSpeed);
+            float newY = Mathf.Clamp(model.followOffset.y - zoomInput * model.zoomAmount, model.followOffsetMin, model.followOffsetMax);
+            model.SetFollowOffsetY(newY);
+            view.SetFollowOffset(model.followOffset, model.zoomSpeed);
+        }
     }
 }

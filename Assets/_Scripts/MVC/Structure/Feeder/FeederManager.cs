@@ -52,7 +52,7 @@ public class FeederManager : MonoBehaviour, IStructureManager
             ActiveFeeders.Find(t => t.GetID() == ID).Refill();
         else Debug.LogWarning("Nincs elegendő pénzed újratölteni!");
 
-        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 20);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 20);
     }
 
     public void SetView(IPlaceable view, int ID)

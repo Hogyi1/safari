@@ -18,4 +18,4 @@ MonoBehaviour:
   state: 1
   description: 'Pocket Change: Earn $500'
   goal: 500
-  progress: 150
+  progress: 0

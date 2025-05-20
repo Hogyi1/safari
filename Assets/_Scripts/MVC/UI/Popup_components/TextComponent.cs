@@ -3,7 +3,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-public class TextComponent : MonoBehaviour, IPopupComponent
+public class TextComponent : MonoBehaviour, IUIComponent
 {
     [SerializeField] private TextMeshProUGUI textField;
     [SerializeField] private UIKeys textKey;
