@@ -87,4 +87,9 @@ public class HuntingState : AnimalBaseState
         context.animal.Model.IsConsuming = false;
         context.animal.View.Animator.SetBool(AnimalView.IsEating, false);
     }
+
+    public override string ToString()
+    {
+        return "Eating prey";
+    }
 }

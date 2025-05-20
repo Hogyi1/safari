@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using static UIKeys;
 
@@ -15,7 +13,7 @@ public class AnimalModel
     public Sprite Icon;
 
     // Élettani jellemzők - csak olvashatók kívülről
-    private float hunger = 100;
+    private float hunger = 45;
     private float thirst = 100;
     private float hp = 100;
     private int maxAge;

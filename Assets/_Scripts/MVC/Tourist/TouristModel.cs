@@ -65,6 +65,12 @@ public class TouristModel
     }
 
     /// <summary>
+    /// Gets the patience level of the tourist
+    /// </summary>
+    public float PatienceLevel => patienceLevel;
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="TouristModel"/> class.
     /// </summary>
     /// <param name="id">Unique identifier for the tourist.</param>
@@ -85,6 +91,23 @@ public class TouristModel
 
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="TouristModel"/> class.
+    /// </summary>
+    /// <param name="touristData">Unique save for the tourist.</param>
+    public TouristModel(TouristSaveData touristData)
+    {
+        iD = touristData.ID;
+        patienceLevel = touristData.PatienceLevel;
+        favouriteAnimal = touristData.FavouriteAnimal;
+        elapsedTime = touristData.ElapsedTime;
+        state = touristData.State;
+        waitingMood = touristData.WaitingMood;
+        tourMood = touristData.TourMood;
+        vehicleID = touristData.VehicleID;
+    }
+
+
+    /// <summary>
     /// Sets the state of the tourist.
     /// </summary>
     /// <param name="newState">The new state to assign.</param>
@@ -92,6 +115,7 @@ public class TouristModel
     {
         state = newState;
     }
+
 
     /// <summary>
     /// Adds time (in seconds) to the internal elapsed timer for mood calculation.
@@ -102,6 +126,7 @@ public class TouristModel
         elapsedTime += delta;
     }
 
+
     /// <summary>
     /// Resets the internal elapsed timer to a specified value.
     /// </summary>
@@ -110,6 +135,7 @@ public class TouristModel
     {
         elapsedTime = time;
     }
+
 
     /// <summary>
     /// Calculates the tourist's current mood based on waiting and animals seen.
@@ -125,6 +151,7 @@ public class TouristModel
         float waiting = CalculateWaitingMood();
         float touring = CalculateTourMood(animalsSeen, hasFavourite);
     }
+
 
     /// <summary>
     /// Calculates waiting mood based on exponential decay formula.
@@ -145,6 +172,7 @@ public class TouristModel
 
         return waitingMood;
     }
+
 
     /// <summary>
     /// Calculates tour mood based on animals seen and presence of favourite species.

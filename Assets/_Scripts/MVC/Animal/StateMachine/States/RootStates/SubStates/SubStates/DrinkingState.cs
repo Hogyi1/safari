@@ -97,4 +97,9 @@ public class DrinkingState : AnimalBaseState
         context.animal.Model.IsConsuming = false;
         context.animal.View.Animator.SetBool(AnimalView.IsDrinking, false);
     }
+
+    public override string ToString()
+    {
+        return "Drinking";
+    }
 }

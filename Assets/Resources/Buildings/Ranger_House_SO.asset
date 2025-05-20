@@ -24,3 +24,4 @@ MonoBehaviour:
   MaxLevel: 5
   ToUpgrade: 2
   BuildingPrefab: {fileID: 6729789292189893960, guid: 72b0b5bd136230343a1e014aa656ec68, type: 3}
+  UpgradeAmount: 1

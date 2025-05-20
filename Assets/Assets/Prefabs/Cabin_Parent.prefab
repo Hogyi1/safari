@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8358925755720619058}
   m_Layer: 8
-  m_Name: Door
+  m_Name: InteractPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -286,7 +286,7 @@ GameObject:
   - component: {fileID: 1858307676059194484}
   - component: {fileID: 4552151734067953787}
   m_Layer: 0
-  m_Name: 0
+  m_Name: Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

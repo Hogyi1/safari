@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 71f59cf33b6275548be4f143223ed0fe, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 39.271313
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 71f59cf33b6275548be4f143223ed0fe, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.05
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 71f59cf33b6275548be4f143223ed0fe, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.9471977
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 71f59cf33b6275548be4f143223ed0fe, type: 3}
       propertyPath: m_LocalRotation.w
@@ -162,14 +162,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 8610505614121844881}
   navigator: {fileID: 4472317481498800714}
-  destination: {x: 0, y: 0, z: 0}
-  hasPath: 0
-  Loco: 0
-  isWalking: 0
-  arrived: 0
-  waitingmood: 0
-  mood: 0
-  fav: 0
 --- !u!95 &8610505614121844881 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 71f59cf33b6275548be4f143223ed0fe, type: 3}

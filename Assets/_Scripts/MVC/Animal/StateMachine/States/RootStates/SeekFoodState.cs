@@ -88,6 +88,8 @@ public class SeekFoodState : AnimalBaseState, IRootState
 
     public override string ToString()
     {
+        if (currentSubState != null)
+            return currentSubState?.ToString();
         return "Hungry";
     }
 }

@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 5519604431896168041}
   - component: {fileID: 4507268036265247270}
   m_Layer: 8
-  m_Name: Feeder_Parent
+  m_Name: Feeder_parent_carnivore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3185da8e3435b8542851d2a117fed1c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 0}
+  data: {fileID: 11400000, guid: 449fca4fcbe79c04c8a6a0124177a061, type: 2}
 --- !u!114 &4507268036265247270
 MonoBehaviour:
   m_ObjectHideFlags: 0

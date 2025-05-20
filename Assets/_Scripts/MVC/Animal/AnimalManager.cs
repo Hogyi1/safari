@@ -28,6 +28,9 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     public int CarnivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Carnivore).Count();
     public List<Animal> AllAnimals => activeAnimals;
 
+    public float Priority => 1000f;
+    private Action OnHandlerResponse;
+
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -38,28 +41,28 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    }
 
-    private void Start()
-    {
         factory = GetComponent<AnimalFactory>();
         StopPlacement();
+
+        // Events
         RandomEvents.Instance.AddObserver(this);
+        OnHandlerResponse = () => gameObject.SetActive(true);
+        DataPersistenceManager.Instance.OnAllLoaded += OnHandlerResponse;
+
+        gameObject.SetActive(false);
     }
+
+    private void OnDestroy() => DataPersistenceManager.Instance.OnAllLoaded -= OnHandlerResponse;
 
     private void Update()
     {
-        // Tudsz ennél biztonságosabb kódot? XDD
-        try
-        {
-            List<Animal> deadAnimals = activeAnimals.FindAll(t => t.CanRemove);
+        List<Animal> deadAnimals = activeAnimals.FindAll(t => t.CanRemove);
 
-            foreach (var dead in deadAnimals)
-            {
-                RemoveAnimal(dead.ID);
-            }
+        foreach (var dead in deadAnimals)
+        {
+            RemoveAnimal(dead.ID);
         }
-        catch { }
     }
 
     public void StartPlacing(int animalID)
@@ -81,7 +84,11 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         Vector3 mousePosition = InputManager.Instance.GetSelectedMapPosition();
 
         bool placed = BuildingState.OnAction(mousePosition);
-        if (placed) OnPlaced?.Invoke();
+        if (placed)
+        {
+            OnPlaced?.Invoke();
+            GameEvents.Instance.NotifyObservers(EventType.ANIMAL_PLACE, 1);
+        }
     }
 
     public void StopPlacement()
@@ -106,6 +113,8 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         if (newAnimal.IsUnityNull()) return;
 
         GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 10);
+        GameEvents.Instance.NotifyObservers(EventType.ANIMAL_PLACE, 1);
+        GameEvents.Instance.NotifyObservers(EventType.ANIMALS_OWNED, 1);
         activeAnimals.Add(newAnimal);
         Incoming = true;
     }
@@ -115,6 +124,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         Animal toRemove = activeAnimals.Find(t => t.ID == ID);
         if (toRemove != null)
         {
+            GameEvents.Instance.NotifyObservers(EventType.ANIMALS_OWNED, -1);
             GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 20);
             Incoming = false;
             activeAnimals.Remove(toRemove);
@@ -149,6 +159,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     public void Breed(AnimalModel mate1, AnimalModel mate2)
     {
         // Opció evoluciora
+        GameEvents.Instance.NotifyObservers(EventType.ANIMAL_BORN, 1);
         Animal animal = activeAnimals.Find(t => t.ID == mate1.ID);
         SpawnAnimal(animal.Model.Type, animal.View.transform.position, 1);
         GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 50);
@@ -167,7 +178,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
             prey.Model.GetKilled();
     }
 
-    public bool CanBuy() => true;
+    public bool CanBuy() => true; // Nincs kapacitás jelenleg
 
 
 
@@ -181,9 +192,10 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         }
     }
 
-    public void LoadData(GameData data)
+    // Rework mentés
+    public IEnumerator LoadData(GameData data)
     {
-        StartCoroutine(SpawnAnimalWithDelay(data));
+        yield return SpawnAnimalWithDelay(data);
     }
 
     private IEnumerator SpawnAnimalWithDelay(GameData data)
@@ -194,13 +206,11 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         {
             SpawnAnimal(a.type, a.position, a.Age);
         }
-
     }
-
 }
 
 // Most csak ilyen állatok vannak
-[Serializable]
+[System.Serializable]
 public enum AnimalType
 {
     None,

@@ -309,7 +309,7 @@ GameObject:
   m_Component:
   - component: {fileID: 524741152734771032}
   m_Layer: 0
-  m_Name: Garage
+  m_Name: Spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -343,7 +343,7 @@ GameObject:
   - component: {fileID: 884552717031777227}
   - component: {fileID: 5250264220752345043}
   m_Layer: 8
-  m_Name: Cube (1)
+  m_Name: Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -450,7 +450,6 @@ GameObject:
   - component: {fileID: 4486763555031102351}
   - component: {fileID: 8908904026906658050}
   - component: {fileID: 5402060373668330451}
-  - component: {fileID: 902746094815199320}
   m_Layer: 8
   m_Name: Garage
   m_TagString: Untagged
@@ -519,19 +518,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 0ed4686c85d765a4ebf459d82316899e, type: 2}
---- !u!208 &902746094815199320
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8774679962435594418}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.5

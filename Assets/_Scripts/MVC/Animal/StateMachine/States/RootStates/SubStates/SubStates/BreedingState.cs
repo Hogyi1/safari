@@ -66,4 +66,9 @@ public class BreedingState : AnimalBaseState
         context.animal.Model.StopBreeding();
         context.animal.Model.SetTarget(Vector3.zero);
     }
+
+    public override string ToString()
+    {
+        return "Fucking";
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -34,6 +35,7 @@ public class AnimalFactory : MonoBehaviour
     /// <returns>Az elkészült Animal példány, vagy null, ha nem található adat hozzá.</returns>
     public Animal CreateAnimal(AnimalType type, Vector3 position, int ID, int Age)
     {
+        LoadAllAnimals();
         AnimalData data = FindAnimalData(type);
         if (data == null) return null;
 
@@ -43,7 +45,7 @@ public class AnimalFactory : MonoBehaviour
         AnimalStateMachine sm = instance.GetComponent<AnimalStateMachine>();
         AnimalView view = instance.GetComponent<AnimalView>();
         AnimalModel model = new AnimalModel(data, ID, Age);
-
+        Debug.Log("Data " + data.IsUnityNull());
         return new Animal(ID, model, view, sm);
     }
 
