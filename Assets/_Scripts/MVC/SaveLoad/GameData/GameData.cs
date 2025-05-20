@@ -16,11 +16,6 @@ public class GameData
     public long lastUpdated;
 
     /// <summary>
-    /// Example integer value used for testing or placeholder logic.
-    /// </summary>
-    public int exempleint;
-
-    /// <summary>
     /// Example serializable dictionary (int-to-int) for custom data testing or tracking.
     /// </summary>
     public SerializableDictionary<int, int> exemple;
@@ -34,29 +29,19 @@ public class GameData
     /// Data related to the player's inventory (e.g., items, currencies).
     /// </summary>
     public InventoryData inventoryData;
-
     public LevelSaveData levelSaveData;
-
     public GameSettingsModel settingsModel;
-
     public Economy Economy;
-
     public int idSeed;
-
     public Vector3 CameraPosition;
     public Vector3 CameraRotation;
-
     public TouristData touristData;
-
     public VehicleSaveData vehicleData;
-
     public int RangerCount;
     public int RangerMaxCapacity;
-
-
     public List<AnimalSaveData> animalSaveDatas;
-
     public List<SaveMapData> saveMapDatas;
+    public List<ChallangeData> challangeDataList;
 
     /// <summary>
     /// Initializes a new GameData instance with default values.
@@ -64,7 +49,6 @@ public class GameData
     /// </summary>
     public GameData()
     {
-        this.exemple = new SerializableDictionary<int, int>();
         this.parkData = new ParkData();
         this.inventoryData = new InventoryData();
         this.levelSaveData = new LevelSaveData();
@@ -76,15 +60,7 @@ public class GameData
         this.vehicleData = new VehicleSaveData();
         this.RangerCount = 0;
         this.RangerMaxCapacity = 3;
-        this.saveMapDatas = new();
-    }
-    /// <summary>
-    /// Returns the overall completion percentage of the game.
-    /// Currently returns a fixed value of 0%.
-    /// </summary>
-    /// <returns>An integer representing the completion percentage (0-100).</returns>
-    public int GetPercentageComplete()
-    {
-        return 0;
+        this.saveMapDatas = new();  
+        this.challangeDataList = new List<ChallangeData>();
     }
 }

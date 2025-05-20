@@ -243,6 +243,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
     public void LevelUp(int amount) => maxCapacity += amount;
     public void LevelDown(int amount) => maxCapacity -= amount;
     public bool CanBuy() => Capacity < MaxCapacity;
+
     public int MaxCapacity => maxCapacity;
     public int Capacity => activeVehicles.Count;
     public List<Vehicle> AllVehicles => activeVehicles;

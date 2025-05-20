@@ -15,7 +15,7 @@ MonoBehaviour:
   id: 1
   prize: 300
   eventType: 1
-  state: 0
+  state: 1
   description: 'First Catch: Place your first animal'
   goal: 1
   progress: 0

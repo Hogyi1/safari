@@ -43,6 +43,7 @@ public class DataPersistenceManager : MonoBehaviour
     public void NewGame()
     {
         this.gameData = new GameData();
+        ChallangeSOReseter.Instance.ResetChallangesToInitial();
         CreateParkManager.Instance.SetParkPropertys();
         gameData.parkData.parkName = Park.Instance.ParkName;
         SaveGame();
@@ -58,9 +59,10 @@ public class DataPersistenceManager : MonoBehaviour
     {
         dataPersistenceObjects = FindAllDataPersistenceObjects();
         this.gameData = dataHandler.Load(selectedProfileId);
-
-        IDGenerator.SetSeed(gameData.idSeed);
-
+        if (gameData != null)
+        {
+            IDGenerator.SetSeed(gameData.idSeed);
+        }
         foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects)
         {
             dataPersistenceObj.LoadData(gameData);
@@ -87,6 +89,10 @@ public class DataPersistenceManager : MonoBehaviour
 
         //Filebaírás
         dataHandler.Save(gameData, selectedProfileId);
+    }
+
+    public void DeletGame() { 
+        dataHandler.Delete(selectedProfileId);
     }
 
     /// <summary>

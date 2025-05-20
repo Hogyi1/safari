@@ -571,9 +571,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
+<<<<<<< HEAD
+=======
   - {fileID: 3231325954774170136}
-  - {fileID: 7412622853048537587}
+>>>>>>> development
   - {fileID: 1170258732870759461}
+  - {fileID: 7412622853048537587}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &8923454028183033090
@@ -1084,7 +1087,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4601342960021497504, guid: 8739604ff156c91408e3f6352de03dbc, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 451579dbdc4d3184d9f5da87d5611b73, type: 2}
     - target: {fileID: 4725506184553464117, guid: 8739604ff156c91408e3f6352de03dbc, type: 3}
