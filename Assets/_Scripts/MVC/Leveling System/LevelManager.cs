@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -67,6 +68,8 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
     /// Gets the total number of levels configured.
     /// </summary>
     public int MaxLevel => levels.Count;
+
+    public float Priority => 0;
 
     /// <summary>
     /// Ensures only one instance of LevelManager exists and persists across scenes.
@@ -219,12 +222,13 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
         return levels[levelNumber - 1];
     }
 
-    public void LoadData(GameData data)
+    public IEnumerator LoadData(GameData data)
     {
-        this.currentLevel = data.levelSaveData.currentLevel;
-        this.currentExp = data.levelSaveData.currentExp;
-        this.progress = data.levelSaveData.progress;
-        this.isMaxLevel = data.levelSaveData.isMaxLevel;
+        currentLevel = data.levelSaveData.currentLevel;
+        currentExp = data.levelSaveData.currentExp;
+        progress = data.levelSaveData.progress;
+        isMaxLevel = data.levelSaveData.isMaxLevel;
+        yield return null;
     }
 
     public void SaveData(GameData data)

@@ -1,5 +1,3 @@
-using UnityEngine;
-
 /// <summary>
 /// Stores economy data such as current money, expenses, ticket price, and ranger salary.
 /// </summary>

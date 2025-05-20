@@ -1,9 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class SaveSlotsMenu : MonoBehaviour
 {
@@ -15,7 +11,7 @@ public class SaveSlotsMenu : MonoBehaviour
 
     private void Awake()
     {
-        saveSlots = this.GetComponentsInChildren<SaveSlot>();
+        saveSlots = GetComponentsInChildren<SaveSlot>();
     }
 
     public void OnSaveSlotClicked(SaveSlot saveSlot)
@@ -47,7 +43,7 @@ public class SaveSlotsMenu : MonoBehaviour
 
         // loop through each save slot in the UI and set the content appropriately
 
-
+        // Implement new saveslots that dinamically generate
         foreach (SaveSlot saveSlot in saveSlots)
         {
             GameData profileData = null;

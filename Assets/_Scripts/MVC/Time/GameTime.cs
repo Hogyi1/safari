@@ -5,11 +5,14 @@ using UnityEngine;
 /// Represents in-game time, tracking minutes, hours, days, months, and total days passed.
 /// Provides methods to advance time and notifies observers on day, month, and year transitions.
 /// </summary>
+
+[System.Serializable]
 public class GameTime
 {
     /// <summary>
     /// Enumeration of calendar months.
     /// </summary>
+    [System.Serializable]
     public enum Months
     {
         Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -53,7 +52,7 @@ public class MainMenuController : MonoBehaviour
         {
             menu.SetActive(false);
         }
-        activeMenu.SetActive(true);  
+        activeMenu.SetActive(true);
     }
 
     /// <summary>
@@ -61,8 +60,8 @@ public class MainMenuController : MonoBehaviour
     /// </summary>
     public void mm_Continue()
     {
-            DataPersistenceManager.Instance.LoadGame();
-            SceneLoadManager.LoadScene(gameSceneName);
+        //DataPersistenceManager.Instance.LoadGame();
+        SceneLoadManager.LoadScene(gameSceneName);
     }
 
     /// <summary>

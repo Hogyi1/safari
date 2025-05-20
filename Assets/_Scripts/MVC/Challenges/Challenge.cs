@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewChallenge", menuName = "Challenge System/Challenge")]
 public class Challenge : ScriptableObject
 {
+    public int id;
     public int prize;
     public EventType eventType;
     public ChallengeState state;

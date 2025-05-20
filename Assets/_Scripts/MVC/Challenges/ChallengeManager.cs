@@ -1,15 +1,18 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// Central manager for all challenges, handling their progress updates and reward collection.
 /// </summary>
-public class ChallengeManager : MonoBehaviour, IChallengeObserver
+public class ChallengeManager : MonoBehaviour, IChallengeObserver, IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the ChallengeManager.
     /// </summary>
     public static ChallengeManager Instance { get; private set; }
+
+    public float Priority => 0f;
 
     private List<Challenge> challenges = new();
 
@@ -121,5 +124,37 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
     public List<Challenge> GetChallengesByState(ChallengeState state)
     {
         return challenges.FindAll(c => c.state == state);
+    }
+
+    /// <summary>
+    /// Gets challenge by its ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>Challenge</returns>
+    public Challenge GetChallengeById(int id)
+    {
+        foreach (var challenge in challenges)
+        {
+            if (challenge.id == id)
+                return challenge;
+        }
+        return null;
+    }
+
+    public IEnumerator LoadData(GameData data)
+    {
+        data.challengeDatas.ForEach(t =>
+        {
+            Challenge c = GetChallengeById(t.ID);
+            c.SetState(t.State);
+            c.progress = t.Progress;
+        });
+        yield return null;
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.challengeDatas.Clear();
+        challenges.ForEach(t => data.challengeDatas.Add(new ChallengeSaveData(t.id, t.state, t.progress)));
     }
 }

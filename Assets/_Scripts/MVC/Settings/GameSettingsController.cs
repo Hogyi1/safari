@@ -8,6 +8,7 @@
     // Implement permanent saving solution here...
 */
 
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -25,6 +26,8 @@ public class GameSettingsController : MonoBehaviour, IDataPersistence
     /// Current settings data used by the game.
     /// </summary>
     public GameSettingsModel CurrentSettings = new GameSettingsModel();
+
+    public float Priority => 10000f;
 
     /// <summary>
     /// Ensures only one instance exists and loads saved settings on awake.
@@ -182,18 +185,25 @@ public class GameSettingsController : MonoBehaviour, IDataPersistence
         ApplyDisplaySettings();
     }
 
-    public void LoadData(GameData data)
+    /// <summary>
+    /// Loads all settings
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public IEnumerator LoadData(GameData data)
     {
-        if (DataPersistenceManager.Instance.HasGameData()) {
+        // Always has game data
+        CurrentSettings = data.settingsSaveData;
+        ApplyGraphicsSettings();
+        ApplyDisplaySettings();
 
-            this.CurrentSettings = data.settingsModel;
-            ApplyGraphicsSettings();
-            ApplyDisplaySettings();
-        }
+        yield return null;
     }
 
-    public void SaveData(GameData data)
-    {
-        data.settingsModel = this.CurrentSettings;
-    }
+    /// <summary>
+    /// Saves the current settings int othe main game data
+    /// </summary>
+    /// <param name="data">The saveable game data</param>
+    public void SaveData(GameData data) => data.settingsSaveData = CurrentSettings;
+
 }
