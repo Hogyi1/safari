@@ -27,7 +27,7 @@ public enum EventType
     JEEP_BUY,
     /// <summary>Money has been gained.</summary>
     MONEY_GAIN,
-    /// <summary>Experience points have been gained.</summary>
+    /// <summary>Experience points have been added.</summary>
     EXP_ADD,
     /// <summary>Visitor has been transported.</summary>
     VISITOR_TRANSPORTED,
@@ -37,7 +37,7 @@ public enum EventType
     LEVEL_UP,
     /// <summary>All challenges have been completed.</summary>
     ALL_CHALLENGES_COMPLETED,
-
+    /// <summary>Experience points have been gained.</summary>
     EXP_GAINED
     // Add more if we need to
 }

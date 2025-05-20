@@ -54,6 +54,7 @@ public class TimeManager : MonoBehaviour, IDataPersistence
 
     public float Priority => 5000f;
     private Action OnHandlerResponse;
+    public bool IsPaused => isPaused;
 
     /// <summary>
     /// Initializes the singleton, global time, and sets opening hour.
@@ -130,10 +131,11 @@ public class TimeManager : MonoBehaviour, IDataPersistence
     /// <summary>
     /// Toggles time speed among 1x, 1.5x, 2x, then back to 1x.
     /// </summary>
-    public void SpeedUpTime()
+    public float SpeedUpTime()
     {
         timeMultiplier = timeMultiplier >= 2f ? 1.0f : timeMultiplier + 0.5f;
         Time.timeScale = timeMultiplier;
+        return timeMultiplier;
     }
 
     /// <summary>

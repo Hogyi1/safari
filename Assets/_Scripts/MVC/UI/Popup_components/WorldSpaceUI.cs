@@ -25,7 +25,7 @@ public class WorldSpaceUI : MonoBehaviour
     /// <summary>
     /// List of popup components
     /// </summary>
-    private List<IPopupComponent> Components = new();
+    private List<IUIComponent> Components = new();
 
     /// <summary>
     /// Max distance when the popup closes automatically
@@ -78,7 +78,7 @@ public class WorldSpaceUI : MonoBehaviour
         {
             var allBehaviours = mono.GetComponentsInChildren<MonoBehaviour>(true);
 
-            foreach (var comp in allBehaviours.OfType<IPopupComponent>())
+            foreach (var comp in allBehaviours.OfType<IUIComponent>())
             {
                 Components.Add(comp);
             }
@@ -122,7 +122,7 @@ public class WorldSpaceUI : MonoBehaviour
 
         foreach (var comp in Components)
         {
-            if (comp is IPopupComponent component) component.TrySetup(Data);
+            if (comp is IUIComponent component) component.TrySetup(Data);
         }
     }
 
@@ -138,7 +138,7 @@ public class WorldSpaceUI : MonoBehaviour
 
         foreach (var comp in Components)
         {
-            if (comp is IPopupComponent component) component.TrySetup(Data);
+            if (comp is IUIComponent component) component.TrySetup(Data);
         }
     }
 

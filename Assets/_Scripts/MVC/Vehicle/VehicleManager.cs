@@ -261,7 +261,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
     public void SetCapacity(int amount) => maxCapacity = amount;
     public int MaxCapacity => maxCapacity;
     public int Capacity => activeVehicles.Count;
-    public List<Vehicle> GetAllVehicles() => activeVehicles;
+    public List<Vehicle> AllVehicles => activeVehicles;
 
 
     /// <summary>

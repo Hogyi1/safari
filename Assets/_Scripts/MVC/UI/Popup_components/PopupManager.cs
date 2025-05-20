@@ -83,7 +83,7 @@ public class PopupManager : MonoBehaviour
 /// Interface that all UI components inside a structure popup must implement
 /// to be initialized with dynamic data.
 /// </summary>
-public interface IPopupComponent
+public interface IUIComponent
 {
     public void TrySetup(Dictionary<UIKeys, object> data);
     public void OnPopupUpdate();

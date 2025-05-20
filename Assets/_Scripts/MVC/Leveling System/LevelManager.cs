@@ -141,6 +141,8 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
         Debug.Log("Current exp: " + currentExp);
         Debug.Log("Current progress: " + progress);
 
+        GameEvents.Instance.NotifyObservers(EventType.EXP_GAINED, amount);
+
         if (currentExp >= requiredExp)
         {
             if ((currentLevel - 1) < levels.Count - 1)

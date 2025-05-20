@@ -26,6 +26,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     public int Count => activeAnimals.Count;
     public int HerbivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Herbivore).Count();
     public int CarnivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Carnivore).Count();
+    public List<Animal> AllAnimals => activeAnimals;
 
     public float Priority => 1000f;
     private Action OnHandlerResponse;
