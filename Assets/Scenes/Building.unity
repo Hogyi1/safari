@@ -467,14 +467,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21531681c30575945a69475911f64cd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingDatabase: []
-  nextID: 0
-  ActiveView: {fileID: 0}
-  LastView: {fileID: 0}
-  grid: {fileID: 1911836706}
-  ActiveMaterial: {fileID: 2100000, guid: f07c1dc33592be246953d70953666e66, type: 2}
-  PreviewSystem: {fileID: 1569394414}
-  TerrainController: {fileID: 1773273084}
+  vegetationManager: {fileID: 0}
+  feederManager: {fileID: 0}
+  waterManager: {fileID: 0}
+  roadManager: {fileID: 0}
+  facilityManager: {fileID: 0}
 --- !u!1 &415127055
 GameObject:
   m_ObjectHideFlags: 0
@@ -940,10 +937,8 @@ MonoBehaviour:
   PlacementLayermask:
     serializedVersion: 2
     m_Bits: 8
-  SelectableLayermask:
-    serializedVersion: 2
-    m_Bits: 256
-  setMaterial: {fileID: 2100000, guid: 874a2f5a80a086d418a5c2f656b7e5e6, type: 2}
+  State: 1
+  ViewHandler: {fileID: 0}
 --- !u!1 &1340664047 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3706936160302216349, guid: 28ad77346a60b1a4591a909b68116da7, type: 3}
@@ -1299,6 +1294,8 @@ MonoBehaviour:
   cellIndicator: {fileID: 1340664047}
   previewMaterialPrefab: {fileID: 2100000, guid: f07c1dc33592be246953d70953666e66, type: 2}
   gridVisualization: {fileID: 1835294832}
+  WrongColor: {r: 0, g: 0, b: 0, a: 0}
+  ValidColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1639705245
 GameObject:
   m_ObjectHideFlags: 0
@@ -1466,9 +1463,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 0}
-  adjustRadius: 10
-  blendStrength: 2
   restoreSpeed: 2
+  blendingArea: 1
+  CurrentObject: {fileID: 0}
 --- !u!4 &1773273085
 Transform:
   m_ObjectHideFlags: 0
