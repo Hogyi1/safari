@@ -15,7 +15,7 @@ MonoBehaviour:
   id: 3
   prize: 150
   eventType: 10
-  state: 0
+  state: 3
   description: 'Welcome to the Wild: Buy your first jeep'
   goal: 1
-  progress: 0
+  progress: 1
