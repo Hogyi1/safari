@@ -26,6 +26,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     public int Count => activeAnimals.Count;
     public int HerbivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Herbivore).Count();
     public int CarnivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Carnivore).Count();
+    public List<Animal> AllAnimals => activeAnimals;
 
     public void Awake()
     {
@@ -104,8 +105,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
         if (newAnimal.IsUnityNull()) return;
 
-        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 10);
-        GameEvents.Instance.NotifyObservers(EventType.ANIMAL_PLACE, 1);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 10);
         activeAnimals.Add(newAnimal);
         Incoming = true;
     }
@@ -115,7 +115,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         Animal toRemove = activeAnimals.Find(t => t.ID == ID);
         if (toRemove != null)
         {
-            GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 20);
+            GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 20);
             Incoming = false;
             activeAnimals.Remove(toRemove);
             Destroy(toRemove.View.gameObject);
@@ -151,7 +151,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         // Opció evoluciora
         Animal animal = activeAnimals.Find(t => t.ID == mate1.ID);
         SpawnAnimal(animal.Model.Type, animal.View.transform.position, 1);
-        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 50);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 50);
     }
 
     public Animal GetAnimal(int iD)
