@@ -13,7 +13,7 @@ public class SaveSlot : MonoBehaviour
     [SerializeField] private TextMeshProUGUI parkName;
     [SerializeField] private TextMeshProUGUI percentageCompleted;
     public bool hasData { get; private set; } = false;
-    private Button saveSlotButton;
+    [SerializeField] private Button saveSlotButton;
 
     private void Awake()
     {
@@ -36,16 +36,15 @@ public class SaveSlot : MonoBehaviour
             noDataContent.SetActive(false);
             hasDataContent.SetActive(true);
 
-            //itt kell beállítani a két szöveget
-            parkName.text = data.parkData.ParkName;
-            // percentageCompleted.text = data.exempleint.ToString();
+            //itt kell beï¿½llï¿½tani a kï¿½t szï¿½veget
+            parkName.text = data.parkData.parkName;
+            perecentComplited.text = "Park level" + data.levelSaveData.currentLevel.ToString();
         }
     }
 
-    public string GetProfileId() => profileId;
+    public string GetProfileId() => this.profileId;
 
-    public void SetInteractable(bool interactable)
-    {
-        saveSlotButton.interactable = interactable;
-    }
+    public void setProfileid(string pid) => profileId = pid;
+
+    public void SetInteractable(bool interactable) => saveSlotButton.interactable = interactable;
 }

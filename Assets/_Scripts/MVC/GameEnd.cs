@@ -6,14 +6,14 @@ public class GameEnd : MonoBehaviour
 {
     Coroutine Coroutine;
     // Update is called once per frame
-    //void LateUpdate()
-    //{
-    //    if (TouristManager.Instance.OverallMood <= 30f && Coroutine.IsUnityNull())
-    //    {
-    //        Coroutine = StartCoroutine(EndGame());
+    void LateUpdate()
+    {
+        //if (TouristManager.Instance.OverallMood <= 30f && Coroutine.IsUnityNull())
+        //{
+          //  Coroutine = StartCoroutine(EndGame());
 
-    //    }
-    //}
+        //}
+    }
 
     private IEnumerator EndGame()
     {

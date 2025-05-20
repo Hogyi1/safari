@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28b4bccbfcc07e4cb13f22696b40440, type: 3}
   m_Name: Challenge_FirstCatch
   m_EditorClassIdentifier: 
+  id: 1
   prize: 300
   eventType: 1
-  state: 0
+  state: 1
   description: 'First Catch: Place your first animal'
   goal: 1
   progress: 0

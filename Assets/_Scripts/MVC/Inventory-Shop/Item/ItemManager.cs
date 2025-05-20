@@ -61,6 +61,22 @@ public class ItemManager : MonoBehaviour
         Debug.Log($"Betöltve {Items.Count} Item.");
     }
 
+
+    /// <summary>
+    /// Sets the lock state of items based on the provided map.
+    /// </summary>
+    public void SetItemLockStates(Dictionary<int, LockState> newStates)
+    {
+        foreach (var pair in newStates)
+        {
+            var item = GetItemById(pair.Key);
+            if (item != null)
+            {
+                item.LockState = pair.Value;
+            }
+        }
+    }
+
     public Item GetItemById(int id)
     {
         return Items.FirstOrDefault(item => item.ID == id);

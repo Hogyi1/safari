@@ -46,6 +46,7 @@ public class DataPersistenceManager : MonoBehaviour
         gameData = new GameData();
         dataHandler.LoadAllProfiles().TryGetValue(newGameProfileID, out this.gameData); // Még a mentés előtt betölti az új játékos profilt
         Debug.Log(gameData.IDSeed);
+        ChallangeSOReseter.Instance.ResetChallangesToInitial();
         SaveGame(); // Egyből el is menti a már megváltoztatott profile ID helyére
     }
 
@@ -94,6 +95,9 @@ public class DataPersistenceManager : MonoBehaviour
         dataHandler.Save(gameData, selectedProfileId);
     }
 
+    public void DeletGame() { 
+        dataHandler.Delete(selectedProfileId);
+    }
 
     /// <summary>
     /// Finds all active and inactive MonoBehaviour components in the scene

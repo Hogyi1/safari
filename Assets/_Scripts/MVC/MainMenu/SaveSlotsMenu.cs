@@ -1,17 +1,23 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class SaveSlotsMenu : MonoBehaviour
+public class SaveSlotsMenu : MonoBehaviour 
 {
 
     //saveslot lista
-    [SerializeField] private SaveSlot[] saveSlots;
-    private bool isLoadingGame = true;
+    [SerializeField] private List<SaveSlot> saveSlots = new List<SaveSlot>();
+    private bool isLoadingGame = false;
+    [SerializeField] private TMP_Text headerText;
+    [SerializeField] private GameObject addButton;
     [SerializeField] private string gameSceneName = "Final";
+    [SerializeField] private Transform saveSlotContainer;
+    [SerializeField] private GameObject saveSlotPrefab;
 
     private void Awake()
     {
-        saveSlots = GetComponentsInChildren<SaveSlot>();
+        saveSlots = new List<SaveSlot>(this.GetComponentsInChildren<SaveSlot>());
     }
 
     public void OnSaveSlotClicked(SaveSlot saveSlot)
@@ -19,7 +25,7 @@ public class SaveSlotsMenu : MonoBehaviour
         // update the selected profile id to be used for data persistence
         DataPersistenceManager.Instance.ChangeSelectedProfileId(saveSlot.GetProfileId());
 
-        //ha a createGamebol jon akkor inicializ�l
+        //ha a createGamebol jon akkor inicializál
         if (!isLoadingGame)
         {
             DataPersistenceManager.Instance.NewGame();
@@ -35,30 +41,70 @@ public class SaveSlotsMenu : MonoBehaviour
 
     public void ActivateMenu(bool isLoadingGame)
     {
-        // set mode
         this.isLoadingGame = isLoadingGame;
 
-        // load all of the profiles that exist
-        Dictionary<string, GameData> profilesGameData = DataPersistenceManager.Instance.GetAllProfilesGameData();
-
-        // loop through each save slot in the UI and set the content appropriately
-
-        // Implement new saveslots that dinamically generate
-        foreach (SaveSlot saveSlot in saveSlots)
+        if (isLoadingGame)
         {
-            GameData profileData = null;
-            profilesGameData.TryGetValue(saveSlot.GetProfileId(), out profileData);
-            saveSlot.SetData(profileData);
-            if (profileData == null && isLoadingGame)
-            {
-                saveSlot.SetInteractable(false);
-            }
-            else
-            {
-                saveSlot.SetInteractable(true);
-            }
+            headerText.text = "LOAD SAVE";
+            addButton.SetActive(false);
+        }
+        else
+        {
+            headerText.text = "NEW GAME";
+            addButton.SetActive(true);
         }
 
+        foreach (Transform child in saveSlotContainer)
+        {
+            Destroy(child.gameObject);
+        }
+        saveSlots.Clear();
+
+        
+        Dictionary<string, GameData> profilesGameData = DataPersistenceManager.Instance.GetAllProfilesGameData();
+
+        foreach (var kvp in profilesGameData)
+        {
+            string profileId = kvp.Key;
+            GameData profileData = kvp.Value;
+
+            GameObject newSlotGO = Instantiate(saveSlotPrefab, saveSlotContainer);
+            newSlotGO.transform.SetParent(saveSlotContainer, false);
+
+            SaveSlot slot = newSlotGO.GetComponent<SaveSlot>();
+            slot.setProfileid(profileId);
+            slot.SetData(profileData);
+
+            if (profileData == null && isLoadingGame)
+                slot.SetInteractable(false);
+            else
+                slot.SetInteractable(true);
+
+            Button button = newSlotGO.GetComponent<Button>();
+            if (button != null)
+            {
+                button.onClick.AddListener(() => OnSaveSlotClicked(slot));
+            }
+
+            saveSlots.Add(slot);
+        }
+    }
+
+    public void AddNewSaveSlot()
+    {
+        GameObject newSlot = Instantiate(saveSlotPrefab, saveSlotContainer);
+        // Lekérjük a SaveSlotUI komponenst
+        SaveSlot slot = newSlot.GetComponent<SaveSlot>();
+        if (slot != null)
+        {
+            slot.setProfileid(IDGenerator.GenerateID().ToString());
+        }
+        Button button = newSlot.GetComponent<Button>();
+        if (button != null)
+        {
+            button.onClick.AddListener(() => OnSaveSlotClicked(slot));
+        }
+        saveSlots.Add(slot);
     }
 
 }

@@ -87,7 +87,6 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
         levels = new List<LevelData>(Resources.LoadAll<LevelData>(""));
     }
 
-
     /// <summary>
     /// Initializes the required experience for the starting level
     /// and registers this manager as a level observer.
@@ -102,6 +101,9 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
         }
 
         GameEvents.Instance.AddObserver(this);
+
+        // Unlock first level contents
+        UnlockContent(levels[currentLevel - 1]);
     }
 
     /// <summary>
