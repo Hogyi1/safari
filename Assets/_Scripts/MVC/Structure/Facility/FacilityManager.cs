@@ -85,7 +85,7 @@ public class FacilityManager : MonoBehaviour, IStructureManager
                 break;
         }
 
-        GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 40);
+        GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 40);
         EconomyManager.Instance.RemoveMoney(price);
     }
 
