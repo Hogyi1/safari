@@ -15,7 +15,7 @@ MonoBehaviour:
   id: 2
   prize: 250
   eventType: 11
-  state: 0
+  state: 1
   description: 'Pocket Change: Earn $500'
   goal: 500
   progress: 150
