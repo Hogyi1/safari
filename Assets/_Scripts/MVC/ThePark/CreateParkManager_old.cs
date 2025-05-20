@@ -6,12 +6,12 @@ using UnityEngine.UI;
 /// <summary>
 /// Manages the park creation UI and logic, including input validation and difficulty selection.
 /// </summary>
-public class CreateParkManager : MonoBehaviour
+public class CreateParkManager_old : MonoBehaviour
 {
     /// <summary>
     /// Singleton instance of the CreateParkManager.
     /// </summary>
-    public static CreateParkManager Instance;
+    public static CreateParkManager_old Instance;
 
     /// <summary>
     /// Ensures only one instance exists at runtime.
@@ -84,7 +84,7 @@ public class CreateParkManager : MonoBehaviour
                 fadeInTime: 0.25f,
                 displayTime: 2.5f,
                 fadeOutTime: 0.4f
-            );  
+            );
             return;
         }
 
@@ -100,6 +100,6 @@ public class CreateParkManager : MonoBehaviour
     public void SetParkPropertys()
     {
         Park.Instance.ParkName = ParkName;
-        Park.Instance.difficulty = difficulty;
+        Park.Instance.Difficulty = difficulty;
     }
 }

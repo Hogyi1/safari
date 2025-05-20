@@ -73,6 +73,11 @@ public class BuildingData : ScriptableObject, IDetails
     public GameObject BuildingPrefab;
 
     /// <summary>
+    /// The amount to upgrade the specified manager
+    /// </summary>
+    public int UpgradeAmount;
+
+    /// <summary>
     /// Returns the unique data ID used by this building (implementation of IDetails).
     /// </summary>
     public int GetDataID()

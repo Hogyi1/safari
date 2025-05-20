@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -24,7 +25,9 @@ public class Park : MonoBehaviour, IDataPersistence
     /// <summary>
     /// The difficulty level of the current park session.
     /// </summary>
-    public DifficultyEnum difficulty;
+    public DifficultyEnum Difficulty;
+
+    public float Priority => 5000f;
 
     /// <summary>
     /// Ensures only one Park instance exists and persists across scenes.
@@ -45,14 +48,12 @@ public class Park : MonoBehaviour, IDataPersistence
     /// Loads park-specific data from the provided GameData object.
     /// </summary>
     /// <param name="data">The GameData object containing saved park information.</param>
-    public void LoadData(GameData data)
+    public IEnumerator LoadData(GameData data)
     {
-        if (DataPersistenceManager.Instance.HasGameData()) {
+        ParkName = data.parkData.ParkName;
+        Difficulty = data.parkData.Difficulty;
 
-            this.ParkName = data.parkData.parkName;
-            this.difficulty = data.parkData.difficulty;
-        }
-        
+        yield return null;
     }
 
     /// <summary>
@@ -61,7 +62,8 @@ public class Park : MonoBehaviour, IDataPersistence
     /// <param name="data">The GameData object to write park data into.</param>
     public void SaveData(GameData data)
     {
-        data.parkData.parkName = this.ParkName;
-        data.parkData.difficulty = this.difficulty;
+        data.parkData.ParkName = ParkName;
+        data.parkData.Difficulty = Difficulty;
     }
+
 }
