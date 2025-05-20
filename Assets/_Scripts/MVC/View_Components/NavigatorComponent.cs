@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// Handles movement logic using NavMeshAgent, providing functionality for direct navigation,
+/// path following, and target tracking.
+/// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 public class NavigatorComponent : MonoBehaviour, INavigatable
 {
@@ -12,19 +14,21 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
     private Vector3 currentDestination;
     private List<Vector3> currentRoute;
 
-    // Publikus hozzáférés az Agenthez (pl. külső ellenőrzéshez)
+    /// <summary>
+    /// Public access to the NavMeshAgent (e.g., for external checks).
+    /// </summary>
     public NavMeshAgent Agent => agent;
 
-    // === ÉLETCIKLUS ===
+    // === LIFECYCLE ===
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
     }
 
-    // === MOZGÁS KEZELÉS ===
+    // === MOVEMENT HANDLING ===
 
     /// <summary>
-    /// Célpont beállítása, ahova az állat el akar jutni.
+    /// Sets a destination for the agent to move toward.
     /// </summary>
     public void SetTarget(Vector3 destination)
     {
@@ -36,7 +40,7 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
     }
 
     /// <summary>
-    /// Több pont bejárása egymás után coroutine-nal.
+    /// Moves through multiple waypoints sequentially using a coroutine.
     /// </summary>
     public void SetWayPoints(List<Vector3> waypoints)
     {
@@ -45,7 +49,7 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
     }
 
     /// <summary>
-    /// Egy másik objektum (pl. egy állat vagy célpont) követése pozíció alapján.
+    /// Follows another object (e.g., animal or target) by tracking its position.
     /// </summary>
     public void Follow(MonoBehaviour targetView)
     {
@@ -53,7 +57,7 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
     }
 
     /// <summary>
-    /// Mozgás teljes leállítása azonnal, és a komponens deaktiválása.
+    /// Instantly stops all movement and disables this component.
     /// </summary>
     public void StopMovementInstantly()
     {
@@ -67,7 +71,7 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
     }
 
     /// <summary>
-    /// Mozgás leállítása (de a komponens aktív marad).
+    /// Stops movement but keeps this component active.
     /// </summary>
     public void StopMovement()
     {
@@ -78,7 +82,7 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
     }
 
     /// <summary>
-    /// Mozgás újraindítása, ha korábban le lett állítva.
+    /// Resumes movement if it was previously stopped.
     /// </summary>
     public void ResetMovement()
     {
@@ -86,10 +90,10 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
         agent.isStopped = false;
     }
 
-    // === COROUTINE-OK ===
+    // === COROUTINES ===
 
     /// <summary>
-    /// Bejárja az összes waypoint-ot egyesével, amíg el nem ér minden pontra.
+    /// Visits each waypoint one by one until all are reached.
     /// </summary>
     private IEnumerator TraverseWaypoints(List<Vector3> waypoints)
     {
@@ -105,7 +109,7 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
     }
 
     /// <summary>
-    /// Egy célpont folyamatos követése, amíg közel nem kerül hozzá.
+    /// Continuously follows a moving target until close enough.
     /// </summary>
     private IEnumerator FollowRoutine(MonoBehaviour target)
     {
@@ -119,10 +123,10 @@ public class NavigatorComponent : MonoBehaviour, INavigatable
         yield return null;
     }
 
-    // === SEGÉD PROPERTY ===
+    // === HELPER PROPERTY ===
 
     /// <summary>
-    /// True, ha az ügynök elérte a célpontját vagy már nincs mit követnie.
+    /// True if the agent has arrived at its destination or has no more path to follow.
     /// </summary>
     public bool Arrived
     {
