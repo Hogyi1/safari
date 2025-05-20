@@ -21,6 +21,7 @@ public class RangerFactory : MonoBehaviour
         LoadAllRangers();
     }
 
+
     /// <summary>
     /// Creates a new Vehicle, instantiating its prefab at the given position,
     /// setting up its view and model components, and returning the assembled object.
@@ -37,7 +38,7 @@ public class RangerFactory : MonoBehaviour
         var data = FindRangerData(rangerDataID);
         if (data == null)
             return null;
-        Vector3 position = RangerManager.Instance.GetSpawnposition();
+        Vector3 position = RangerManager.Instance.GetSpawnPosition();
         var instance = Instantiate(data.RangerPrefab, position, Quaternion.identity);
         instance.transform.SetParent(RangerParent.transform, true);
 
@@ -47,6 +48,7 @@ public class RangerFactory : MonoBehaviour
         var model = new RangerModel(id, data);
         return new Ranger(id, model, view);
     }
+
 
     /// <summary>
     /// Finds the VehicleData asset matching the given ID in the loaded cache.
@@ -59,6 +61,7 @@ public class RangerFactory : MonoBehaviour
     {
         return rangerDatabase.Find(v => v.RangerID == rangerDataID);
     }
+
 
     /// <summary>
     /// Loads all VehicleData ScriptableObjects from the "Vehicles" Resources folder

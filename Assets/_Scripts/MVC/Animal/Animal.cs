@@ -69,7 +69,7 @@ public class Animal : ISelectable
             { MaxValue_slider, 100f },
             { Healthbar, true },
             { Hunt_action, new Action(() => { RangerManager.Instance.HuntDownAnimal(ID); })},
-            { Hunt_interact, new Func<bool>(() => RangerManager.Instance.CanHunt(ID)) }
+            { Hunt_interact, new Func<bool>(() => RangerManager.Instance.CanHunt(ID) && !Model.IsDead) }
         };
     }
 

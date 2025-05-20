@@ -7,12 +7,20 @@ using static UIKeys;
 /// </summary>
 public class Vehicle : ISelectable, ISaveable<VehicleSaveData>
 {
+    /* DATA */
     public int ID;
     private VehicleModel model;
     private VehicleView view;
+
+    /* GETTERS */
     public VehicleModel Model => model;
     public VehicleView View => view;
+    public BuildingType GetBuildingType() => BuildingType.None;
+    public int GetID() => ID;
 
+    /// <summary>
+    /// Constructor initializes model-view connection and assigns ID.
+    /// </summary>
     public Vehicle(int ID, VehicleModel model, VehicleView view)
     {
         this.ID = ID;
@@ -22,8 +30,10 @@ public class Vehicle : ISelectable, ISaveable<VehicleSaveData>
         this.view.Init(this.model);
     }
 
-    public BuildingType GetBuildingType() => BuildingType.None;
-    public int GetID() => ID;
+
+    /// <summary>
+    /// Constructs a UI data dictionary for the popup system.
+    /// </summary>
     public Dictionary<UIKeys, object> GetUIData()
     {
         return new Dictionary<UIKeys, object> {
@@ -36,6 +46,10 @@ public class Vehicle : ISelectable, ISaveable<VehicleSaveData>
         };
     }
 
+
+    /// <summary>
+    /// Serializes the vehicle state into a save data structure.
+    /// </summary>
     public VehicleSaveData GetSaveData()
     {
         return new VehicleSaveData

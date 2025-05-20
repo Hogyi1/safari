@@ -13,24 +13,13 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
     private int iD;
     private VehicleModel model;
     private bool isActive = false;
+    private VehicleState nextState;
+    public List<AnimalType> AnimalsInView = new();
 
     [SerializeField] private NavigatorComponent navigator;
     [SerializeField] private FadeEffect fadeEffect;
 
     [SerializeField] LayerMask animalLayermask;
-    public List<AnimalType> AnimalsInView = new();
-    private VehicleState nextState;
-
-    public int ID;
-    public List<int> assignedtourists;
-    public VehicleState State;
-
-    private void Update()
-    {
-        State = model.State;
-        assignedtourists = model.AssignedTouristIDs;
-        ID = model.ID;
-    }
 
     /// <summary>
     /// Initializes this view with its corresponding model and sets up the navigator.
@@ -42,6 +31,7 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         this.model = model;
         this.iD = model.ID;
     }
+
 
     /// <summary>
     /// Moves the vehicle along a sequence of waypoints in order.
@@ -55,6 +45,7 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         StartCoroutine(WaitForArrival(newState));
     }
 
+
     /// <summary>
     /// Waits until the navigator reports arrival, then updates state if necessary.
     /// </summary>
@@ -65,6 +56,7 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         VehicleManager.Instance.SetVehicleState(iD, newState);
         if (newState == Empty) ResetVehicle();
     }
+
 
     /// <summary>
     /// TriggerEnter handler: adds animal types to the in-view list.
@@ -82,6 +74,7 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         }
     }
 
+
     /// <summary>
     /// TriggerExit handler: removes animal types from the in-view list.
     /// </summary>
@@ -98,7 +91,7 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         }
     }
 
-    // === INavigatable metódusok delegálása ===
+    // === Delegation for INavigatable interface ===
     public void SetTarget(Vector3 dest) => navigator.SetTarget(dest);
     public void SetWayPoints(List<Vector3> wp) => navigator.SetWayPoints(wp);
     public void Follow(MonoBehaviour t) => navigator.Follow(t);
@@ -106,16 +99,21 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
     public void StopMovement() => navigator.StopMovement();
     public void ResetMovement() => navigator.ResetMovement();
 
+    // === Getters ===
+    public bool Arrived => navigator.Arrived;
+    public List<Vector3> CurrentRoute => navigator.CurrentRoute;
+    public VehicleState NextState => nextState;
+
     /// <summary>
-    /// Returns to position and deactivates the vehicle
+    /// Resets the vehicle's position and state.
     /// </summary>
-    /// <param name="parkingSpace"></param>
     public void ResetVehicle()
     {
         transform.position = VehicleManager.Instance.GetParkingSpot();
         VehicleManager.Instance.SetVehicleState(iD, Empty);
         if (isActive) InputManager.Instance.DisableView();
     }
+
 
     /// <summary>
     /// Sets the agents speed
@@ -126,21 +124,25 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         navigator.Agent.speed = speed;
     }
 
-    // === Érkezés logika ===
-    public bool Arrived => navigator.Arrived;
 
     private void OnDestroy()
     {
         if (isActive) PopupManager.Instance.HidePopup();
     }
 
-    // Egér rámutatás esemény kezelése (fade in effekt)
+
+    /// <summary>
+    /// Hover event – fades in the vehicle highlight.
+    /// </summary>
     public void OnHover()
     {
         fadeEffect.FadeIn();
     }
 
-    // Egér elhagyás esemény, ha nem aktív (fade out)
+
+    /// <summary>
+    /// Mouse exit event – fades out if not active.
+    /// </summary>
     public void OnExit()
     {
         if (!isActive)
@@ -149,7 +151,10 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         }
     }
 
-    // Kattintás vagy aktiválás kezelése (fade in)
+
+    /// <summary>
+    /// On interaction – activates UI popup and highlight.
+    /// </summary>
     public void OnAction()
     {
         isActive = true;
@@ -157,13 +162,13 @@ public class VehicleView : MonoBehaviour, INavigatable, IInteractable
         PopupManager.Instance.ActivatePopup(VehicleManager.Instance.GetVehicle(iD).GetUIData(), gameObject);
     }
 
-    // Interakció megszüntetése, állapot alaphelyzetbe (fade out)
+
+    /// <summary>
+    /// Cancels interaction – fades out and marks inactive.
+    /// </summary>
     public void OnCancel()
     {
         isActive = false;
         fadeEffect.FadeOut();
     }
-
-    public List<Vector3> CurrentRoute => navigator.CurrentRoute;
-    public VehicleState NextState => nextState;
 }

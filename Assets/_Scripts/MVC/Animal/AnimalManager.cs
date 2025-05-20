@@ -27,7 +27,8 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     public int HerbivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Herbivore).Count();
     public int CarnivoreCount => activeAnimals.Where(t => t.Model.Diet == DietType.Carnivore).Count();
 
-    private bool IsLoaded = false;
+    public float Priority => 1000f;
+    private Action OnHandlerResponse;
 
     public void Awake()
     {
@@ -39,32 +40,28 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    }
 
-    private void Start()
-    {
         factory = GetComponent<AnimalFactory>();
         StopPlacement();
+
+        // Events
         RandomEvents.Instance.AddObserver(this);
-        DataPersistenceManager.Instance.OnAllLoaded += AllLoaded;
+        OnHandlerResponse = () => gameObject.SetActive(true);
+        DataPersistenceManager.Instance.OnAllLoaded += OnHandlerResponse;
+
+        gameObject.SetActive(false);
     }
 
-    private void AllLoaded() => IsLoaded = true;
+    private void OnDestroy() => DataPersistenceManager.Instance.OnAllLoaded -= OnHandlerResponse;
 
     private void Update()
     {
-        // Tudsz ennél biztonságosabb kódot? XDD
-        if (!IsLoaded) return;
-        try
-        {
-            List<Animal> deadAnimals = activeAnimals.FindAll(t => t.CanRemove);
+        List<Animal> deadAnimals = activeAnimals.FindAll(t => t.CanRemove);
 
-            foreach (var dead in deadAnimals)
-            {
-                RemoveAnimal(dead.ID);
-            }
+        foreach (var dead in deadAnimals)
+        {
+            RemoveAnimal(dead.ID);
         }
-        catch { }
     }
 
     public void StartPlacing(int animalID)
@@ -173,7 +170,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
             prey.Model.GetKilled();
     }
 
-    public bool CanBuy() => true;
+    public bool CanBuy() => true; // Nincs kapacitás jelenleg
 
 
 
@@ -187,9 +184,10 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         }
     }
 
-    public void LoadData(GameData data)
+    // Rework mentés
+    public IEnumerator LoadData(GameData data)
     {
-        StartCoroutine(SpawnAnimalWithDelay(data));
+        yield return SpawnAnimalWithDelay(data);
     }
 
     private IEnumerator SpawnAnimalWithDelay(GameData data)
@@ -200,13 +198,11 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         {
             SpawnAnimal(a.type, a.position, a.Age);
         }
-
     }
-
 }
 
 // Most csak ilyen állatok vannak
-[Serializable]
+[System.Serializable]
 public enum AnimalType
 {
     None,

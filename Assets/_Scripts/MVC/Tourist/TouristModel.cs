@@ -69,6 +69,7 @@ public class TouristModel
     /// </summary>
     public float PatienceLevel => patienceLevel;
 
+
     /// <summary>
     /// Initializes a new instance of the <see cref="TouristModel"/> class.
     /// </summary>
@@ -88,6 +89,11 @@ public class TouristModel
         vehicleID = -1;
     }
 
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TouristModel"/> class.
+    /// </summary>
+    /// <param name="touristData">Unique save for the tourist.</param>
     public TouristModel(TouristSaveData touristData)
     {
         iD = touristData.ID;
@@ -110,6 +116,7 @@ public class TouristModel
         state = newState;
     }
 
+
     /// <summary>
     /// Adds time (in seconds) to the internal elapsed timer for mood calculation.
     /// </summary>
@@ -119,6 +126,7 @@ public class TouristModel
         elapsedTime += delta;
     }
 
+
     /// <summary>
     /// Resets the internal elapsed timer to a specified value.
     /// </summary>
@@ -127,6 +135,7 @@ public class TouristModel
     {
         elapsedTime = time;
     }
+
 
     /// <summary>
     /// Calculates the tourist's current mood based on waiting and animals seen.
@@ -142,6 +151,7 @@ public class TouristModel
         float waiting = CalculateWaitingMood();
         float touring = CalculateTourMood(animalsSeen, hasFavourite);
     }
+
 
     /// <summary>
     /// Calculates waiting mood based on exponential decay formula.
@@ -162,6 +172,7 @@ public class TouristModel
 
         return waitingMood;
     }
+
 
     /// <summary>
     /// Calculates tour mood based on animals seen and presence of favourite species.

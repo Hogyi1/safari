@@ -81,6 +81,7 @@ public class VehicleModel
     /// </summary>
     public Sprite Icon;
 
+
     /// <summary>
     /// Initializes a new instance of the <see cref="VehicleModel"/> class.
     /// </summary>
@@ -97,6 +98,11 @@ public class VehicleModel
         this.Icon = data.Icon;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VehicleModel"/> class.
+    /// </summary>
+    /// <param name="vehicleData">Unique save for this vehicle.</param>
+    /// <param name="data">Data object containing type, capacity, and space-taken values.</param>
     public VehicleModel(VehicleSaveData vehicleData, VehicleData data)
     {
         iD = vehicleData.ID;
@@ -108,6 +114,7 @@ public class VehicleModel
         AssignedTouristIDs = vehicleData.AssignedTourists;
         Icon = data.Icon;
     }
+
 
     /// <summary>
     /// Attempts to add a passenger by their tourist ID.
@@ -126,6 +133,7 @@ public class VehicleModel
         return true;
     }
 
+
     /// <summary>
     /// Adds to the waiting time counter.
     /// </summary>
@@ -134,6 +142,7 @@ public class VehicleModel
     {
         waitingTime += time;
     }
+
 
     /// <summary>
     /// Clears all assigned passengers and resets waiting time.

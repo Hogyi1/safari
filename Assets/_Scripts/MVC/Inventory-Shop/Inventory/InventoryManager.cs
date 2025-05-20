@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Collections;
 
 /// <summary>
 /// Manages the player's inventory logic, including item placement, filtering, selling, and UI updates.
 /// Acts as a bridge between the inventory data, UI, and placement systems.
 /// </summary>
-public class InventoryManager : MonoBehaviour , IDataPersistence
+public class InventoryManager : MonoBehaviour, IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the InventoryManager.
@@ -28,6 +29,8 @@ public class InventoryManager : MonoBehaviour , IDataPersistence
     /// Currently selected item for placement.
     /// </summary>
     private Item currentItem;
+
+    public float Priority => 1500f;
 
     /// <summary>
     /// Initializes the singleton instance.
@@ -148,14 +151,14 @@ public class InventoryManager : MonoBehaviour , IDataPersistence
         }
     }
 
-    public void LoadData(GameData data)
+    public IEnumerator LoadData(GameData data)
     {
         if (inventory == null) inventory = new Inventory();
 
 
         inventory.Items.Clear();
         if (data.inventoryData == null || data.inventoryData.items == null)
-            return;
+            yield return null;
         foreach (var pair in data.inventoryData.items)
         {
             Item item = ItemManager.Instance.GetItemById(pair.Key);
@@ -164,7 +167,7 @@ public class InventoryManager : MonoBehaviour , IDataPersistence
                 inventory.Items[item] = pair.Value;
             }
         }
-        Debug.Log("Inventory betöltve.");
+        yield return null;
     }
 
     public void SaveData(GameData data)
@@ -175,7 +178,6 @@ public class InventoryManager : MonoBehaviour , IDataPersistence
         {
             data.inventoryData.items[pair.Key.ID] = pair.Value;
         }
-        Debug.Log("Inventory elmentve.");
     }
 
 
