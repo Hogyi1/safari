@@ -150,10 +150,10 @@ public class InventoryManager : MonoBehaviour , IDataPersistence
 
     public void LoadData(GameData data)
     {
+
         if (inventory == null) inventory = new Inventory();
-
-
         inventory.Items.Clear();
+        ItemManager.Instance.SetItemLockStates(data.inventoryData.idPlusState);
         if (data.inventoryData == null || data.inventoryData.items == null)
             return;
         foreach (var pair in data.inventoryData.items)
@@ -170,10 +170,11 @@ public class InventoryManager : MonoBehaviour , IDataPersistence
     public void SaveData(GameData data)
     {
         data.inventoryData.items.Clear();
-
+        data.inventoryData.idPlusState.Clear();
         foreach (var pair in inventory.Items)
         {
             data.inventoryData.items[pair.Key.ID] = pair.Value;
+            data.inventoryData.idPlusState[pair.Key.ID] = pair.Key.LockState;
         }
         Debug.Log("Inventory elmentve.");
     }

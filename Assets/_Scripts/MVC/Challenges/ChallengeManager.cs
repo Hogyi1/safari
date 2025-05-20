@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Central manager for all challenges, handling their progress updates and reward collection.
 /// </summary>
-public class ChallengeManager : MonoBehaviour, IChallengeObserver
+public class ChallengeManager : MonoBehaviour, IChallengeObserver, IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the ChallengeManager.
@@ -154,4 +154,20 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
         return completedCount == otherChallenges.Count;
     }
 
+    public void LoadData(GameData data)
+    {
+        foreach (var challenge in data.challangeDataList) {
+            Challenge c = GetChallengeById(challenge.id);
+            c.SetState(challenge.state);
+            c.progress = challenge.progress;
+        }
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.challangeDataList.Clear();
+        foreach (var challenge in challenges) {
+            data.challangeDataList.Add(new ChallangeData(challenge.id,challenge.state,challenge.progress));
+        }
+    }
 }

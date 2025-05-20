@@ -265,12 +265,10 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
 
     public void SaveData(GameData data)
     {
-
         List<IPlaceable> pla = StructureManager.Instance.GetPlaceables();
         data.saveMapDatas.Clear();
         foreach (IPlaceable placeable in pla)
         {
-
             data.saveMapDatas.Add(new SaveMapData(
                     placeable.GetID(),
                     placeable.GetData().BuildingID,
@@ -278,10 +276,8 @@ public class PlacementManager : MonoBehaviour, IPlaceableManager, IDataPersisten
                 )
             );
         }
-
         data.idSeed = IDGenerator.GetSeed();
     }
-
 
     private IEnumerator LoadBuildingLate(GameData data)
     {

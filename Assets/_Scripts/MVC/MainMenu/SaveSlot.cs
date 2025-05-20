@@ -38,7 +38,7 @@ public class SaveSlot : MonoBehaviour
 
             //itt kell beállítani a két szöveget
             parkName.text = data.parkData.parkName;
-            perecentComplited.text = data.exempleint.ToString();
+            perecentComplited.text = "Park level" + data.levelSaveData.currentLevel.ToString();
         }
     }
 

@@ -43,6 +43,7 @@ public class DataPersistenceManager : MonoBehaviour
     public void NewGame()
     {
         this.gameData = new GameData();
+        ChallangeSOReseter.Instance.ResetChallangesToInitial();
         CreateParkManager.Instance.SetParkPropertys();
         gameData.parkData.parkName = Park.Instance.ParkName;
         SaveGame();
@@ -87,6 +88,10 @@ public class DataPersistenceManager : MonoBehaviour
 
         //Filebaírás
         dataHandler.Save(gameData, selectedProfileId);
+    }
+
+    public void DeletGame() { 
+        dataHandler.Delete(selectedProfileId);
     }
 
     /// <summary>
