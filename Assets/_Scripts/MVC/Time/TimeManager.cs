@@ -90,7 +90,6 @@ public class TimeManager : MonoBehaviour, IDataPersistence
 
         // This makes each in-game week correspond to one animal year, which is about 56 minutes
         if (SecondsPerAnimalYear == 0) SecondsPerAnimalYear = (60 * 24) / 15 * 5 * 7;
-        Debug.Log("Gametime loaded in start");
     }
 
     /// <summary>

@@ -141,7 +141,6 @@ public class StructureManager : MonoBehaviour, IBuyableManager
         foreach (var structure in IInteractables)
         {
             var view = structure.Value;
-            Debug.Log(position + " Ezen poziciot akarom lecsekkolni");
             if (Vector3.Distance(view.GetGameObject().transform.position, position) <= tolerance)
             {
                 return view.GetStructure();

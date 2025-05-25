@@ -138,8 +138,8 @@ public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
     {
         currentExp += amount;
         progress = (float)currentExp / requiredExp;
-        Debug.Log("Current exp: " + currentExp);
-        Debug.Log("Current progress: " + progress);
+        //Debug.Log("Current exp: " + currentExp);
+        //Debug.Log("Current progress: " + progress);
 
         GameEvents.Instance.NotifyObservers(EventType.EXP_GAINED, amount);
 

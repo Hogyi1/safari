@@ -21,9 +21,12 @@ public class IdleState : AnimalBaseState, IRootState
 
         // Priority #2
         // Ha csoportban és van valamilyen activity
-        if (context.animal.Group != null && context.animal.Group.State != GroupState.Idle)
+        if (context.animal.Group != null)
         {
-            SwitchState(factory.Group());
+            if (context.animal.Group.State != GroupState.Idle)
+            {
+                SwitchState(factory.Group());
+            }
             return;
         }
         // Nincsen groupban
@@ -82,16 +85,16 @@ public class IdleState : AnimalBaseState, IRootState
         switch (currentSubState)
         {
             case SleepingState sleepingState:
-                context.animal.Model.CalculateHunger(0.2f);
-                context.animal.Model.CalculateThirst(0.2f);
+                context.animal.Model.CalculateHunger(0.1f);
+                context.animal.Model.CalculateThirst(0.1f);
                 break;
             case StationaryState stationaryState:
-                context.animal.Model.CalculateHunger(0.5f);
-                context.animal.Model.CalculateThirst(0.5f);
+                context.animal.Model.CalculateHunger(0.3f);
+                context.animal.Model.CalculateThirst(0.3f);
                 break;
             case WanderingState wanderingState:
-                context.animal.Model.CalculateHunger(0.8f);
-                context.animal.Model.CalculateThirst(0.8f);
+                context.animal.Model.CalculateHunger(0.5f);
+                context.animal.Model.CalculateThirst(0.5f);
                 break;
         }
     }
@@ -103,6 +106,7 @@ public class IdleState : AnimalBaseState, IRootState
         Animal animal = context.GetAnimal(view.ID);
         if (animal.Group == null && context.animal.Group == null && animal.Model.Type == context.animal.Model.Type && !animal.Model.IsDead)
         {
+            Debug.LogError("Idle stateben is keletkezik");
             GroupManager.Instance.CreateNewGroup(new List<Animal> { animal, context.animal });
         }
         else if (animal.Group != null && context.animal.Group == null && animal.Model.Type == context.animal.Model.Type && !animal.Model.IsDead)

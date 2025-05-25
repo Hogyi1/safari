@@ -38,8 +38,8 @@ public class DrinkingState : AnimalBaseState
 
         if (!(context.GetStructure(context.animal.Model.Target) is IWaterSource ws))
         {
-            FinishConsumption();
             context.animal.Model.RemoveSource(context.animal.Model.Target);
+            FinishConsumption();
             return;
         }
 

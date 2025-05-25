@@ -27,6 +27,8 @@ public class AnimalStateMachine : MonoBehaviour
 
     public bool Arrived;
     public bool AllFinished;
+    public int EventSubs;
+
 
     public bool InGroup;
     public GroupState gState;
@@ -41,6 +43,11 @@ public class AnimalStateMachine : MonoBehaviour
     public Vector3 GroupTarget;
     public List<Vector3> gfoodSources;
     public List<Vector3> gwaterSources;
+    public List<int> ToMove;
+    public List<int> Members;
+    public bool ContainsGroup;
+
+    public bool IsConsuming;
     public void Init(Animal context)
     {
         this.animal = context;
@@ -59,6 +66,8 @@ public class AnimalStateMachine : MonoBehaviour
 
     public void LateUpdate()
     {
+        IsConsuming = animal.Model.IsConsuming;
+        EventSubs = animal.View.FoodSourceEventSubs;
         Age = animal.Model.Age;
         Hunger = animal.Model.Hunger;
         Thirst = animal.Model.Thirst;
@@ -73,7 +82,6 @@ public class AnimalStateMachine : MonoBehaviour
 
         foodSources = animal.Model.foodSources;
         waterSources = animal.Model.waterSources;
-
         Target = animal.Model.Target;
         Type = animal.Model.Type;
         Destination = animal.View.Agent.destination;
@@ -89,6 +97,9 @@ public class AnimalStateMachine : MonoBehaviour
             GroupHasPrey = !animal.Group.Prey.IsUnityNull();
 
             GroupID = animal.Group.ID;
+            ToMove = animal.Group.ToMove.Select(t => t.ID).ToList();
+            Members = animal.Group.Members.Select(m => m.ID).ToList();
+            ContainsGroup = GroupManager.Instance.Contains(animal.Group);
         }
 
         try
@@ -160,6 +171,7 @@ public class AnimalStateMachine : MonoBehaviour
     {
         if (GroupManager.Instance.EnterGroup(group, animal))
         {
+            Debug.Log("Beléptem egy csoportba");
             ReenterState();
         }
     }

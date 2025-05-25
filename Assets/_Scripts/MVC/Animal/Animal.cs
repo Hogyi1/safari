@@ -7,6 +7,7 @@ public class Animal : ISelectable
 {
     public int ID;
     public bool CanRemove;
+    public bool CanLeave;
     private AnimalModel model;
     private AnimalView view;
     private AnimalStateMachine brain;
@@ -24,6 +25,7 @@ public class Animal : ISelectable
         this.brain = brain;
         this.group = null;
         CanRemove = false;
+        CanLeave = false;
 
         this.brain.Init(this);
         this.view.Init(this.model);
@@ -37,7 +39,7 @@ public class Animal : ISelectable
         this.brain = brain;
         this.group = group;
         CanRemove = false;
-
+        CanLeave = false;
 
         this.brain.Init(this);
         this.view.Init(this.model);
@@ -51,9 +53,10 @@ public class Animal : ISelectable
 
     public void SetGroup(Group newGroup)
     {
-        if (newGroup == null)
-            group = null;
-        else
+        if (group != null && group != newGroup)
+            Debug.Log("Vagyok már egy groupban");
+
+        if (GroupManager.Instance.Contains(newGroup))
             group = newGroup;
     }
 

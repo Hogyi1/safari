@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 
 public class GroupBehaviourState : AnimalBaseState, IRootState
 {
@@ -10,13 +11,18 @@ public class GroupBehaviourState : AnimalBaseState, IRootState
 
     public override void EnterState()
     {
+        context.animal.Group.OnStateChanged += HandleStateChanged;
         HandleStateChanged(context.animal.Group);
     }
 
     // Ha a csoportnak van valami gondja itt kezeljük
     private void HandleStateChanged(Group g)
     {
-        ColliderTrigger[] triggers = context.animal.Model.Diet == DietType.Carnivore ? new ColliderTrigger[] { ColliderTrigger.Food, ColliderTrigger.Prey } : new ColliderTrigger[] { ColliderTrigger.Food };
+        if (g.IsUnityNull() || !g.Equals(context.animal.Group)) return;
+
+        ColliderTrigger[] triggers = context.animal.Model.Diet == DietType.Carnivore ?
+            new ColliderTrigger[] { ColliderTrigger.Food, ColliderTrigger.Prey } :
+            new ColliderTrigger[] { ColliderTrigger.Food };
 
         switch (g.State)
         {
@@ -44,7 +50,11 @@ public class GroupBehaviourState : AnimalBaseState, IRootState
     public override void ExitState()
     {
         if (context.animal.Group != null)
+        {
             context.animal.Group.OnStateChanged -= HandleStateChanged;
+            context.animal.CanLeave = false;
+            context.animal.SetGroup(null);
+        }
         context.animal.Model.SetTarget(Vector3.zero);
     }
 
@@ -54,7 +64,22 @@ public class GroupBehaviourState : AnimalBaseState, IRootState
         if (context.animal.Model.IsDead) { SwitchState(factory.Dead()); return; }
 
         // Ha kiléptünk akkor visszaváltunk Idle-be onnan, majd kezeli saját magát
-        if (context.animal.Group == null) { SwitchState(factory.Idle()); return; }
+        if (context.animal.CanLeave)
+        {
+            Debug.Log("Ki fogok lépni a csoportból");
+            if (context.animal.Model.IsHungry)
+                SwitchState(factory.SeekFood());
+            // Ha groupban vagyok ha nem az Idle maga intézi
+            // Ha nincsen semmi bajom akkor Idle
+            else if (context.animal.Model.IsThirsty)
+                SwitchState(factory.SeekWater());
+            // Ha már nincsen más bajom és breedingelhetek
+            else if (context.animal.Model.IsBreeding && !context.animal.Model.IsHungry && !context.animal.Model.IsThirsty)
+                SwitchState(factory.SeekMate());
+            else
+                SwitchState(factory.Idle());
+        }
+        else if (context.animal.Group.State == GroupState.Idle) { SwitchState(factory.Idle()); return; }
     }
 
     public override void InitializeSubState()
@@ -71,14 +96,15 @@ public class GroupBehaviourState : AnimalBaseState, IRootState
     public void CalculateModelData()
     {
         context.animal.Model.CalculateHp();
-        context.animal.Model.CalculateHunger(0.8f);
-        context.animal.Model.CalculateThirst(0.8f);
+        context.animal.Model.CalculateHunger(0.7f);
+        context.animal.Model.CalculateThirst(0.7f);
     }
 
     public override string ToString()
     {
-        if (currentSubState != null)
-            return currentSubState?.ToString();
-        else return "In group";
+        //if (currentSubState != null)
+        //    return currentSubState?.ToString();
+        //else return "In group";
+        return "Group activity";
     }
 }

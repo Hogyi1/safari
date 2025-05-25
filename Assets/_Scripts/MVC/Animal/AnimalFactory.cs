@@ -45,7 +45,6 @@ public class AnimalFactory : MonoBehaviour
         AnimalStateMachine sm = instance.GetComponent<AnimalStateMachine>();
         AnimalView view = instance.GetComponent<AnimalView>();
         AnimalModel model = new AnimalModel(data, ID, Age);
-        Debug.Log("Data " + data.IsUnityNull());
         return new Animal(ID, model, view, sm);
     }
 

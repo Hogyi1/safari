@@ -13,8 +13,8 @@ public class AnimalModel
     public Sprite Icon;
 
     // Élettani jellemzők - csak olvashatók kívülről
-    private float hunger = 45;
-    private float thirst = 100;
+    private float hunger = 42;
+    private float thirst = 60;
     private float hp = 100;
     private int maxAge;
 
@@ -59,38 +59,30 @@ public class AnimalModel
     public void CalculateHunger(float multiplier)
     {
         hunger = Mathf.Max(0, hunger - (multiplier * Time.deltaTime));
-        if (hunger <= 0)
-        {
-            hp = 1;
-        }
     }
 
     public void CalculateThirst(float multiplier)
     {
         thirst = Mathf.Max(0, thirst - (multiplier * Time.deltaTime));
-        if (thirst <= 0)
-        {
-            hp = 1;
-        }
     }
     public void CalculateHp()
     {
         float normalizedAge = (float)Age / (float)maxAge;
-        float ageFactor = 1f - Mathf.Pow((normalizedAge - 0.5f) * 2f, 2f); // 0.0..1.0
+        float ageFactor = 1.1f - Mathf.Pow((normalizedAge - 0.5f) * 2f, 2f); // 0.1..1.1
 
         float change = 0f;
 
         // Ha van valami baja akkor szépen csökken az életereje, ha nem és még van "ereje" akkor regenerálódik
-        if (IsHungry || IsThirsty)
+        if ((IsHungry || IsThirsty) && !IsConsuming)
         {
-            change = -10f * Time.deltaTime * 2;
+            change = -Time.deltaTime;
         }
         else
         {
-            change = 3f * Time.deltaTime * ageFactor;
+            change = Time.deltaTime * ageFactor;
         }
 
-        hp = Mathf.Clamp(Mathf.RoundToInt(hp + change), 0, 100);
+        hp = Mathf.Clamp((hp + change), 0, 100);
     }
 
     public void AdvanceAge()

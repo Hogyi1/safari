@@ -304,8 +304,6 @@ public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDat
     private IEnumerator Register(List<VehicleSaveData> data)
     {
         yield return new WaitForEndOfFrame();
-        Debug.Log("Elkezdtem az autokat visszatölteni");
-        Debug.Log("Factory null?" + factory.IsUnityNull());
         data.ForEach(t => activeVehicles.Add(factory.CreateVehicle(t)));
         yield return new WaitForEndOfFrame();
     }

@@ -161,7 +161,16 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         // Opció evoluciora
         GameEvents.Instance.NotifyObservers(EventType.ANIMAL_BORN, 1);
         Animal animal = activeAnimals.Find(t => t.ID == mate1.ID);
-        SpawnAnimal(animal.Model.Type, animal.View.transform.position, 1);
+
+        int ID = IDGenerator.GenerateID();
+        Animal newAnimal = factory.CreateAnimal(animal.Model.Type, animal.View.transform.position, ID, 1);
+
+        if (newAnimal.IsUnityNull()) return;
+
+        animal.Group.ForceJoin(newAnimal);
+        activeAnimals.Add(newAnimal);
+        Incoming = true;
+
         GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 50);
     }
 

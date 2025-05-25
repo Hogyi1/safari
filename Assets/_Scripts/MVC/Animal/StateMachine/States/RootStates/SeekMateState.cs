@@ -74,8 +74,8 @@ public class SeekMateState : AnimalBaseState, IRootState
     public void CalculateModelData()
     {
         context.animal.Model.CalculateHp();
-        context.animal.Model.CalculateHunger(0.8f);
-        context.animal.Model.CalculateThirst(0.8f);
+        context.animal.Model.CalculateHunger(0.5f);
+        context.animal.Model.CalculateThirst(0.5f);
     }
 
     public override string ToString()

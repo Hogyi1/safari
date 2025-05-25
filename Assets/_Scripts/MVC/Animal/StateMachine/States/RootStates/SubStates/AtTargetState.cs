@@ -54,6 +54,7 @@ public class AtTargetState : AnimalBaseState, IRootState
     }
     public override void ExitState()
     {
+        currentSubState.ExitState();
         currentSubState = null;
     }
     public override void InitializeSubState() { }

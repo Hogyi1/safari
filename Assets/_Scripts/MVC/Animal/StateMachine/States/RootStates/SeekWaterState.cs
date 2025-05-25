@@ -23,10 +23,11 @@ public class SeekWaterState : AnimalBaseState, IRootState
             {
                 SwitchState(factory.Group());
             }
+            return;
         }
         // Nincsen context.animal.Groupban
         // Ha éhes lett és nem szomjas már
-        else if (!context.animal.Model.IsThirsty && context.animal.Model.IsHungry)
+        else if (!context.animal.Model.IsThirsty && context.animal.Model.IsHungry && !context.animal.Model.IsConsuming)
         {
             SwitchState(factory.SeekFood());
         }
@@ -76,8 +77,8 @@ public class SeekWaterState : AnimalBaseState, IRootState
     public void CalculateModelData()
     {
         context.animal.Model.CalculateHp();
-        context.animal.Model.CalculateHunger(1f);
-        context.animal.Model.CalculateThirst(1.2f);
+        context.animal.Model.CalculateHunger(0.5f);
+        context.animal.Model.CalculateThirst(0.65f);
     }
 
     public override string ToString()

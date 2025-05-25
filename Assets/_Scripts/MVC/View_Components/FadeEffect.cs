@@ -117,7 +117,7 @@ public class FadeEffect : MonoBehaviour
                     mat.color = c;
                 }
 
-                time += Time.deltaTime;
+                time += Time.unscaledDeltaTime;
                 yield return null;
             }
         }
@@ -133,7 +133,7 @@ public class FadeEffect : MonoBehaviour
                     mat.SetFloat("_AlphaClip", To);
                 }
 
-                time += Time.deltaTime;
+                time += Time.unscaledDeltaTime;
                 yield return null;
             }
         }

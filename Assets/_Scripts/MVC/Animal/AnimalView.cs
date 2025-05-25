@@ -27,6 +27,12 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
         [3] = Vector3.one
     };
 
+    public int FoodSourceEventSubs;
+    private void Update()
+    {
+        FoodSourceEventSubs = OnFoodSourceFound?.GetInvocationList().Length ?? 0;
+    }
+
     // === Detektált colliderek nyilvántartása ===
     private readonly HashSet<Collider> _inside = new HashSet<Collider>();
 
@@ -176,11 +182,6 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
                     Mathf.Round(rawPos.y),
                     rawPos.z
                 );
-
-                if (structure is IFoodSource)
-                {
-                    Debug.Log("Ez egy foodsource");
-                }
 
                 if (structure is IFoodSource food && model.Diet == food.GetDietType())
                     OnFoodSourceFound?.Invoke(food, roundedPos);

@@ -41,7 +41,7 @@ public class GroupManager : MonoBehaviour
     /// <summary>
     /// Minden frame-ben frissítjük a csoportok állapotát és ellenőrizzük a feloszlottakat
     /// </summary>
-    private void Update()
+    private void LateUpdate()
     {
         Count = activeGroups.Count;
 
@@ -50,7 +50,6 @@ public class GroupManager : MonoBehaviour
         {
             activeGroups[i].CalculateGroupState();
             activeGroups[i].UpdateCircle();
-
             if (activeGroups[i].Members.Count == 0)
             {
                 groupsToRemove.Add(activeGroups[i]);
@@ -80,8 +79,8 @@ public class GroupManager : MonoBehaviour
     {
         var group = new Group(GroupState.Idle, animals, RADIUS);
         group.OnStateChanged += HandleGroupStateChanged;
-        activeGroups.Add(group);
         group.ID = IDGenerator.GenerateID();
+        activeGroups.Add(group);
     }
 
     /// <summary>
@@ -103,19 +102,25 @@ public class GroupManager : MonoBehaviour
         activeGroups.Remove(group);
     }
 
+    public bool Contains(Group a)
+    {
+        return activeGroups.Contains(a);
+    }
+
     /// <summary>
     /// Két csoport összeolvasztása egy új csoporttá.
     /// </summary>
     private void MergeGroups(Group a, Group b)
     {
-        var mergedMembers = new List<Animal>();
-        mergedMembers.AddRange(a.Members);
-        mergedMembers.AddRange(b.Members);
+        var mergedMembers = new HashSet<Animal>();
+        mergedMembers.UnionWith(a.Members);
+        mergedMembers.UnionWith(b.Members);
 
         RemoveGroup(a);
         RemoveGroup(b);
 
-        CreateNewGroup(mergedMembers);
+        CreateNewGroup(mergedMembers.ToList());
+        Debug.Log("Merged group A: " + a.ID + " and group B: " + b.ID);
     }
 
     /// <summary>
@@ -133,19 +138,23 @@ public class GroupManager : MonoBehaviour
     /// </summary>
     public void CheckCollision()
     {
+        HashSet<Group> mergedGroups = new();
+
         for (int i = activeGroups.Count - 1; i >= 0; i--)
         {
             for (int j = activeGroups.Count - 1; j > i; j--)
             {
+
                 Group groupA = activeGroups[i];
                 Group groupB = activeGroups[j];
 
-                if (Vector3.Distance(groupA.Position, groupB.Position) < RADIUS * 2)
+                if (mergedGroups.Contains(groupA) || mergedGroups.Contains(groupB)) continue;
+
+                if (Vector3.Distance(groupA.Position, groupB.Position) < RADIUS * 2 && CanMerge(groupA, groupB))
                 {
-                    if (CanMerge(groupA, groupB))
-                    {
-                        MergeGroups(groupA, groupB);
-                    }
+                    MergeGroups(groupA, groupB);
+                    mergedGroups.Add(groupA);
+                    mergedGroups.Add(groupB);
                 }
             }
         }
@@ -175,18 +184,23 @@ public class GroupManager : MonoBehaviour
     /// </summary>
     private IEnumerator HandleDifferentNeeds()
     {
-        foreach (var group in activeGroups)
+        while (true)
         {
-            group.ToMove.ToList().ForEach(t => group.LeaveGroup(t));
-
-            if (group.ToMove.Count >= 2)
+            foreach (var group in activeGroups)
             {
-                CreateNewGroup(group.ToMove.ToList());
+
+                if (group.ToMove.Count >= 2)
+                {
+                    CreateNewGroup(group.ToMove.ToList());
+                    Debug.LogError("Separated: " + group.ID + " with " + group.ToMove.Count + " animals");
+                }
+                group.ToMove.ToList().ForEach(t => group.LeaveGroup(t));
+
                 group.ToMove.Clear();
             }
-        }
 
-        yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1f);
+        }
     }
 
     /// <summary>

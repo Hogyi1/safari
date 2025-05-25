@@ -43,38 +43,41 @@ public class Group
         {
             if (member.IsUnityNull()) continue;
             member.SetGroup(this);
-            member.Brain.ReenterState();
+            // member.Brain.ReenterState();
         }
         InitializeSources();
     }
 
     // A csoportból minden View megérkezett
     public bool AllArrived() => members.TrueForAll(t => t.View.Arrived);
-    public bool AllFinished() => members.TrueForAll(t => t.View.FinishedAnimation && !t.Model.IsConsuming);
+    public bool AllFinished() => members.TrueForAll(t => !t.Model.IsConsuming);
     public Vector3 Position => center;
     public List<Animal> Members => members;
 
     // Belépés, ezt maga az állat fogja megpróbálni
     public bool TryJoin(Animal animal)
     {
-        if (animal.Model.Type != AnimalType) return false;
-        if (members.Count >= 5) return false;
-        if (members.Contains(animal)) return false;
-        if (State != GroupState.Idle) return false;
+        if (animal.Model.Type != AnimalType || members.Count >= 5 || members.Contains(animal) || State != GroupState.Idle) return false;
 
         members.Add(animal);
         animal.SetGroup(this);
-        animal.Brain.ReenterState();
+        // animal.Brain.ReenterState();
         return true;
+    }
+
+    // Ha gyerek születik a körülményektől független beszáll a csoportba
+    public void ForceJoin(Animal newAnimal)
+    {
+        members.Add(newAnimal);
+        newAnimal.SetGroup(this);
+        // newAnimal.Brain.ReenterState();
     }
 
     // Kilépés
     public void LeaveGroup(Animal animal)
     {
         members.Remove(animal);
-        if (!animal.Model.IsDead)
-            animal.Brain.ReenterState();
-        animal.SetGroup(null);
+        animal.CanLeave = true; // Ne a group léptesse ki hanem saját magát kezelje
     }
 
     // Updateben mindig lefut, kör közepét állítod be
@@ -135,8 +138,10 @@ public class Group
             return;
         }
 
-        List<Animal> hungryAnimals = members.Where(m => m.Model.IsHungry).ToList();
-        List<Animal> thirstyAnimals = members.Where(m => !m.Model.IsHungry && m.Model.IsThirsty).ToList();
+        Debug.Log("My group state is: " + State.ToString());
+
+        List<Animal> hungryAnimals = members.Where(m => m.Model.IsHungry && !m.Model.IsConsuming).ToList();
+        List<Animal> thirstyAnimals = members.Where(m => !m.Model.IsHungry && m.Model.IsThirsty && !m.Model.IsConsuming).ToList();
 
         if (!hungryAnimals.Any() && !thirstyAnimals.Any() && AllFinished())
         {
@@ -144,21 +149,16 @@ public class Group
             // már nem figyelnek semmire csak abból gazdálkodnak ami a memóriájukban van és azt pörgetik végig a keresésnél,
             // ha viszont találnak egy a keresés alatt egy új Resource-ot akkor az bekerül a közös memóriába, és elindulnak oda, 
             // amennyiben még mindig nem volt elég nekik akkor újra kitörlődik és kezdik előlről a keresést. Egy préda a teljes csoportnak 100% élelmet ad.
-
             InitializeSources();
             SetState(GroupState.Idle);
+
             return;
         }
-        else
+        else if (AllFinished())
         {
             if (hungryAnimals.Any() && thirstyAnimals.Any())
             {
                 ToMove.AddRange(new List<Animal>(thirstyAnimals));
-                foreach (var animal in ToMove)
-                {
-                    if (animal.IsUnityNull()) continue;
-                    LeaveGroup(animal);
-                }
                 return;
             }
 
@@ -191,7 +191,7 @@ public class Group
         if (newState != State)
         {
             State = newState;
-            members.ForEach(t => t.Brain.ReenterState());
+            // members.ForEach(t => t.Brain.ReenterState());
             OnStateChanged?.Invoke(this);
         }
     }
@@ -208,9 +208,10 @@ public class Group
     // Addig fut ameddig nem találtunk valamilyen forrást legyen az préda vagy etető
     public IEnumerator StartGroupSearching()
     {
-
+        yield return new WaitForEndOfFrame();
         sourceFound = false;
-        members.ForEach(t => t.View.ResetMovement());
+        members.ForEach(t => { t.View.ResetMovement(); t.Model.SetTarget(Vector3.zero); });
+        Debug.Log("Elkezdtük a keresést " + State.ToString());
 
         while (!sourceFound)
         {
@@ -221,23 +222,26 @@ public class Group
                 if (t.IsUnityNull()) continue;
                 Vector3 offset = GetRandomOffset(5f);
                 t.View.SetTarget(targetPosition + offset);
-                t.Model.SetTarget(Vector3.zero);
+                Debug.Log("Következő keresés: " + Target);
             }
 
             HashSet<Vector3> activeSources = (State == GroupState.SearchingFood ? foodSources : waterSources);
 
-            if (!Prey.IsUnityNull() || activeSources.Count != 0)
+            if (!Prey.IsUnityNull() || Target != Vector3.zero || activeSources.Count != 0)
             {
                 sourceFound = true;
-                activeSources.Add(Target);
+                if (Target != Vector3.zero)
+                    activeSources.Add(Target);
                 if (State == GroupState.SearchingFood) SetState(GroupState.Hungry);
                 else SetState(GroupState.Thirsty);
+                Debug.Log("Találtunk valamit");
+                yield return null;
             }
 
             // Megvárjuk míg mindenki odaért
             yield return new WaitUntil(() => AllArrived());
         }
-
+        Debug.Log("Abbahagytuk a keresést");
         // Ha találtak állatot vagy vizet vagy egyéb élelmet, hozzáadom a közös tudáshoz
     }
 
@@ -245,11 +249,12 @@ public class Group
     // ezért ha valahol egy üres etetővel találkoznak akkor azt elfelejtik, ugyanígy, hogyha a fa már nem létezik akkor is elfelejtik.
     public IEnumerator SetGroupTargeting()
     {
+        yield return new WaitForEndOfFrame();
         HashSet<Vector3> activeSources = (State == GroupState.Hungry ? foodSources : waterSources);
         members.ForEach(t => t.View.ResetMovement());
         if (activeSources.Count == 0) yield return null;
         GroupState startingState = State;
-
+        Debug.Log("Elkezdtünk menni " + State.ToString());
         while (startingState == State)
         {
             if (Prey == null)
@@ -271,8 +276,7 @@ public class Group
                 // ha kimerítettük az összes lehetséges helyet akkor automatikusan átvált a CalculateGroupState miatt Searchingbe
                 // ami, pedig megakasztja ezt a Coroutinet
 
-                members.ForEach(t => t.SetTarget(Target));
-                members.ForEach(m => m.Model.SetTarget(Target));
+                members.ForEach(t => { t.SetTarget(Target); Debug.Log("Elindultam: " + Target); });
             }
             else
             {
@@ -292,10 +296,13 @@ public class Group
             yield return new WaitUntil(() => AllArrived() && AllFinished());
 
             activeSources.Remove(Target);
+            Target = Vector3.zero;
+            Debug.Log("Megyünk tovább");
         }
 
         members.ForEach(t => t.Model.ClearPrey());
         Prey = null;
+        Target = Vector3.zero;
     }
 
     // Related to Search
@@ -303,6 +310,7 @@ public class Group
     public void SourceFound(Vector3 targetPosition)
     {
         Target = targetPosition;
+        Debug.Log("Source found");
     }
 
     // Related to Search
@@ -314,6 +322,7 @@ public class Group
             Prey = prey;
             PreyTarget = prey.transform.position;
             Target = prey.transform.position;
+            Debug.Log("Prey found");
         }
     }
 
@@ -321,6 +330,7 @@ public class Group
     {
         InitializeSources();
     }
+
 }
 
 // === Lehetséges csoportállapotok ===

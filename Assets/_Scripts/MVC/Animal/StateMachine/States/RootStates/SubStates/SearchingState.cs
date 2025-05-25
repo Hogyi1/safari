@@ -21,11 +21,10 @@ public class SearchingState : AnimalBaseState
             SwitchState(factory.OnTarget(triggers));
         else if (context.animal.View.Arrived && context.animal.Model.Target != Vector3.zero)
             SwitchState(factory.AtTarget(triggers));
-        else if (context.animal.View.Arrived && context.animal.Model.IsBreeding && context.animal.Model.Target == Vector3.zero && context.animal.Group != null)
-        {
-            context.animal.View.GetSetRandomPosition();
-            context.animal.View.RefreshDetection();
-        }
+        //else if (context.animal.View.Arrived && context.animal.Model.IsBreeding && context.animal.Model.Target == Vector3.zero && context.animal.Group != null)
+        //{
+        //    // context.animal.View.GetSetRandomPosition();
+        //}
     }
 
     public override void EnterState()
@@ -54,6 +53,7 @@ public class SearchingState : AnimalBaseState
         }
 
         // Keresési fázis a model-ben nincsen target
+        context.animal.View.RefreshDetection();
         context.animal.Model.SetTarget(Vector3.zero);
     }
 
@@ -92,6 +92,7 @@ public class SearchingState : AnimalBaseState
         else if (IsNewSource)
         {
             context.animal.SetTarget(position);
+            Debug.Log("Started going towards the watersource");
         }
     }
 
@@ -109,6 +110,7 @@ public class SearchingState : AnimalBaseState
         else if (IsNewSource)
         {
             context.animal.SetTarget(position);
+            Debug.Log("Started going towards the foodsource");
         }
     }
 

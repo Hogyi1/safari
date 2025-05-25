@@ -70,6 +70,7 @@ public class EatingState : AnimalBaseState
             // Beállítjuk a targetet
             context.animal.Model.SetTarget(otherTarget);
         }
+        context.animal.Model.IsConsuming = false;
         context.animal.View.Animator.SetBool(AnimalView.IsEating, false);
     }
 
