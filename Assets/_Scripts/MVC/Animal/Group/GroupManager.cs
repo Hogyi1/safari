@@ -199,7 +199,7 @@ public class GroupManager : MonoBehaviour
                 group.ToMove.Clear();
             }
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSecondsRealtime(2f);
         }
     }
 

@@ -55,9 +55,7 @@ public class Animal : ISelectable
     {
         if (group != null && group != newGroup)
             Debug.Log("Vagyok már egy groupban");
-
-        if (GroupManager.Instance.Contains(newGroup))
-            group = newGroup;
+        group = newGroup;
     }
 
     public Dictionary<UIKeys, object> GetUIData()
