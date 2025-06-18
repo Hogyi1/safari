@@ -45,16 +45,36 @@ public class TimeManager : MonoBehaviour, IDataPersistence
     /// <summary>
     /// Hour of day when the park closes (inclusive).
     /// </summary>
-    [SerializeField] private int closingHour = 18;
+    [SerializeField, Tooltip("Hour of the day when the park closes.")]
+    private int closingHour = 18;
+
+    [SerializeField, Tooltip("Hour of the day when the park opens.")]
+    private int openingHour = 8;
+
+    [SerializeField, Tooltip("Hour of the day when night starts.")]
+    private int nightStartHour = 22;
+
+    [SerializeField, Tooltip("Hour of the day when night ends and morning starts.")]
+    private int morningHour = 6;
 
     /// <summary>
-    /// Hour of day when the park opens.
+    /// Indicates whether the game is currently paused.
     /// </summary>
-    [SerializeField] private int openingHour = 8;
-
-    public float Priority => 5000f;
-    private Action OnHandlerResponse;
     public bool IsPaused => isPaused;
+
+    /// <summary>
+    /// Determines if it's currently night time.
+    /// </summary>
+    public bool IsNight =>
+        GetCurrentTime().Hours >= nightStartHour || GetCurrentTime().Hours < morningHour;
+
+    /// <summary>
+    /// Used for determining load priority.
+    /// </summary>
+    public float Priority => 5000f;
+
+    private Action OnHandlerResponse;
+
 
     /// <summary>
     /// Initializes the singleton, global time, and sets opening hour.

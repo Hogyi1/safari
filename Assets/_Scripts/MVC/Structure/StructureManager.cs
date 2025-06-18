@@ -81,12 +81,12 @@ public class StructureManager : MonoBehaviour, IBuyableManager
     // Szól az őt kezelő Managernek is, hogy törölje.
     public void RemoveStructure(int ID)
     {
-        Structure newStructure = activeStructures.Find(t => t.GetID() == ID);
-        if (newStructure != null)
+        Structure oldStructure = activeStructures.Find(t => t.GetID() == ID);
+        if (oldStructure != null)
         {
-            activeStructures.Remove(newStructure);
+            activeStructures.Remove(oldStructure);
 
-            IStructureManager manager = GetManager(newStructure.GetBuildingType());
+            IStructureManager manager = GetManager(oldStructure.GetBuildingType());
 
             manager.RemoveStructure(ID);
         }
