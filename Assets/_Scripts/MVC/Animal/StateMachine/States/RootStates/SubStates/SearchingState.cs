@@ -1,157 +1,189 @@
-﻿using System.Data;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
-using static AnimalView;
 
+/// <summary>
+/// State in which the animal searches for a specific type of resource or entity (e.g., food, water, mate, or prey).
+/// It listens for environmental triggers and transitions accordingly based on detection results.
+/// </summary>
 public class SearchingState : AnimalBaseState
 {
-    ColliderTrigger[] triggers;
-    public SearchingState(AnimalStateMachine stateMachine,
-                          AnimalStateFactory factory, params ColliderTrigger[] triggers) : base(stateMachine, factory)
+    private readonly ColliderTrigger[] triggers;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SearchingState"/> class with the desired triggers to detect.
+    /// </summary>
+    public SearchingState(AnimalStateMachine stateMachine, AnimalStateFactory factory, params ColliderTrigger[] triggers)
+        : base(stateMachine, factory)
     {
         isRootState = false;
         this.triggers = triggers;
     }
 
-    public override void CheckSwitchStates()
-    {
-        if (context.animal.View.Arrived && context.animal.Model.Target == Vector3.zero && context.animal.Group == null)
-            context.animal.View.GetSetRandomPosition();
-        else if (!context.animal.View.Arrived && context.animal.Model.Target != Vector3.zero)
-            SwitchState(factory.OnTarget(triggers));
-        else if (context.animal.View.Arrived && context.animal.Model.Target != Vector3.zero)
-            SwitchState(factory.AtTarget(triggers));
-        else if (context.animal.View.Arrived && context.animal.Model.IsBreeding && context.animal.Model.Target == Vector3.zero && context.animal.Group != null)
-        {
-            context.animal.View.GetSetRandomPosition();
-            context.animal.View.RefreshDetection();
-        }
-    }
-
+    /// <summary>
+    /// Called once when the state is entered. Subscribes to relevant detection events
+    /// and resets movement to begin searching.
+    /// </summary>
     public override void EnterState()
     {
-        context.animal.View.ResetMovement();
+        var model = context.animal.Model;
+        var view = context.animal.View;
 
+        view.ResetMovement();
+
+        // Subscribe to relevant detection events
         foreach (var trigger in triggers)
         {
             switch (trigger)
             {
                 case ColliderTrigger.Prey:
-                    context.animal.View.OnAnimalFound += HandlePreyFound;
+                    view.OnAnimalFound += HandlePreyFound;
                     break;
                 case ColliderTrigger.Mate:
-                    context.animal.View.OnAnimalFound += HandleAnimalFound;
+                    view.OnAnimalFound += HandleMateFound;
                     break;
                 case ColliderTrigger.Water:
-                    context.animal.View.OnWaterSourceFound += HandleWaterSource;
+                    view.OnWaterSourceFound += HandleWaterSource;
                     break;
                 case ColliderTrigger.Food:
-                    context.animal.View.OnFoodSourceFound += HandleFoodSource;
-                    break;
-                default:
+                    view.OnFoodSourceFound += HandleFoodSource;
                     break;
             }
         }
 
-        // Keresési fázis a model-ben nincsen target
-        context.animal.Model.SetTarget(Vector3.zero);
+        view.RefreshDetection();
     }
 
-    // Mindenről leiratkozunk
-    public override void ExitState()
-    {
-        context.animal.View.OnFoodSourceFound -= HandleFoodSource;
-        context.animal.View.OnWaterSourceFound -= HandleWaterSource;
-        context.animal.View.OnAnimalFound -= HandleAnimalFound;
-        context.animal.View.OnAnimalFound -= HandlePreyFound;
-    }
-
-    // Nincsen neki substate-e
-    public override void InitializeSubState() { }
-
+    /// <summary>
+    /// Called every frame to evaluate transitions to new states
+    /// based on current search conditions and progress.
+    /// </summary>
     public override void UpdateState()
     {
         CheckSwitchStates();
     }
 
+    /// <summary>
+    /// Evaluates if the animal should transition from searching to another state
+    /// such as OnTarget, AtTarget, or continue random movement.
+    /// </summary>
+    public override void CheckSwitchStates()
+    {
+        var model = context.animal.Model;
+        var view = context.animal.View;
 
-    // Collider event Handler
-    // Ha van group szólunk neki, de nem ragálunk rá, ha pedig nincsen csoportunk akkor
-    // lereagáljuk és elindulunk felé a ColliderTriggereket visszük tovább
+        if (view.Arrived && model.Target == Vector3.zero && (!context.animal.InGroup || model.IsBreeding))
+            view.GetSetRandomTarget();
+
+        else if (!view.Arrived && model.Target != Vector3.zero)
+            SwitchState(factory.OnTarget(triggers));
+
+        else if (view.Arrived && model.Target != Vector3.zero)
+            SwitchState(factory.AtTarget(triggers));
+
+    }
+
+    /// <summary>
+    /// Called once when exiting the state. Unsubscribes from all detection events.
+    /// </summary>
+    public override void ExitState()
+    {
+        var view = context.animal.View;
+
+        view.OnFoodSourceFound -= HandleFoodSource;
+        view.OnWaterSourceFound -= HandleWaterSource;
+        view.OnAnimalFound -= HandleMateFound;
+        view.OnAnimalFound -= HandlePreyFound;
+    }
+
+    public override void InitializeSubState() { }
+
+#warning Lehet egyszerusiteni
+    /// <summary>
+    /// Handles detection of a new water source. If the animal is in a group,
+    /// the group is notified. Otherwise, the animal sets the water as a new target.
+    /// </summary>
     private void HandleWaterSource(IWaterSource water, Vector3 position)
     {
-        bool IsNewSource = false;
+        var model = context.animal.Model;
 
-        IsNewSource = context.animal.Model.SaveWaterSource(position);
-
-        if (context.animal.Group != null && IsNewSource)
-        {
-            context.animal.Group.SourceFound(position);
+        if (!model.SaveWaterSource(position))
             return;
-        }
-        else if (IsNewSource)
-        {
+
+        if (context.animal.InGroup)
+            GroupManager.Instance.GetGroupByID(context.animal.GroupID)?.SourceFound(position);
+
+        else
             context.animal.SetTarget(position);
-        }
     }
 
+    /// <summary>
+    /// Handles detection of a new food source. If the animal is in a group,
+    /// the group is notified. Otherwise, the animal sets the food as a new target.
+    /// </summary>
     private void HandleFoodSource(IFoodSource food, Vector3 position)
     {
-        bool IsNewSource = false;
+        var model = context.animal.Model;
 
-        IsNewSource = context.animal.Model.SaveFoodSource(position);
-
-        if (context.animal.Group != null && IsNewSource)
-        {
-            context.animal.Group.SourceFound(position);
+        if (!model.SaveFoodSource(position))
             return;
-        }
-        else if (IsNewSource)
-        {
+
+        if (context.animal.InGroup)
+            GroupManager.Instance.GetGroupByID(context.animal.GroupID)?.SourceFound(position);
+
+        else
             context.animal.SetTarget(position);
-        }
+
     }
 
-    // Találunk egy csoportot vagy csoport nélkülit illetve találunk egy párt
-    private void HandleAnimalFound(AnimalView mateView)
+    /// <summary>
+    /// Handles detection of a potential mate. If conditions are favorable (e.g., same type, same group),
+    /// the animal begins to follow the mate.
+    /// </summary>
+    private void HandleMateFound(int mateID)
     {
-        Animal animal = context.GetAnimal(mateView.ID);
+        Animal self = context.animal;
+        Animal other = AnimalManager.Instance.GetAnimalByID(mateID);
 
-        if (animal != null && animal.Model.Type == context.animal.Model.Type)
+        if (other == null || other.Model.IsDead || self.Model.IsDead)
+            return;
+
+        if (other.Model.Type != self.Model.Type || !other.Model.CanBreed)
+            return;
+
+        if (other.GroupID == self.GroupID)
         {
-            if (animal.Group != null && context.animal.Group == null)
-            {
-                context.JoinGroup(animal.Group);
-            }
-            else if (animal.Model.CanBreed && context.animal.Model.IsBreeding && context.animal.Model.Mate != animal.Model)
-            {
-                context.animal.Model.SetMate(animal.Model);
-                context.animal.Model.SetTarget(mateView.transform.position);
-                context.animal.View.Follow(mateView);
-            }
+            self.Model.SetMate(other.ID);
+            self.Model.SetTarget(other.View.transform.position);
+            self.View.Follow(other.View);
         }
     }
 
-    private void HandlePreyFound(AnimalView preyView)
+    /// <summary>
+    /// Handles detection of a prey animal. If in a group, notifies the group.
+    /// Otherwise, sets the prey as a new target and starts following.
+    /// </summary>
+    private void HandlePreyFound(int preyID)
     {
-        Animal animal = context.GetAnimal(preyView.ID);
+        Animal other = AnimalManager.Instance.GetAnimalByID(preyID);
+        if (other == null || other.Model.Diet == context.animal.Model.Diet)
+            return;
 
-        if (animal.Model.Diet != context.animal.Model.Diet)
+        Debug.Log("Other animal found");
+
+        if (context.animal.InGroup)
+            GroupManager.Instance.GetGroupByID(context.animal.GroupID)?.PreyFound(preyID);
+
+        else
         {
-            if (context.animal.Group != null)
-            {
-                context.animal.Group.PreyFound(preyView);
-            }
-            else
-            {
-                context.animal.Model.SetTarget(preyView.transform.position);
-                context.animal.View.Follow(preyView);
-            }
-
-            context.animal.Model.SetPrey(preyView.Model);
+            context.animal.Model.SetTarget(other.View.transform.position);
+            context.animal.Model.SetPrey(preyID);
+            context.animal.View.Follow(other.View);
         }
     }
 
+    /// <summary>
+    /// Returns a readable description of the current search intent.
+    /// </summary>
     public override string ToString()
     {
         if (triggers.Contains(ColliderTrigger.Water))
@@ -162,6 +194,7 @@ public class SearchingState : AnimalBaseState
             return "Searching for prey";
         if (triggers.Contains(ColliderTrigger.Food))
             return "Searching for food";
+
         return "Searching for something";
     }
 }

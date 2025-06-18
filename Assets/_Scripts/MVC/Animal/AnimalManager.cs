@@ -6,18 +6,16 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(AnimalFactory))]
+[RequireComponent(typeof(AnimalPreviewSystem))]
 public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManager, IPlaceableManager, IDataPersistence
 {
-    // Singleton
-    public static AnimalManager Instance { get; private set; }
+    public static AnimalManager Instance;
 
-    // Every Animal
     private List<Animal> activeAnimals = new List<Animal>();
 
-    // Factory
+    // Factory, preview
     [SerializeField] private AnimalFactory factory;
     [SerializeField] private AnimalPreviewSystem previewSystem;
-    private IBuildingState BuildingState;
 
     public event Action OnPlaced;
     public event Action OnStopped;
@@ -30,6 +28,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
 
     public float Priority => 1000f;
     private Action OnHandlerResponse;
+    private IBuildingState BuildingState;
 
     public void Awake()
     {
@@ -40,9 +39,7 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
-        factory = GetComponent<AnimalFactory>();
         StopPlacement();
 
         // Events
@@ -105,18 +102,20 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
     }
 
     // Létrehozzuk illetve eltávolítjuk
-    public void SpawnAnimal(AnimalType animalType, Vector3 SpawningLocation, int Age)
+    public Animal SpawnAnimal(AnimalType animalType, Vector3 SpawningLocation, int Age)
     {
         int ID = IDGenerator.GenerateID();
         Animal newAnimal = factory.CreateAnimal(animalType, SpawningLocation, ID, Age);
 
-        if (newAnimal.IsUnityNull()) return;
+        if (newAnimal.IsUnityNull()) return null;
+
+        activeAnimals.Add(newAnimal);
+        Incoming = true;
 
         GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 10);
         GameEvents.Instance.NotifyObservers(EventType.ANIMAL_PLACE, 1);
         GameEvents.Instance.NotifyObservers(EventType.ANIMALS_OWNED, 1);
-        activeAnimals.Add(newAnimal);
-        Incoming = true;
+        return newAnimal;
     }
 
     public void RemoveAnimal(int ID)
@@ -124,64 +123,63 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
         Animal toRemove = activeAnimals.Find(t => t.ID == ID);
         if (toRemove != null)
         {
-            GameEvents.Instance.NotifyObservers(EventType.ANIMALS_OWNED, -1);
-            GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 20);
             Incoming = false;
             activeAnimals.Remove(toRemove);
             Destroy(toRemove.View.gameObject);
+
+            GameEvents.Instance.NotifyObservers(EventType.ANIMALS_OWNED, -1);
+            GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 20);
         }
     }
 
     // Kiválaszt egy random állatot aki képes párzani
     private void SelectAnimalForBreeding()
     {
-        List<AnimalModel> breedables = new List<AnimalModel>();
-        foreach (var animal in activeAnimals)
-        {
-            if (animal.Model.CanBreed && animal.Group != null && !animal.Model.IsBreeding) breedables.Add(animal.Model);
-        }
+        var breedables = activeAnimals.Where(animal => animal.Model.CanBreed && animal.InGroup && !animal.Model.IsBreeding).ToList();
 
         if (breedables.Count != 0)
-        {
-            int Random = UnityEngine.Random.Range(0, breedables.Count);
-            breedables[Random].StartBreeding();
-        }
+            breedables[UnityEngine.Random.Range(0, breedables.Count)].Model.StartBreeding();
     }
 
     public void OnNotify(RandomEvent randomEvent)
     {
         if (randomEvent == RandomEvent.Breed_animal)
-        {
             SelectAnimalForBreeding();
-        }
     }
 
-    public void Breed(AnimalModel mate1, AnimalModel mate2)
+    public void Breed(int mate1ID, int mate2ID)
     {
         // Opció evoluciora
-        GameEvents.Instance.NotifyObservers(EventType.ANIMAL_BORN, 1);
-        Animal animal = activeAnimals.Find(t => t.ID == mate1.ID);
-        SpawnAnimal(animal.Model.Type, animal.View.transform.position, 1);
+        Animal animal = GetAnimalByID(mate1ID);
+
+        Animal babyAnimal = SpawnAnimal(animal.Model.Type, animal.View.transform.position, 1);
+
+        GroupManager.Instance.EnterGroup(animal.GroupID, babyAnimal.ID, true);
+
         GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 50);
+        GameEvents.Instance.NotifyObservers(EventType.ANIMAL_BORN, 1);
     }
 
-    public Animal GetAnimal(int iD)
+    public Animal GetAnimalByID(int iD)
     {
         Animal animal = activeAnimals.Find(t => t.ID == iD);
         if (animal == null) return null;
         return animal;
     }
 
-    public void KillAnimal(Animal prey)
+    public void KillAnimal(int preyID)
     {
-        if (activeAnimals.Contains(prey))
-            prey.Model.GetKilled();
+        GetAnimalByID(preyID)?.Model.GetKilled();
     }
 
     public bool CanBuy() => true; // Nincs kapacitás jelenleg
 
 
 
+
+
+    // Rework mentés
+    // pls hogyi doit
     public void SaveData(GameData data)
     {
 
@@ -191,8 +189,6 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
             data.animalSaveDatas.Add(new AnimalSaveData(a.Model.Type, a.View.gameObject.transform.position, a.Model.Age));
         }
     }
-
-    // Rework mentés
     public IEnumerator LoadData(GameData data)
     {
         yield return SpawnAnimalWithDelay(data);
@@ -207,6 +203,39 @@ public class AnimalManager : MonoBehaviour, IRandomEventObserver, IBuyableManage
             SpawnAnimal(a.type, a.position, a.Age);
         }
     }
+
+    /// <summary>
+    /// Suggests the formation of a new group between two animals,
+    /// if neither is currently part of a group and they are compatible.
+    /// Only the animal with the smaller ID will initiate the group to avoid duplicates.
+    /// </summary>
+    /// <param name="iD1">The ID of the first animal.</param>
+    /// <param name="iD2">The ID of the second animal.</param>
+    public void SuggestGroupFormation(int iD1, int iD2)
+    {
+        if (iD1 == iD2) return;
+
+        Animal a1 = GetAnimalByID(iD1);
+        Animal a2 = GetAnimalByID(iD2);
+
+        if (a1 == null || a2 == null) return;
+        if (a1.InGroup || a2.InGroup) return;
+
+        // Only the animal with the smaller ID initiates the group creation
+        if (a1.ID < a2.ID)
+            GroupManager.Instance.CreateGroup(new List<int> { a1.ID, a2.ID }, GroupState.Idle);
+    }
+
+    /// <summary>
+    /// Attempts to join the specified animal to an existing group, by their IDs.
+    /// </summary>
+    /// <param name="animalID">The ID of the animal trying to join.</param>
+    /// <param name="groupID">The ID of the target group.</param>
+    public void TryJoinGroup(int animalID, int groupID)
+    {
+        GroupManager.Instance.EnterGroup(groupID, animalID, false);
+    }
+
 }
 
 // Most csak ilyen állatok vannak

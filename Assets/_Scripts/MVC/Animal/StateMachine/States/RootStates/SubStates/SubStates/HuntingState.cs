@@ -1,95 +1,102 @@
-﻿using System;
-using Unity.VisualScripting;
+﻿using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// Substate triggered when the animal hunts and consumes a prey.
+/// Handles the prey elimination and hunger restoration over time.
+/// </summary>
 public class HuntingState : AnimalBaseState
 {
-    Animal prey;
-    float eatTimer;
-    const float EatingInterval = 2f;
+    private float eatTimer;
+    private const float EatingInterval = 2f;
+
     public HuntingState(AnimalStateMachine stateMachine,
-                         AnimalStateFactory factory) : base(stateMachine, factory)
+                        AnimalStateFactory factory) : base(stateMachine, factory)
     {
         isRootState = false;
     }
 
+    /// <summary>
+    /// Called when entering the state. Kills the prey and starts the eating process.
+    /// </summary>
     public override void EnterState()
     {
-        prey = context.GetAnimal(context.animal.Model.Prey.ID);
+        var model = context.animal.Model;
+        model.IsConsuming = true;
 
-        if (prey == null)
+        var preyAnimal = AnimalManager.Instance.GetAnimalByID(model.PreyID);
+        if (preyAnimal.IsUnityNull())
         {
             ExitState();
             return;
         }
 
-        // Kinyírjuk az állatot
-        context.KillAnimal(prey);
-        context.animal.Model.IsConsuming = true;
+        AnimalManager.Instance.KillAnimal(model.PreyID);
         eatTimer = EatingInterval;
     }
 
-
+    /// <summary>
+    /// Called every frame. Simulates periodic consumption of prey and ends the state if full.
+    /// </summary>
     public override void UpdateState()
     {
-        if (!context.animal.Model.IsConsuming || prey == null)
+        var model = context.animal.Model;
+        var view = context.animal.View;
+
+        if (!model.IsConsuming || model.PreyID <= 0)
             return;
 
         eatTimer += Time.deltaTime;
         if (eatTimer < EatingInterval)
             return;
 
-        if (context.GetAnimal(context.animal.Model.Prey.ID).IsUnityNull())
+        if (AnimalManager.Instance.GetAnimalByID(model.PreyID).IsUnityNull())
         {
-            FinishConsumption();
+            ExitState();
             return;
         }
 
-        // 2 másodperc eltelt, iszunk egyszer
         eatTimer = 0f;
-        context.animal.Model.Eat(2);
-        context.animal.View.Animator.SetBool(AnimalView.IsEating, true);
+        model.Eat(2);
+        view.Animator.SetBool(AnimalView.IsEating, true);
 
-        // ha elfogyott a vízforrás vagy már nem szomjas, befejezzük
-        if (context.animal.Model.Hunger >= 100f)
-            FinishConsumption();
+        if (model.Hunger >= 100f)
+            ExitState();
     }
 
-    // Nincs se alstate se szomszéd state-je
-    public override void CheckSwitchStates() { return; }
-    public override void InitializeSubState() { return; }
+    /// <summary>
+    /// No transitions required while consuming.
+    /// </summary>
+    public override void CheckSwitchStates() { }
 
+    /// <summary>
+    /// This substate does not contain any substates.
+    /// </summary>
+    public override void InitializeSubState() { }
+
+    /// <summary>
+    /// Called when exiting the state. Resets flags and determines the next target.
+    /// </summary>
     public override void ExitState()
     {
-        if (context.animal.Group == null)
+        var model = context.animal.Model;
+        var view = context.animal.View;
+
+        model.ClearPrey();
+        model.IsConsuming = false;
+        view.Animator.SetBool(AnimalView.IsEating, false);
+
+        // If not in group and still hungry, try setting a new target
+        if (!context.animal.InGroup && model.IsHungry)
         {
-            // Lekérjük a következő targetet, ha vector3.zero akkor úgyis keresni indul, ha nem akkor meg OnTargetre vált
-            Vector3 otherTarget = context.animal.Model.GetNextFoodSourcePosition();
-            // Nincsen már semmilyen préda akit követünk
-            context.animal.Model.ClearPrey();
-            // Beállítjuk a targetet
-            context.animal.Model.SetTarget(otherTarget);
+            Vector3 newTarget = model.GetNextFoodSourcePosition();
+            context.animal.SetTarget(newTarget);
         }
-
-        context.animal.Model.IsConsuming = false;
-        context.animal.View.Animator.SetBool(AnimalView.IsEating, false);
     }
 
-    private void FinishConsumption()
-    {
-        if (context.animal.Model.IsHungry && context.animal.Group == null)
-        {
-            Vector3 nextTarget = context.animal.Model.GetNextFoodSourcePosition();
-            context.animal.Model.ClearPrey();
-            context.animal.SetTarget(nextTarget);
-        }
+    /// <summary>
+    /// Returns a description of the state for debug or UI purposes.
+    /// </summary>
+    public override string ToString() => "Consuming prey";
 
-        context.animal.Model.IsConsuming = false;
-        context.animal.View.Animator.SetBool(AnimalView.IsEating, false);
-    }
-
-    public override string ToString()
-    {
-        return "Eating prey";
-    }
 }

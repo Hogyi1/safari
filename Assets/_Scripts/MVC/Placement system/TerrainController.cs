@@ -87,13 +87,11 @@ public class TerrainController : MonoBehaviour
             GameObject bottom = CurrentObject.transform.Find("Floor").gameObject;
             bounds = bottom.GetComponent<Renderer>().bounds;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Debug.LogWarning(ex);
-
             // Ha nincs Floor akkor az alapot használjuk
             bounds = Structure.GetComponentInChildren<Renderer>().bounds;
-            Debug.LogWarning("Floor nem található, Renderer bounds lesz használva!");
+            // Debug.LogWarning("Floor nem található, Renderer bounds lesz használva!");
         }
 
         // A Structure aljának koordinátája átváltva - normalizálva heightmapre
