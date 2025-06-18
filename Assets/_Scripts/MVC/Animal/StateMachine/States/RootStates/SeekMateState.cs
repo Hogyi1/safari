@@ -1,6 +1,9 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// Root state in which the animal actively seeks a mate for reproduction.
+/// Handles searching, approaching, and interacting with potential mates.
+/// </summary>
 public class SeekMateState : AnimalBaseState, IRootState
 {
     public SeekMateState(AnimalStateMachine stateMachine, AnimalStateFactory factory)
@@ -9,77 +12,96 @@ public class SeekMateState : AnimalBaseState, IRootState
         isRootState = true;
     }
 
-    public override void CheckSwitchStates()
-    {
-        // Priority #1
-        // Ha halott akkor vége van
-        if (context.animal.Model.IsDead) { SwitchState(factory.Dead()); return; }
-
-        // Priority #2
-        // Ha csoportban és van valamilyen activity
-        if (context.animal.Group != null && context.animal.Group.State != GroupState.Idle)
-        {
-            SwitchState(factory.Group());
-        }
-        // Nincsen context.animal.Groupban
-        // Ha éhes lett és nem szomjas már
-        else if (context.animal.Model.IsHungry)
-        {
-            SwitchState(factory.SeekFood());
-            return;
-        }
-        // Ha már nincsen más bajom és breedingelhetek
-        else if (context.animal.Model.IsThirsty)
-        {
-            SwitchState(factory.SeekWater());
-            return;
-        }
-        // Ha context.animal.Groupban vagyok ha nem az Idle maga intézi
-        // Ha nincsen semmi bajom akkor Idle
-        else if (!context.animal.Model.IsBreeding)
-        {
-            SwitchState(factory.Idle());
-        }
-    }
-
+    /// <summary>
+    /// Called when entering the state. Resets the target and initializes the mating substate logic.
+    /// </summary>
     public override void EnterState()
     {
         context.animal.Model.SetTarget(Vector3.zero);
         InitializeSubState();
     }
 
+    /// <summary>
+    /// Called once when exiting the state. Clears the current target.
+    /// </summary>
     public override void ExitState()
     {
+        context.animal.Model.StopBreeding();
         context.animal.Model.SetTarget(Vector3.zero);
     }
 
-    public override void InitializeSubState()
+    /// <summary>
+    /// Evaluates whether the animal should switch to another root state,
+    /// such as Dead, Group, SeekFood, SeekWater, or Idle.
+    /// </summary>
+    public override void CheckSwitchStates()
     {
-        if (context.animal.Model.Target == Vector3.zero && context.animal.Model.Mate == null)
-            SetSubState(factory.Searching(ColliderTrigger.Mate));
-        else if (!context.animal.View.Arrived && context.animal.Model.Target != Vector3.zero && context.animal.Model.Mate != null)
-            SetSubState(factory.OnTarget(ColliderTrigger.Mate));
-        else if (context.animal.View.Arrived && context.animal.Model.Target != Vector3.zero && context.animal.Model.Mate != null)
-            SetSubState(factory.AtTarget(ColliderTrigger.Mate));
+        var model = context.animal.Model;
 
-        // Minden keresésnél nézzen újra körbe
-        context.animal.View.RefreshDetection();
+        if (model.IsDead)
+            SwitchState(factory.Dead());
+
+
+        if (!model.IsBreeding)
+            SwitchState(factory.Group());
+
+
+        if (!context.animal.InGroup)
+        {
+            if (model.IsHungry)
+                SwitchState(factory.SeekFood());
+
+            else if (model.IsThirsty)
+                SwitchState(factory.SeekWater());
+
+            else if (!model.IsBreeding)
+                SwitchState(factory.Idle());
+        }
     }
 
+    /// <summary>
+    /// Initializes the appropriate substate for mating behavior based on presence and location of a potential mate.
+    /// </summary>
+    public override void InitializeSubState()
+    {
+        var model = context.animal.Model;
+        var view = context.animal.View;
+
+        if (model.Target == Vector3.zero && model.MateID < 0)
+            SetSubState(factory.Searching(ColliderTrigger.Mate));
+
+        else if (!view.Arrived && model.Target != Vector3.zero && model.MateID > 0)
+            SetSubState(factory.OnTarget(ColliderTrigger.Mate));
+
+        else if (view.Arrived && model.Target != Vector3.zero && model.MateID > 0)
+            SetSubState(factory.AtTarget(ColliderTrigger.Mate));
+
+
+        view.RefreshDetection();
+    }
+
+    /// <summary>
+    /// Called every frame. Checks for transitions and updates needs related to mating behavior.
+    /// </summary>
     public override void UpdateState()
     {
         CheckSwitchStates();
         CalculateModelData();
     }
+
+    /// <summary>
+    /// Applies moderate degradation to hunger and thirst while searching for a mate.
+    /// </summary>
     public void CalculateModelData()
     {
-        context.animal.Model.CalculateHp();
-        context.animal.Model.CalculateHunger(0.5f);
-        context.animal.Model.CalculateThirst(0.5f);
+        context.animal.Model.CalculateNeeds(0.5f);
     }
 
+    /// <summary>
+    /// Returns a readable name of the current substate or a default description if none is active.
+    /// </summary>
     public override string ToString()
     {
-        return "Searching for mate";
+        return currentSubState?.ToString() ?? "Searching for mate";
     }
 }

@@ -1,124 +1,135 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.AI;
+﻿using UnityEngine;
 
+/// <summary>
+/// Represents the idle root state of an animal when it is not engaged in any urgent behavior
+/// (e.g., hunger, thirst, reproduction) and not part of a group.
+/// </summary>
 public class IdleState : AnimalBaseState, IRootState
 {
-    public IdleState(AnimalStateMachine stateMachine,
-                          AnimalStateFactory factory) : base(stateMachine, factory)
+    public IdleState(AnimalStateMachine stateMachine, AnimalStateFactory factory)
+        : base(stateMachine, factory)
     {
         isRootState = true;
     }
 
+    /// <summary>
+    /// Checks for transitions to other root states based on the animal's condition.
+    /// Prioritizes death, group membership, hunger, thirst, and mating.
+    /// </summary>
     public override void CheckSwitchStates()
     {
-        // Priority #1
-        // Ha halott akkor vége van
-        if (context.animal.Model.IsDead) { SwitchState(factory.Dead()); return; }
+        var model = context.animal.Model;
+        var view = context.animal.View;
 
+        if (model.IsDead)
+            SwitchState(factory.Dead());
 
-        // Priority #2
-        // Ha csoportban és van valamilyen activity
-        if (context.animal.Group != null)
-        {
-            if (context.animal.Group.State != GroupState.Idle)
-            {
-                SwitchState(factory.Group());
-            }
-            return;
-        }
-        // Nincsen groupban
-        // Ha éhes lett és nem szomjas már
-        else if (context.animal.Model.IsHungry)
-        {
+        else if (context.animal.InGroup)
+            SwitchState(factory.Group());
+
+        else if (model.IsHungry)
             SwitchState(factory.SeekFood());
-        }
-        // Ha groupban vagyok ha nem az Idle maga intézi
-        // Ha nincsen semmi bajom akkor Idle
-        else if (context.animal.Model.IsThirsty)
-        {
+
+        else if (model.IsThirsty)
             SwitchState(factory.SeekWater());
-        }
-        // Ha már nincsen más bajom és breedingelhetek
-        else if (context.animal.Model.IsBreeding && !context.animal.Model.IsHungry && !context.animal.Model.IsThirsty)
-        {
+
+        else if (model.IsBreeding)
             SwitchState(factory.SeekMate());
-        }
     }
 
+    /// <summary>
+    /// Called when entering the idle state. Subscribes to animal detection events and sets an initial substate.
+    /// </summary>
     public override void EnterState()
     {
-        context.animal.View.RefreshDetection();
         context.animal.View.OnAnimalFound += HandleAnimalFound;
         InitializeSubState();
     }
 
+    /// <summary>
+    /// Called when exiting the idle state. Unsubscribes from events and exits substates.
+    /// </summary>
     public override void ExitState()
     {
         context.animal.View.OnAnimalFound -= HandleAnimalFound;
+        ExitAllSubStates();
     }
 
+    /// <summary>
+    /// Randomly initializes a substate such as sleeping, stationary or wandering behavior
+    /// to simulate idle activity during downtime.
+    /// </summary>
     public override void InitializeSubState()
     {
-        // Random választunk egy SubStatet
-        // Azt, hogy mennyi ideig tartson azt, maga a State fogja eldönteni
-        float roll = UnityEngine.Random.Range(0f, 1f);
+        float roll = Random.Range(0f, 1f);
 
-        if (roll <= 0.1f || TimeManager.Instance.GetCurrentTime().Hours > 22) { SetSubState(factory.Sleeping()); return; }
-        if (roll <= 0.5f) { SetSubState(factory.Stationary()); return; }
-        else SetSubState(factory.Wandering());
+        if (roll <= 0.1f || TimeManager.Instance.IsNight)
+            SetSubState(factory.Sleeping());
+
+        else if (roll <= 0.5f)
+            SetSubState(factory.Stationary());
+
+        else
+            SetSubState(factory.Wandering());
     }
 
+    /// <summary>
+    /// Called every frame. Handles state transitions and updates physiological data.
+    /// </summary>
     public override void UpdateState()
     {
         CheckSwitchStates();
         CalculateModelData();
     }
 
-    // A jelenlegi aktivítástól függően beállítjuk az éhség és szomjúság mértékét
+    /// <summary>
+    /// Updates the animal's hunger and thirst levels based on its current idle substate.
+    /// </summary>
     public void CalculateModelData()
     {
-        context.animal.Model.CalculateHp();
-
         switch (currentSubState)
         {
-            case SleepingState sleepingState:
-                context.animal.Model.CalculateHunger(0.1f);
-                context.animal.Model.CalculateThirst(0.1f);
+            case SleepingState:
+                context.animal.Model.CalculateNeeds(0.1f);
                 break;
-            case StationaryState stationaryState:
-                context.animal.Model.CalculateHunger(0.3f);
-                context.animal.Model.CalculateThirst(0.3f);
+            case StationaryState:
+                context.animal.Model.CalculateNeeds(0.3f);
                 break;
-            case WanderingState wanderingState:
-                context.animal.Model.CalculateHunger(0.5f);
-                context.animal.Model.CalculateThirst(0.5f);
+            case WanderingState:
+                context.animal.Model.CalculateNeeds(0.5f);
                 break;
         }
     }
 
-    // Ha a View talál egy másik állatot, csoport kezelés
-    private void HandleAnimalFound(AnimalView view)
+    /// <summary>
+    /// Handles detection of nearby animals.
+    /// If both animals are ungrouped and share the same species, a group formation is suggested.
+    /// If the other animal is in a group and this one is not, it tries to join that group.
+    /// </summary>
+    /// <param name="viewID">The ID of the detected animal.</param>
+    private void HandleAnimalFound(int viewID)
     {
-        if (view.ID == context.animal.Model.ID) return;
-        Animal animal = context.GetAnimal(view.ID);
-        if (animal.Group == null && context.animal.Group == null && animal.Model.Type == context.animal.Model.Type && !animal.Model.IsDead)
-        {
-            Debug.LogError("Idle stateben is keletkezik");
-            GroupManager.Instance.CreateNewGroup(new List<Animal> { animal, context.animal });
-        }
-        else if (animal.Group != null && context.animal.Group == null && animal.Model.Type == context.animal.Model.Type && !animal.Model.IsDead)
-        {
-            GroupManager.Instance.EnterGroup(animal.Group, context.animal);
-        }
+        Animal self = context.animal;
+        Animal other = AnimalManager.Instance.GetAnimalByID(viewID);
+
+        if (other == null || other.Model.IsDead || self.Model.IsDead)
+            return;
+
+        if (other.Model.Type != self.Model.Type)
+            return;
+
+        if (!self.InGroup && !other.InGroup)
+            AnimalManager.Instance.SuggestGroupFormation(self.ID, other.ID);
+
+        else if (other.InGroup && !self.InGroup)
+            AnimalManager.Instance.TryJoinGroup(self.ID, other.GroupID);
     }
 
+    /// <summary>
+    /// Returns the name of the active substate or "Idle" if none is set.
+    /// </summary>
     public override string ToString()
     {
-        if (currentSubState != null)
-            return currentSubState?.ToString();
-        return "Chilling";
+        return currentSubState?.ToString() ?? "Idle";
     }
 }
