@@ -1,110 +1,166 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Root state representing the behavior of an animal while being part of a group.
+/// Controls substate transitions based on the current group state.
+/// </summary>
 public class GroupBehaviourState : AnimalBaseState, IRootState
 {
-    public GroupBehaviourState(AnimalStateMachine stateMachine,
-                              AnimalStateFactory factory) : base(stateMachine, factory)
+    private GroupModel group;
+
+    public GroupBehaviourState(AnimalStateMachine stateMachine, AnimalStateFactory factory)
+        : base(stateMachine, factory)
     {
         isRootState = true;
     }
 
+    /// <summary>
+    /// Called when the state is entered. Subscribes to group change events and sets up listeners.
+    /// </summary>
     public override void EnterState()
     {
-        context.animal.Group.OnStateChanged += HandleStateChanged;
-        HandleStateChanged(context.animal.Group);
+        context.animal.OnGroupChange += GetGroup;
+        GetGroup();
+        HandleStateChanged(group);
     }
 
-    // Ha a csoportnak van valami gondja itt kezeljük
-    private void HandleStateChanged(Group g)
+    /// <summary>
+    /// Resolves the current group by ID and registers to its state change event.
+    /// Ensures only one handler is subscribed at a time.
+    /// </summary>
+    private void GetGroup()
     {
-        if (g.IsUnityNull() || !g.Equals(context.animal.Group)) return;
+        if (group != null)
+            group.OnStateChanged -= HandleStateChanged;
 
-        ColliderTrigger[] triggers = context.animal.Model.Diet == DietType.Carnivore ?
-            new ColliderTrigger[] { ColliderTrigger.Food, ColliderTrigger.Prey } :
-            new ColliderTrigger[] { ColliderTrigger.Food };
+        group = GroupManager.Instance.GetGroupByID(context.animal.GroupID);
 
-        switch (g.State)
+        if (group != null)
+            group.OnStateChanged += HandleStateChanged;
+
+        Debug.Log(group.groupID);
+    }
+
+    /// <summary>
+    /// Handles changes in the group's state and switches substates accordingly.
+    /// </summary>
+    /// <param name="group">The group that triggered the state change.</param>
+    private void HandleStateChanged(GroupModel group)
+    {
+        if (group.groupID != context.animal.GroupID)
+            return;
+
+        var triggers = GetTriggers(group.State);
+
+        switch (group.State)
         {
             case GroupState.Idle:
-                SwitchState(factory.Idle());
+                SetSubState(factory.GroupIdle());
                 break;
+
             case GroupState.Hungry:
+            case GroupState.Thirsty:
                 SetSubState(factory.OnTarget(triggers));
                 break;
-            case GroupState.Thirsty:
-                SetSubState(factory.OnTarget(ColliderTrigger.Water));
-                break;
+
             case GroupState.SearchingFood:
-                SetSubState(factory.Searching(triggers));
-                break;
             case GroupState.SearchingWater:
-                SetSubState(factory.Searching(ColliderTrigger.Water));
+                SetSubState(factory.Searching(triggers));
                 break;
         }
 
-        // Minden keresésnél nézzen újra körbe
+        // Refresh surroundings (e.g., prey, water, food)
         context.animal.View.RefreshDetection();
     }
 
-    public override void ExitState()
+    /// <summary>
+    /// Returns the relevant detection triggers based on the group state and the animal's diet.
+    /// </summary>
+    private ColliderTrigger[] GetTriggers(GroupState state)
     {
-        if (context.animal.Group != null)
+        return state switch
         {
-            context.animal.Group.OnStateChanged -= HandleStateChanged;
-            context.animal.CanLeave = false;
-            context.animal.SetGroup(null);
-        }
-        context.animal.Model.SetTarget(Vector3.zero);
+            GroupState.Hungry or GroupState.SearchingFood =>
+                context.animal.Model.Diet == DietType.Carnivore
+                    ? new[] { ColliderTrigger.Prey, ColliderTrigger.Food }
+                    : new[] { ColliderTrigger.Food },
+
+            GroupState.Thirsty or GroupState.SearchingWater =>
+                new[] { ColliderTrigger.Water },
+
+            _ => null,
+        };
     }
 
+    /// <summary>
+    /// Cleans up subscriptions when exiting the state.
+    /// </summary>
+    public override void ExitState()
+    {
+        context.animal.OnGroupChange -= GetGroup;
+
+        if (group != null)
+            group.OnStateChanged -= HandleStateChanged;
+
+        ExitAllSubStates();
+    }
+
+    /// <summary>
+    /// Evaluates whether the animal should exit the group state (e.g., if it left the group or died).
+    /// </summary>
     public override void CheckSwitchStates()
     {
-        // Priority #1
-        if (context.animal.Model.IsDead) { SwitchState(factory.Dead()); return; }
+        var model = context.animal.Model;
+        var view = context.animal.View;
 
-        // Ha kiléptünk akkor visszaváltunk Idle-be onnan, majd kezeli saját magát
-        if (context.animal.CanLeave)
+        if (model.IsDead)
+            SwitchState(factory.Dead());
+
+        if (!context.animal.InGroup)
         {
-            Debug.Log("Ki fogok lépni a csoportból");
-            if (context.animal.Model.IsHungry)
+            Debug.Log("Animal has left the group.");
+
+            if (model.IsHungry)
                 SwitchState(factory.SeekFood());
-            // Ha groupban vagyok ha nem az Idle maga intézi
-            // Ha nincsen semmi bajom akkor Idle
-            else if (context.animal.Model.IsThirsty)
+
+            else if (model.IsThirsty)
                 SwitchState(factory.SeekWater());
-            // Ha már nincsen más bajom és breedingelhetek
-            else if (context.animal.Model.IsBreeding && !context.animal.Model.IsHungry && !context.animal.Model.IsThirsty)
-                SwitchState(factory.SeekMate());
+
             else
                 SwitchState(factory.Idle());
         }
-        else if (context.animal.Group.State == GroupState.Idle) { SwitchState(factory.Idle()); return; }
+        else if (model.IsBreeding && group.State.Equals(GroupState.Idle))
+            SwitchState(factory.SeekMate());
     }
 
-    public override void InitializeSubState()
-    {
-        return; // HandleStage intézi
-    }
+    /// <summary>
+    /// Not used – substates are controlled externally via group state changes.
+    /// </summary>
+    public override void InitializeSubState() { }
 
+    /// <summary>
+    /// Called each frame. Performs physiological updates and state checking.
+    /// </summary>
     public override void UpdateState()
     {
         CheckSwitchStates();
         CalculateModelData();
     }
 
+    /// <summary>
+    /// Updates the animal's hunger and thirst based on group activity intensity.
+    /// </summary>
     public void CalculateModelData()
     {
-        context.animal.Model.CalculateHp();
-        context.animal.Model.CalculateHunger(0.7f);
-        context.animal.Model.CalculateThirst(0.7f);
+        context.animal.Model.CalculateNeeds(0.7f);
     }
 
+    /// <summary>
+    /// Returns the current substate description or a default label.
+    /// </summary>
     public override string ToString()
     {
-        //if (currentSubState != null)
-        //    return currentSubState?.ToString();
-        //else return "In group";
         return "Group activity";
+        return currentSubState?.ToString() ?? "Group activity";
     }
 }
