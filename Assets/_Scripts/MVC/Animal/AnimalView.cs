@@ -12,6 +12,7 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
     private int iD;
     private AnimalModel model;
     private bool isActive = false;
+    private Vector3 currentDestination;
 
     // === Komponensek ===
     [SerializeField] private Animator animator;
@@ -53,16 +54,14 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
     // === Események más rendszerek számára ===
     public event Action<IFoodSource, Vector3> OnFoodSourceFound;
     public event Action<IWaterSource, Vector3> OnWaterSourceFound;
-    public event Action<AnimalView> OnAnimalFound;
-
-    // === Aktuális célpont, amit követ az állat ===
-    private Vector3 currentDestination;
+    public event Action<int> OnAnimalFound;
 
     // === Egyszerűsített publikus hozzáférések ===
     public Animator Animator => animator;
     public int ID => iD;
     public AnimalModel Model => model;
     public NavMeshAgent Agent => navigator.Agent;
+    public Vector3 CurrentDestination => currentDestination;
 
     void Awake()
     {
@@ -139,12 +138,18 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
     }
 
     // === Visszaad egy random pozíciót a Collider-en belül, és be is állítja célként ===
-    public Vector3 GetSetRandomPosition()
+    public Vector3 GetSetRandomTarget()
+    {
+        Vector3 target = GetRandomTarget();
+        SetTarget(target);
+        return target;
+    }
+
+    public Vector3 GetRandomTarget()
     {
         Vector3 randomDir = UnityEngine.Random.insideUnitSphere * sphereCollider.radius;
         randomDir += transform.position;
         NavMesh.SamplePosition(randomDir, out NavMeshHit hit, sphereCollider.radius, NavMesh.AllAreas);
-        SetTarget(hit.position);
         return hit.position;
     }
 
@@ -193,8 +198,8 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
         else if ((animalMask & (1 << layer)) != 0)
         {
             var av = go.GetComponent<AnimalView>();
-            if (av != null && av.enabled)
-                OnAnimalFound?.Invoke(av);
+            if (av != null && av.enabled && av.ID != ID)
+                OnAnimalFound?.Invoke(av.ID);
         }
     }
 
@@ -243,7 +248,7 @@ public class AnimalView : MonoBehaviour, INavigatable, IInteractable
     {
         isActive = true;
         fadeEffect.FadeIn();
-        PopupManager.Instance.ActivatePopup(AnimalManager.Instance.GetAnimal(ID).GetUIData(), gameObject);
+        PopupManager.Instance.ActivatePopup(AnimalManager.Instance.GetAnimalByID(ID).GetUIData(), gameObject);
     }
 
     // Interakció megszüntetése, állapot alaphelyzetbe (fade out)
