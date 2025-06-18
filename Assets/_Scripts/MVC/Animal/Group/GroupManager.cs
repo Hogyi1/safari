@@ -1,24 +1,27 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GroupManager : MonoBehaviour
 {
     public static GroupManager Instance;
-    private static readonly float RADIUS = 10f;
+    public static readonly float RADIUS = 10f;
+    public static readonly float SEPARATION_TIME = 2f;
 
-    private List<Group> activeGroups = new List<Group>();
-    private Dictionary<Group, Coroutine> runningCoroutines = new Dictionary<Group, Coroutine>();
+    private List<GroupModel> activeGroups = new();
+    private Dictionary<int, GroupView> activeViews = new();
+    private Dictionary<GroupModel, Coroutine> runningCoroutines = new();
 
     [SerializeField] private int Count;
+    [SerializeField] private GameObject groupPrefab;
+    [SerializeField] private GameObject groupParent;
 
     /// <summary>
-    /// Singleton beállítása. Ha már létezik másik példány, megsemmisítjük ezt.
+    /// Sets up the singleton instance. Destroys this instance if another one already exists.
     /// </summary>
-    public void Awake()
+    private void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -27,69 +30,76 @@ public class GroupManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     /// <summary>
-    /// Különböző csoportigények kezelése coroutine-on keresztül
+    /// Starts the coroutine responsible for separating animals with different needs.
     /// </summary>
     private void Start()
     {
-        StartCoroutine(HandleDifferentNeeds());
+        //StartCoroutine(HandleDifferentNeeds());
     }
 
     /// <summary>
-    /// Minden frame-ben frissítjük a csoportok állapotát és ellenőrizzük a feloszlottakat
+    /// Updates group states and removes empty groups each frame.
     /// </summary>
     private void LateUpdate()
     {
         Count = activeGroups.Count;
 
-        List<Group> groupsToRemove = new();
-        for (int i = activeGroups.Count - 1; i >= 0; i--)
-        {
-            activeGroups[i].CalculateGroupState();
-            activeGroups[i].UpdateCircle();
-            if (activeGroups[i].Members.Count == 0)
-            {
-                groupsToRemove.Add(activeGroups[i]);
-            }
-        }
+        //activeGroups
+        //    .Select(g => { g.CalculateGroupState(); g.UpdateCircle(); return g; })
+        //    .Where(g => g.MemberCount == 0)
+        //    .ToList()
+        //    .ForEach(RemoveGroup);
 
-        foreach (var group in groupsToRemove)
+        foreach (var group in activeGroups.ToList())
         {
-            RemoveGroup(group);
-        }
+            group.UpdateCircle();
+            group.CalculateGroupState();
 
-        CheckCollision();
+            if (group.MemberCount == 0)
+                RemoveGroup(group);
+        }
     }
 
     /// <summary>
-    /// Megpróbálunk egy állatot beléptetni egy meglévő csoportba.
+    /// Tries to let an animal join a group by its ID.
     /// </summary>
-    public bool EnterGroup(Group group, Animal animal)
+    public void EnterGroup(int groupID, int animalID, bool isChild)
     {
-        return group.TryJoin(animal);
+        GetGroupByID(groupID)?.TryJoin(animalID, isChild);
     }
 
     /// <summary>
-    /// Új csoport létrehozása adott állatlistából.
+    /// Creates a new group based on the given animal IDs.
     /// </summary>
-    public void CreateNewGroup(List<Animal> animals)
+    public void CreateGroup(List<int> animalIDs, GroupState state)
     {
-        var group = new Group(GroupState.Idle, animals, RADIUS);
+        var animal = AnimalManager.Instance.GetAnimalByID(animalIDs.First());
+        var animalDiet = animal.Model.Diet;
+        var animalType = animal.Model.Type;
+        int newID = IDGenerator.GenerateID();
+
+        GameObject instance = Instantiate(groupPrefab);
+        instance.transform.SetParent(groupParent.transform, true);
+
+        var view = instance.GetComponent<GroupView>();
+        activeViews.Add(newID, view);
+
+        var group = new GroupModel(state, animalIDs, animalType, animalDiet, newID);
+        view.Init(group);
         group.OnStateChanged += HandleGroupStateChanged;
-        group.ID = IDGenerator.GenerateID();
+
         activeGroups.Add(group);
     }
 
     /// <summary>
-    /// Egy csoport eltávolítása a rendszerből.
+    /// Removes a group from the system.
     /// </summary>
-    public void RemoveGroup(Group group)
+    public void RemoveGroup(GroupModel group)
     {
-        if (!activeGroups.Contains(group))
-            return;
+        if (!activeGroups.Contains(group)) return;
 
         group.OnStateChanged -= HandleGroupStateChanged;
 
@@ -100,72 +110,48 @@ public class GroupManager : MonoBehaviour
         }
 
         activeGroups.Remove(group);
-    }
-
-    public bool Contains(Group a)
-    {
-        return activeGroups.Contains(a);
+        activeViews.Remove(group.groupID, out var view);
+        Destroy(view.gameObject);
     }
 
     /// <summary>
-    /// Két csoport összeolvasztása egy új csoporttá.
+    /// Merges two groups into a new one if merging conditions are met.
     /// </summary>
-    private void MergeGroups(Group a, Group b)
+    public void MergeGroups(int groupAID, int groupBID)
     {
-        var mergedMembers = new HashSet<Animal>();
-        mergedMembers.UnionWith(a.Members);
+        var a = GetGroupByID(groupAID);
+        var b = GetGroupByID(groupBID);
+
+        if (!CanMerge(a, b)) return;
+
+        var mergedMembers = new HashSet<int>(a.Members);
         mergedMembers.UnionWith(b.Members);
 
         RemoveGroup(a);
         RemoveGroup(b);
+        CreateGroup(mergedMembers.ToList(), GroupState.Idle);
 
-        CreateNewGroup(mergedMembers.ToList());
-        Debug.Log("Merged group A: " + a.ID + " and group B: " + b.ID);
+        Debug.Log($"Merged group A: {a.groupID} and group B: {b.groupID}");
     }
 
     /// <summary>
-    /// Meghatározza, hogy két csoport összeolvadhat-e (létszám, típus, állapot alapján).
+    /// Checks if two groups can be merged based on size, type, and state.
     /// </summary>
-    private bool CanMerge(Group groupA, Group groupB)
+    private bool CanMerge(GroupModel groupA, GroupModel groupB)
     {
-        return (groupA.Members.Count + groupB.Members.Count <= 10 &&
-                groupA.AnimalType == groupB.AnimalType &&
-                groupA.State == groupB.State);
+        return groupA != null && groupB != null &&
+               groupA.Members.Count + groupB.Members.Count <= 10 &&
+               groupA.AnimalType == groupB.AnimalType &&
+               groupA.State == groupB.State &&
+               groupA.groupID < groupB.groupID;
     }
 
     /// <summary>
-    /// Csoportok közti térbeli ütközés vizsgálata, ha túl közel vannak → összeolvadás.
+    /// Returns a random position within a defined radius of a given point, considering terrain height.
     /// </summary>
-    public void CheckCollision()
+    public Vector3 GetRandomPointOnMap(Vector3 origin)
     {
-        HashSet<Group> mergedGroups = new();
-
-        for (int i = activeGroups.Count - 1; i >= 0; i--)
-        {
-            for (int j = activeGroups.Count - 1; j > i; j--)
-            {
-
-                Group groupA = activeGroups[i];
-                Group groupB = activeGroups[j];
-
-                if (mergedGroups.Contains(groupA) || mergedGroups.Contains(groupB)) continue;
-
-                if (Vector3.Distance(groupA.Position, groupB.Position) < RADIUS * 2 && CanMerge(groupA, groupB))
-                {
-                    MergeGroups(groupA, groupB);
-                    mergedGroups.Add(groupA);
-                    mergedGroups.Add(groupB);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Egy véletlenszerű pontot ad vissza a pályán, megadott távolságon belül, figyelembe véve a terep magasságát is.
-    /// </summary>
-    public Vector3 GetRandomPointOnMap(Vector3 origin, float maxDistance)
-    {
-        Vector2 offset2D = UnityEngine.Random.insideUnitCircle * maxDistance;
+        Vector2 offset2D = Random.insideUnitCircle * RADIUS;
         Vector3 candidate = origin + new Vector3(offset2D.x, 0, offset2D.y);
 
         var terrain = Terrain.activeTerrain;
@@ -178,36 +164,40 @@ public class GroupManager : MonoBehaviour
         return candidate;
     }
 
+    ///// <summary>
+    ///// Periodically checks for animals with different needs in the same group and separates them if necessary.
+    ///// </summary>
+    //private IEnumerator HandleDifferentNeeds()
+    //{
+    //    while (true)
+    //    {
+    //        foreach (var group in activeGroups)
+    //        {
+    //            group.ToMove.ToList().ForEach(group.LeaveGroup);
+
+    //            if (group.ToMove.Count >= 2)
+    //            {
+    //                CreateGroup(group.ToMove.ToList());
+    //            }
+
+    //            group.ToMove.Clear();
+    //            Debug.LogError($"Separated: {group.groupID} with {group.ToMove.Count} animals");
+    //        }
+
+    //        yield return new WaitForSeconds(SEPARATION_TIME);
+    //    }
+    //}
+
     /// <summary>
-    /// Kezeli azokat a csoportokat, ahol egyes tagok igénye eltér a többiekétől (pl. szomjas vs. éhes).
-    /// Az ilyen tagokat kiválasztja és új csoportot hoz létre nekik.
+    /// Returns a group by its unique group ID.
     /// </summary>
-    private IEnumerator HandleDifferentNeeds()
-    {
-        while (true)
-        {
-            foreach (var group in activeGroups)
-            {
-
-                if (group.ToMove.Count >= 2)
-                {
-                    CreateNewGroup(group.ToMove.ToList());
-                    Debug.LogError("Separated: " + group.ID + " with " + group.ToMove.Count + " animals");
-                }
-                group.ToMove.ToList().ForEach(t => group.LeaveGroup(t));
-
-                group.ToMove.Clear();
-            }
-
-            yield return new WaitForSecondsRealtime(2f);
-        }
-    }
+    public GroupModel GetGroupByID(int groupID) =>
+        activeGroups.FirstOrDefault(g => g.groupID == groupID);
 
     /// <summary>
-    /// Reagál a csoport állapotának megváltozására.
-    /// Leállítja a régi coroutine-t, és új keresést vagy célra indulást indít a csoport új állapota alapján.
+    /// Reacts to group state changes by stopping any running coroutine and starting a new one based on the new state.
     /// </summary>
-    private void HandleGroupStateChanged(Group group)
+    private void HandleGroupStateChanged(GroupModel group)
     {
         if (runningCoroutines.TryGetValue(group, out var oldCoroutine))
         {
@@ -215,21 +205,12 @@ public class GroupManager : MonoBehaviour
             runningCoroutines.Remove(group);
         }
 
-        Coroutine newCoro = null;
-        switch (group.State)
+        Coroutine newCoro = group.State switch
         {
-            case GroupState.SearchingFood:
-            case GroupState.SearchingWater:
-                newCoro = StartCoroutine(group.StartGroupSearching());
-                break;
-            case GroupState.Hungry:
-            case GroupState.Thirsty:
-                newCoro = StartCoroutine(group.SetGroupTargeting());
-                break;
-            case GroupState.Idle:
-            default:
-                break;
-        }
+            GroupState.SearchingFood or GroupState.SearchingWater => StartCoroutine(group.StartGroupSearching()),
+            GroupState.Hungry or GroupState.Thirsty => StartCoroutine(group.SetGroupTargeting()),
+            _ => null
+        };
 
         if (newCoro != null)
             runningCoroutines[group] = newCoro;
