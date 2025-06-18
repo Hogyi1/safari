@@ -176,15 +176,13 @@ public class TouristManager : MonoBehaviour, IRandomEventObserver, IDataPersiste
     {
         if (randomEvent == RandomEvent.Spawn_tourist)
         {
-            Debug.Log("Spawn tourist Event");
-
             float chance = UnityEngine.Random.Range(0f, 1f);
             if (chance <= (OverallMood / 100f) * EconomyManager.Instance.GetTicketInfluence())
                 SpawnTourist();
         }
     }
 
-
+#warning EZ ITT NEM JO
     /// <summary>
     /// Manually set a tourist's state.
     /// </summary>

@@ -1,6 +1,9 @@
 using UnityEngine;
-using UnityEngine.AI;
 
+/// <summary>
+/// Root state in which the animal actively seeks water to satisfy its thirst.
+/// The animal will search, approach, and consume water if necessary.
+/// </summary>
 public class SeekWaterState : AnimalBaseState, IRootState
 {
     public SeekWaterState(AnimalStateMachine stateMachine,
@@ -9,40 +12,9 @@ public class SeekWaterState : AnimalBaseState, IRootState
         isRootState = true;
     }
 
-    public override void CheckSwitchStates()
-    {
-        // Priority #1
-        // Ha halott akkor vége van
-        if (context.animal.Model.IsDead) { SwitchState(factory.Dead()); return; }
-
-        // Priority #2
-        // Ha csoportban és van valamilyen activity
-        if (context.animal.Group != null)
-        {
-            if (context.animal.Group.State != GroupState.Idle)
-            {
-                SwitchState(factory.Group());
-            }
-        }
-        // Nincsen context.animal.Groupban
-        // Ha éhes lett és nem szomjas már
-        else if (!context.animal.Model.IsThirsty && context.animal.Model.IsHungry)
-        {
-            SwitchState(factory.SeekFood());
-        }
-        // Ha már nincsen más bajom és breedingelhetek
-        else if (context.animal.Model.IsBreeding && !context.animal.Model.IsHungry && !context.animal.Model.IsThirsty && !context.animal.Model.IsConsuming)
-        {
-            SwitchState(factory.SeekMate());
-        }
-        // Ha context.animal.Groupban vagyok ha nem az Idle maga intézi
-        // Ha nincsen semmi bajom akkor Idle
-        else if (!context.animal.Model.IsThirsty && !context.animal.Model.IsConsuming)
-        {
-            SwitchState(factory.Idle());
-        }
-    }
-
+    /// <summary>
+    /// Called when entering the state. Determines the next water source position and initializes a substate accordingly.
+    /// </summary>
     public override void EnterState()
     {
         Vector3 waterPosition = context.animal.Model.GetNextWaterSourcePosition();
@@ -51,39 +23,81 @@ public class SeekWaterState : AnimalBaseState, IRootState
         InitializeSubState();
     }
 
+    /// <summary>
+    /// Called once when exiting the state. Clears the current target.
+    /// </summary>
     public override void ExitState()
     {
         context.animal.Model.SetTarget(Vector3.zero);
     }
 
+    /// <summary>
+    /// Evaluates whether the animal should switch to another root state,
+    /// such as Idle, SeekFood, SeekMate, Dead, or Group.
+    /// </summary>
+    public override void CheckSwitchStates()
+    {
+        var model = context.animal.Model;
+
+        if (model.IsDead)
+            SwitchState(factory.Dead());
+
+
+        if (context.animal.InGroup)
+            SwitchState(factory.Group());
+
+
+        if (!model.IsConsuming)
+        {
+            if (!model.IsThirsty && model.IsHungry)
+                SwitchState(factory.SeekFood());
+
+            else if (!model.IsThirsty)
+                SwitchState(factory.Idle());
+        }
+    }
+
+    /// <summary>
+    /// Initializes the appropriate substate based on whether the animal has a target and if it has arrived.
+    /// </summary>
     public override void InitializeSubState()
     {
-        if (context.animal.Model.Target == Vector3.zero)
+        var model = context.animal.Model;
+        var view = context.animal.View;
+
+        if (model.Target == Vector3.zero)
             SetSubState(factory.Searching(ColliderTrigger.Water));
-        else if (!context.animal.View.Arrived && context.animal.Model.Target != Vector3.zero)
+
+        else if (!view.Arrived && model.Target != Vector3.zero)
             SetSubState(factory.OnTarget(ColliderTrigger.Water));
-        else if (context.animal.View.Arrived && context.animal.Model.Target != Vector3.zero)
+
+        else if (view.Arrived && model.Target != Vector3.zero)
             SetSubState(factory.AtTarget(ColliderTrigger.Water));
 
-        // Minden keresésnél nézzen újra körbe
-        context.animal.View.RefreshDetection();
     }
+
+    /// <summary>
+    /// Called every frame. Checks for transitions and updates thirst-related need calculation.
+    /// </summary>
     public override void UpdateState()
     {
         CheckSwitchStates();
         CalculateModelData();
     }
+
+    /// <summary>
+    /// Applies thirst-related need degradation based on water-seeking effort.
+    /// </summary>
     public void CalculateModelData()
     {
-        context.animal.Model.CalculateHp();
-        context.animal.Model.CalculateHunger(1f);
-        context.animal.Model.CalculateThirst(1.2f);
+        context.animal.Model.CalculateNeeds(0.65f);
     }
 
+    /// <summary>
+    /// Returns a readable name of the current substate or a default description if none is active.
+    /// </summary>
     public override string ToString()
     {
-        if (currentSubState != null)
-            return currentSubState?.ToString();
-        return "Hungry";
+        return currentSubState?.ToString() ?? "Thirsty";
     }
 }

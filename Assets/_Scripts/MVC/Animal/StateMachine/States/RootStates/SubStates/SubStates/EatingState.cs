@@ -1,108 +1,105 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Substate triggered when the animal consumes food from a stationary source.
+/// Handles periodic consumption and hunger restoration.
+/// </summary>
 public class EatingState : AnimalBaseState
 {
-    IFoodSource foodSource;
-    float eatTimer;
-    const float EatingInterval = 2f;
-    public EatingState(AnimalStateMachine stateMachine,
-                         AnimalStateFactory factory) : base(stateMachine, factory)
+    private IFoodSource foodSource;
+    private float eatTimer;
+    private const float EatingInterval = 2f;
+
+    public EatingState(AnimalStateMachine stateMachine, AnimalStateFactory factory)
+        : base(stateMachine, factory)
     {
         isRootState = false;
     }
 
+    /// <summary>
+    /// Called when entering the state. Validates the food source and begins consumption.
+    /// </summary>
     public override void EnterState()
     {
-        var structObj = context.GetStructure(context.animal.Model.Target);
-        if (!(structObj is IFoodSource fs))
+        var model = context.animal.Model;
+        model.IsConsuming = true;
+
+        var structure = context.GetStructure(model.Target);
+        if (structure is not IFoodSource fs)
         {
+            model.RemoveSource(model.Target);
             ExitState();
             return;
         }
 
         foodSource = fs;
-        context.animal.Model.IsConsuming = true;
         eatTimer = EatingInterval;
     }
 
-
+    /// <summary>
+    /// Called every frame. Simulates food intake at fixed intervals and ends when full or source depleted.
+    /// </summary>
     public override void UpdateState()
     {
-        if (!context.animal.Model.IsConsuming || foodSource == null)
+        var model = context.animal.Model;
+        var view = context.animal.View;
+
+        if (!model.IsConsuming || foodSource == null)
             return;
 
         eatTimer += Time.deltaTime;
         if (eatTimer < EatingInterval)
             return;
 
-        if (!(context.GetStructure(context.animal.Model.Target) is IFoodSource fs))
+        if (context.GetStructure(model.Target) is not IFoodSource fs)
         {
-            FinishConsumption();
-            context.animal.Model.RemoveSource(context.animal.Model.Target);
+            model.RemoveSource(model.Target);
+            ExitState();
             return;
         }
 
         foodSource = fs;
-        // 2 másodperc eltelt, iszunk egyszer
         eatTimer = 0f;
-        int eaten = foodSource.Consume(1);
-        context.animal.Model.Eat(eaten);
-        context.animal.View.Animator.SetBool(AnimalView.IsEating, true);
 
-        // ha elfogyott a vízforrás vagy már nem szomjas, befejezzük
-        if (eaten == 0 || context.animal.Model.Hunger >= 100f)
-            FinishConsumption();
+        int eaten = foodSource.Consume(1);
+        model.Eat(eaten);
+        view.Animator.SetBool(AnimalView.IsEating, true);
+
+        if (eaten == 0 || model.Hunger >= 99f)
+            ExitState();
     }
 
-    // Nincs se alstate se szomszéd state-je
-    public override void CheckSwitchStates() { return; }
-    public override void InitializeSubState() { return; }
+    /// <summary>
+    /// No transitions during eating state.
+    /// </summary>
+    public override void CheckSwitchStates() { }
 
+    /// <summary>
+    /// No substates for eating.
+    /// </summary>
+    public override void InitializeSubState() { }
+
+    /// <summary>
+    /// Called when exiting the state. Resets animation and optionally sets a new food target.
+    /// </summary>
     public override void ExitState()
     {
-        // Nem volt itt semmilyen kaja, ezért töröljük
-        context.animal.Model.RemoveSource(context.animal.Model.Target);
-        if (context.animal.Group == null)
-        {
-            // Lekérjük a következő targetet, ha vector3.zero akkor úgyis keresni indul, ha nem akkor meg OnTargetre vált
-            Vector3 otherTarget = context.animal.Model.GetNextFoodSourcePosition();
-            // Beállítjuk a targetet
-            context.animal.Model.SetTarget(otherTarget);
-        }
-        context.animal.View.Animator.SetBool(AnimalView.IsEating, false);
-    }
+        var model = context.animal.Model;
+        var view = context.animal.View;
 
-    private void FinishConsumption()
-    {
-        if (context.animal.Model.IsHungry && context.animal.Group == null)
+        if (!context.animal.InGroup && model.IsHungry)
         {
-            Vector3 nextTarget = context.animal.Model.GetNextFoodSourcePosition();
-            if (nextTarget == context.animal.Model.Target)
-            {
-                context.animal.Model.RemoveSource(nextTarget);
-                context.animal.Model.SetTarget(Vector3.zero);
-            }
-            else
-            {
-                // Kitörlöm ami most üres inkább keresek mást
-                context.animal.Model.RemoveSource(context.animal.Model.Target);
-                context.animal.SetTarget(nextTarget);
-            }
-        }
-        else if (!context.animal.Model.IsHungry && context.animal.Group == null)
-        {
-            context.animal.Model.SetTarget(Vector3.zero);
+            Vector3 nextTarget = model.GetNextFoodSourcePosition();
+            context.animal.SetTarget(nextTarget);
         }
 
-        context.animal.Model.IsConsuming = false;
-        context.animal.View.Animator.SetBool(AnimalView.IsEating, false);
+        model.IsConsuming = false;
+        view.Animator.SetBool(AnimalView.IsEating, false);
     }
 
-    public override string ToString()
-    {
-        return "Eating";
-    }
+    /// <summary>
+    /// Returns a description of the state for debug or UI purposes.
+    /// </summary>
+    public override string ToString() => "Consuming food";
+
 }
-
-

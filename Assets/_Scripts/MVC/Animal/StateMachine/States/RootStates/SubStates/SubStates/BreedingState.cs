@@ -1,74 +1,96 @@
-﻿using System;
-using Unity.VisualScripting;
+﻿using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// Substate triggered when the animal attempts reproduction with a valid mate.
+/// Handles partner validation, breeding logic, and cooldown.
+/// </summary>
 public class BreedingState : AnimalBaseState
 {
-    Animal mate;
-    float timer;
-    const float cooldown = 2f;
-    public BreedingState(AnimalStateMachine stateMachine,
-                         AnimalStateFactory factory) : base(stateMachine, factory)
+    private Animal mate;
+    private float timer;
+    private const float Cooldown = 2f;
+
+    public BreedingState(AnimalStateMachine stateMachine, AnimalStateFactory factory)
+        : base(stateMachine, factory)
     {
         isRootState = false;
     }
 
+    /// <summary>
+    /// Called when entering the state. Attempts to locate the mating partner.
+    /// </summary>
     public override void EnterState()
     {
-        mate = context.GetAnimal(context.animal.Model.Mate.ID);
+        var model = context.animal.Model;
+        model.IsConsuming = true;
 
-        if (mate == null)
+        mate = AnimalManager.Instance.GetAnimalByID(model.MateID);
+        if (mate.IsUnityNull())
         {
             ExitState();
             return;
         }
 
-        timer = cooldown;
+        timer = Cooldown;
     }
 
+    /// <summary>
+    /// Called every frame. Waits for cooldown then triggers the breeding logic.
+    /// </summary>
     public override void UpdateState()
     {
-        if (!context.animal.Model.IsBreeding || mate == null)
+        var model = context.animal.Model;
+
+        if (!model.IsBreeding || model.MateID < 0)
             return;
 
         timer += Time.deltaTime;
-        if (timer < cooldown)
+        if (timer < Cooldown)
             return;
 
-        if (context.GetAnimal(context.animal.Model.Mate.ID).IsUnityNull())
+        if (AnimalManager.Instance.GetAnimalByID(model.MateID).IsUnityNull())
         {
-            context.animal.Model.SetTarget(Vector3.zero);
-            return;
-        }
-        else
-            mate.View.StopMovement();
-
-        timer = 0f;
-        if (mate.Model.TryBreeding(context.animal.Model))
-        {
-            context.Breeding(mate);
             ExitState();
+            return;
         }
-        else
+
+        mate.View.StopMovement();
+        timer = 0f;
+
+        if (mate.Model.TryBreeding(context.animal.ID))
         {
-            mate.View.ResetMovement();
-            context.animal.Model.SetTarget(Vector3.zero);
+            AnimalManager.Instance.Breed(mate.ID, context.animal.ID);
+            model.StopBreeding();
         }
+
+        ExitState();
     }
 
-    // Nincs se alstate se szomszéd state-je
-    public override void CheckSwitchStates() { return; }
-    public override void InitializeSubState() { return; }
+    /// <summary>
+    /// No transitions during the breeding process.
+    /// </summary>
+    public override void CheckSwitchStates() { }
 
+    /// <summary>
+    /// This substate does not contain any substates.
+    /// </summary>
+    public override void InitializeSubState() { }
+
+    /// <summary>
+    /// Called when exiting the state. Resets movement and mating flags.
+    /// </summary>
     public override void ExitState()
     {
-        mate.View.ResetMovement();
-        context.animal.Model.StopBreeding();
-        context.animal.Model.SetTarget(Vector3.zero);
+        var model = context.animal.Model;
+
+        mate?.View.ResetMovement();
+        model.IsConsuming = false;
+        model.SetTarget(Vector3.zero);
     }
 
-    public override string ToString()
-    {
-        return "Fucking";
-    }
+    /// <summary>
+    /// Returns a description of the state for debug or UI purposes.
+    /// </summary>
+    public override string ToString() => "Ultimate smash bros";
 }

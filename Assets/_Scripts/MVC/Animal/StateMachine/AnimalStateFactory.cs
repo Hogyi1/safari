@@ -24,6 +24,7 @@ public class AnimalStateFactory
     public AnimalBaseState Wandering() => new WanderingState(context, this);
     public AnimalBaseState Sleeping() => new SleepingState(context, this);
     public AnimalBaseState Stationary() => new StationaryState(context, this);
+    public AnimalBaseState GroupIdle() => new GroupIdleState(context, this);
 
     // Sub -> Sub
     public AnimalBaseState Breed() => new BreedingState(context, this);

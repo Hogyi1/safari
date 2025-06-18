@@ -81,12 +81,12 @@ public class StructureManager : MonoBehaviour, IBuyableManager
     // Szól az őt kezelő Managernek is, hogy törölje.
     public void RemoveStructure(int ID)
     {
-        Structure newStructure = activeStructures.Find(t => t.GetID() == ID);
-        if (newStructure != null)
+        Structure oldStructure = activeStructures.Find(t => t.GetID() == ID);
+        if (oldStructure != null)
         {
-            activeStructures.Remove(newStructure);
+            activeStructures.Remove(oldStructure);
 
-            IStructureManager manager = GetManager(newStructure.GetBuildingType());
+            IStructureManager manager = GetManager(oldStructure.GetBuildingType());
 
             manager.RemoveStructure(ID);
         }
@@ -141,7 +141,6 @@ public class StructureManager : MonoBehaviour, IBuyableManager
         foreach (var structure in IInteractables)
         {
             var view = structure.Value;
-            Debug.Log(position + " Ezen poziciot akarom lecsekkolni");
             if (Vector3.Distance(view.GetGameObject().transform.position, position) <= tolerance)
             {
                 return view.GetStructure();
