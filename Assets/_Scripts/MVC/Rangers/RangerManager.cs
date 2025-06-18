@@ -139,7 +139,7 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
         Ranger available = activeRangers.Find(r => r.Model.State == Available);
         if (available == null) return false;
 
-        AnimalView preyView = AnimalManager.Instance.GetAnimal(animalID)?.View;
+        AnimalView preyView = AnimalManager.Instance.GetAnimalByID(animalID)?.View;
         if (preyView == null) return false;
 
         available.Model.SetPrey(animalID);
@@ -170,12 +170,12 @@ public class RangerManager : MonoBehaviour, IUpgradeable, IBuyableManager, ITime
     private void HandleAtTarget(Ranger ranger)
     {
         int preyID = ranger.Model.ClearPrey();
-        Animal prey = AnimalManager.Instance.GetAnimal(preyID);
+        Animal prey = AnimalManager.Instance.GetAnimalByID(preyID);
         if (prey != null)
         {
             GameEvents.Instance.NotifyObservers(EventType.ANIMAL_KILL, 1);
-            EconomyManager.Instance.AddMoney(prey.Model.Price);
-            AnimalManager.Instance.KillAnimal(prey);
+            EconomyManager.Instance.AddMoney(Mathf.RoundToInt(prey.Model.GetPrice()));
+            AnimalManager.Instance.KillAnimal(preyID);
             ranger.View.AtTarget();
             animalIDs.Remove(preyID);
         }
