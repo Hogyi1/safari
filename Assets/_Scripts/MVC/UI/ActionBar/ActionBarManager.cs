@@ -8,41 +8,13 @@ using System;
 /// </summary>
 public class ActionBarManager : MonoBehaviour
 {
+    [SerializeField] private StatisticsUI statUI;
+
     [Header("TextFieldsForBottomBar")]
-    /// <summary>
-    /// Text field displaying the player's current money.
-    /// </summary>
-    public TMP_Text money;
-
-    /// <summary>
-    /// Icon indicating whether money has increased or decreased.
-    /// </summary>
-    public Image monyUpOrDownIcon;
-
-    /// <summary>
-    /// Text field showing the current visitor count.
-    /// </summary>
-    public TMP_Text visitorCount;
-
-    /// <summary>
-    /// Icon indicating whether visitor count has increased or decreased.
-    /// </summary>
-    public Image visitorsUpOrDownIcon;
-
     /// <summary>
     /// Text field displaying the park's name.
     /// </summary>
     public TMP_Text parkName;
-
-    /// <summary>
-    /// Text field showing the current number of animals.
-    /// </summary>
-    public TMP_Text animalCount;
-
-    /// <summary>
-    /// Icon indicating whether animal count has increased or decreased.
-    /// </summary>
-    public Image animalUpOrDownIcon;
 
     [Header("ButtonsForBottomBar")]
     /// <summary>
@@ -81,15 +53,11 @@ public class ActionBarManager : MonoBehaviour
     public TMP_Text Date;
 
     [Header("SpritesForBottomBar")]
-    /// <summary>
-    /// Sprite used for upward trend icons.
-    /// </summary>
-    public Sprite upImage;
 
     /// <summary>
-    /// Sprite used for downward trend icons.
+    /// Original image forwardPlace
     /// </summary>
-    public Sprite downImage;
+    public Image forwardPlace;
 
     /// <summary>
     /// Sprite for the first speed-up indicator.
@@ -111,9 +79,9 @@ public class ActionBarManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        money.text =  Convert.ToString(EconomyManager.Instance.getEconomy().CurrentMoney);
-        animalCount.text = "100"; // TODO: Replace hardcoded value with dynamic data
-        visitorCount.text = "100"; // TODO: Replace hardcoded value with dynamic data
+        statUI.UpdateAnimal(AnimalManager.Instance.Count, AnimalManager.Instance.Incoming);
+        statUI.UpdateTourist(TouristManager.Instance.Count, TouristManager.Instance.Incoming);
+        statUI.UpdateEconomy(EconomyManager.Instance.GetEconomy().CurrentMoney, EconomyManager.Instance.Incoming);
         Date.text = TimeManager.Instance.GetCurrentTime().ToString();
     }
 
@@ -122,8 +90,8 @@ public class ActionBarManager : MonoBehaviour
     /// </summary>
     public void Start()
     {
-        // TODO: Load parkName from data persistence
-
+        parkName.text = Park.Instance.ParkName;
+        // ide kell a datapersistancebol a parkname parkName.text = 
         stopTime.onClick.AddListener(() =>
         {
             TimeManager.Instance.PauseTime();
@@ -134,10 +102,9 @@ public class ActionBarManager : MonoBehaviour
             TimeManager.Instance.ResumeTime();
         });
 
-        forwardTimeButton.onClick.AddListener(() =>
-        {
-            TimeManager.Instance.SpeedUpTime();
-        });
+        //forwardTimeButton.onClick.AddListener(() =>
+        //{
+        //    TimeManager.Instance.SpeedUpTime();
+        //});
     }
-
 }

@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class StructureManager : MonoBehaviour
+public class StructureManager : MonoBehaviour, IBuyableManager
 {
     public static StructureManager Instance;
 
@@ -13,8 +14,9 @@ public class StructureManager : MonoBehaviour
     [SerializeField] private RoadManager roadManager;
     [SerializeField] private FacilityManager facilityManager;
 
-    [SerializeField] private List<Structure> activeSelectables = new List<Structure>();
+    private List<Structure> activeStructures = new List<Structure>();
     public Dictionary<int, IPlaceable> IInteractables = new Dictionary<int, IPlaceable>();
+
 
     //Singleton design
     public void Awake()
@@ -56,15 +58,16 @@ public class StructureManager : MonoBehaviour
     // Visszatérési értéke a generált ID amit, később a MapData tárol el
     public int CreateStructure(BuildingData Data, Vector3 position, Vector2Int gridPosition)
     {
-        IStructureManager manager = GetManager(Data.type);
-        if (manager.IsUnityNull()) throw new Exception("Nem található a következő manager: " + Data.type + "Manager");
+        IStructureManager manager = GetManager(Data.Type);
+        if (manager.IsUnityNull()) throw new Exception("Nem található a következő manager: " + Data.Type + "Manager");
+        GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 10);
 
         int ID = IDGenerator.GenerateID();
 
         Structure newStructure = manager.AddStructure(Data, ID, gridPosition);
-        activeSelectables.Add(newStructure);
+        activeStructures.Add(newStructure);
 
-        IPlaceable view = PlacementManager.Instance.PlaceStructure(Data, position, newStructure);
+        IPlaceable view = PlacementManager.Instance.Place(Data, position, newStructure);
 
         manager.SetView(view, ID);
 
@@ -78,12 +81,12 @@ public class StructureManager : MonoBehaviour
     // Szól az őt kezelő Managernek is, hogy törölje.
     public void RemoveStructure(int ID)
     {
-        Structure newStructure = activeSelectables.Find(t => t.GetID() == ID);
-        if (newStructure != null)
+        Structure oldStructure = activeStructures.Find(t => t.GetID() == ID);
+        if (oldStructure != null)
         {
-            activeSelectables.Remove(newStructure);
+            activeStructures.Remove(oldStructure);
 
-            IStructureManager manager = GetManager(newStructure.GetBuildingType());
+            IStructureManager manager = GetManager(oldStructure.GetBuildingType());
 
             manager.RemoveStructure(ID);
         }
@@ -96,17 +99,32 @@ public class StructureManager : MonoBehaviour
         }
     }
 
-    public bool RegisterStructures(BuildingData Data, int ID, IPlaceable view, Vector2Int nodePosition)
+    public bool RegisterStructures(BuildingData data, int ID, IPlaceable view, Vector2Int nodePosition)
     {
-        IStructureManager manager = GetManager(Data.type);
+        IStructureManager manager = GetManager(data.Type);
         if (manager.IsUnityNull()) return false;
 
-        Structure newStructure = manager.AddStructure(Data, ID, nodePosition); // Nem jó az utakhoz
-        activeSelectables.Add(newStructure);
+        Structure newStructure = manager.AddStructure(data, ID, nodePosition);
+        activeStructures.Add(newStructure);
         view.Init(newStructure);
 
         manager.SetView(view, ID);
         IInteractables[ID] = view;
+        return true;
+    }
+
+
+    public bool RegisterStructures(BuildingData data, StructureSaveData saveData, IPlaceable view, Vector2Int nodePosition)
+    {
+        IStructureManager manager = GetManager(data.Type);
+        if (manager.IsUnityNull()) return false;
+
+        Structure newStructure = manager.RegisterStructure(data, saveData, nodePosition);
+        activeStructures.Add(newStructure);
+        view.Init(newStructure);
+
+        manager.SetView(view, saveData.UniqueID);
+        IInteractables[saveData.UniqueID] = view;
         return true;
     }
 
@@ -123,7 +141,6 @@ public class StructureManager : MonoBehaviour
         foreach (var structure in IInteractables)
         {
             var view = structure.Value;
-            Debug.Log(position + " Ezen poziciot akarom lecsekkolni");
             if (Vector3.Distance(view.GetGameObject().transform.position, position) <= tolerance)
             {
                 return view.GetStructure();
@@ -131,13 +148,22 @@ public class StructureManager : MonoBehaviour
         }
         return null;
     }
+
+    public bool CanBuy() => true; // Nincs megkötve
+
+    /// <summary>
+    /// Returns a list of all currently placed IPlaceable views.
+    /// </summary>
+    public List<IPlaceable> GetPlaceables() => new List<IPlaceable>(IInteractables.Values);
+    public List<Structure> GetStructures() => new List<Structure>(activeStructures);
 }
 
 // Interfész IStructureManager
 // Minden épülettel foglalkozó Manager megvalósítja
 public interface IStructureManager
 {
-    public Structure AddStructure(BuildingData Data, int ID, Vector2Int gridPosition);
+    public Structure AddStructure(BuildingData Ddataata, int ID, Vector2Int gridPosition);
+    public Structure RegisterStructure(BuildingData data, StructureSaveData saveData, Vector2Int gridPosition);
     public void RemoveStructure(int ID);
     public void SetView(IPlaceable view, int ID);
 }
@@ -170,6 +196,7 @@ public interface IPlaceable
 public interface IHasInteractingPosition
 {
     public Vector3 GetInteractingPosition();
+    public Vector3 GetSpawnPosition();
 }
 
 //Interfész IStageable
@@ -185,6 +212,7 @@ public interface IStageable
 // Minden amit lehet fejleszteni megkapja, a View és Model egyaránt megkapja
 public interface IUpgradeable
 {
-    public void LevelUp();
-    public void LevelDown();
+    public void LevelUp(int amount);
+    public void LevelDown(int amount);
+    public void SetCapacity(int amount);
 }

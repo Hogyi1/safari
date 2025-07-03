@@ -80,7 +80,7 @@ public class PauseController : MonoBehaviour
     public void ExitToMainMenu()
     {
         // Implement alert here when there is unsaved progress...
-
+        DataPersistenceManager.Instance.SaveGame();
         Time.timeScale = 1;
         if (SceneHandler.Instance != null)
         {
@@ -99,7 +99,7 @@ public class PauseController : MonoBehaviour
     public void ExitToDesktop()
     {
         // Implement alert here when there is unsaved progress...
-
+        DataPersistenceManager.Instance.SaveGame();
         Application.Quit();
     }
 
@@ -108,7 +108,8 @@ public class PauseController : MonoBehaviour
     /// </summary>
     public void SaveGame()
     {
-        Debug.Log("SaveGame clicked (not implemented).");
+        Debug.Log("SaveGame clicked");
+        DataPersistenceManager.Instance.SaveGame();
     }
 
     /// <summary>

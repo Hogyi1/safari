@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class AnimalStateMachine : MonoBehaviour
@@ -11,41 +9,45 @@ public class AnimalStateMachine : MonoBehaviour
     public Animal animal;
     public AnimalBaseState RootState;
 
-    public AnimalState currentState;
+    [Header("Debug")]
     public AnimalType Type;
-
     public string rootState;
     public string subState;
     public string subsubState;
 
+    [Header("Physicals")]
     public float Hunger;
     public float Thirst;
     public float Age;
     public float Hp;
-    public bool IsBreeding;
-    public int GroupID;
 
+    [Header("States")]
+    public bool IsBreeding;
     public bool Arrived;
     public bool AllFinished;
+    public bool IsConsuming;
 
-    public bool InGroup;
-    public GroupState gState;
-    public bool GroupHasPrey;
+    [Header("Sources")]
     public bool HasPrey;
     public bool HasMate;
     public List<Vector3> foodSources;
     public List<Vector3> waterSources;
 
+    [Header("Positions")]
     public Vector3 Target;
     public Vector3 Destination;
+
+    [Header("Group debugs")]
+    public int GroupID;
     public Vector3 GroupTarget;
-    public List<Vector3> gfoodSources;
-    public List<Vector3> gwaterSources;
+    public GroupState gState;
+    public bool GroupHasPrey;
+
     public void Init(Animal context)
     {
         this.animal = context;
 
-        RootState = new IdleState(this, new AnimalStateFactory(this));
+        RootState = context.InGroup ? new GroupBehaviourState(this, new AnimalStateFactory(this)) : new IdleState(this, new AnimalStateFactory(this));
         RootState.EnterState();
 
         StartCoroutine(AgeRoutine());
@@ -59,6 +61,7 @@ public class AnimalStateMachine : MonoBehaviour
 
     public void LateUpdate()
     {
+        IsConsuming = animal.Model.IsConsuming;
         Age = animal.Model.Age;
         Hunger = animal.Model.Hunger;
         Thirst = animal.Model.Thirst;
@@ -68,27 +71,20 @@ public class AnimalStateMachine : MonoBehaviour
         Arrived = animal.View.Arrived;
         AllFinished = animal.View.FinishedAnimation;
 
-        InGroup = !animal.Group.IsUnityNull();
-        HasPrey = !animal.Model.Prey.IsUnityNull();
-
         foodSources = animal.Model.foodSources;
         waterSources = animal.Model.waterSources;
-
         Target = animal.Model.Target;
         Type = animal.Model.Type;
         Destination = animal.View.Agent.destination;
-        HasMate = !animal.Model.Mate.IsUnityNull();
-        if (animal.Group != null)
+        HasMate = animal.Model.MateID > 0;
+        GroupID = animal.GroupID;
+
+        if (animal.InGroup)
         {
-            gState = animal.Group.State;
-            GroupTarget = animal.Group.GetCurrentTarget();
+            GroupModel group = GroupManager.Instance.GetGroupByID(GroupID);
 
-            gfoodSources = animal.Group.foodSources.ToList();
-            gwaterSources = animal.Group.waterSources.ToList();
-
-            GroupHasPrey = !animal.Group.Prey.IsUnityNull();
-
-            GroupID = animal.Group.ID;
+            gState = group.State;
+            GroupTarget = group.CurrentTarget;
         }
 
         try
@@ -102,7 +98,7 @@ public class AnimalStateMachine : MonoBehaviour
             if (suBsuBState != null) subsubState = suBsuBState.ToString();
             else subsubState = "null";
         }
-        catch (Exception ex) { }
+        catch (Exception) { }
 
         RootState.UpdateStates();
     }
@@ -112,7 +108,14 @@ public class AnimalStateMachine : MonoBehaviour
 
         gameObject.GetComponent<AgentSync>().enabled = false;
 
-        if (animal.Group != null) animal.Group.LeaveGroup(animal);
+        MonoBehaviour[] allBehaviours = gameObject.GetComponentsInChildren<MonoBehaviour>(true);
+        foreach (var behaviour in allBehaviours)
+        {
+            if (behaviour != this)
+                behaviour.enabled = false;
+        }
+
+        if (animal.InGroup) GroupManager.Instance.GetGroupByID(animal.GroupID).LeaveGroup(animal.ID);
         StartCoroutine(DeathDelay());
     }
 
@@ -144,50 +147,8 @@ public class AnimalStateMachine : MonoBehaviour
         }
     }
 
-    public Animal GetAnimal(int iD)
-    {
-        return AnimalManager.Instance.GetAnimal(iD);
-    }
-
-    public void JoinGroup(Group group)
-    {
-        if (GroupManager.Instance.EnterGroup(group, animal))
-        {
-            ReenterState();
-        }
-    }
-
     public Structure GetStructure(Vector3 target)
     {
         return StructureManager.Instance.GetStructureByPosition(target);
     }
-
-    public void KillAnimal(Animal animal)
-    {
-        AnimalManager.Instance.KillAnimal(animal);
-    }
-
-    public void Breeding(Animal mate)
-    {
-        AnimalManager.Instance.Breed(animal.Model, mate.Model);
-    }
-}
-
-public enum AnimalState
-{
-    Idle,
-    SeekFood,
-    SeekWater,
-    SeekMate,
-    GroupBehaviour,
-    Dead,
-    Wandering,
-    Stationary,
-    Sleeping,
-    AtTarget,
-    Searching,
-    OnTarget,
-    Eating,
-    Drinking,
-    Breeding
 }

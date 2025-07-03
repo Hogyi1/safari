@@ -56,7 +56,7 @@ public class LevelUIController : MonoBehaviour, ILevelObserver
     /// <param name="amount">Associated amount (for example, how much exp was gained).</param>
     public void OnNotify(EventType eventType, int amount)
     {
-        if (eventType == EventType.EXP_GAIN)
+        if (eventType == EventType.EXP_ADD)
             StartCoroutine(DelayedUpdate());
     }
 

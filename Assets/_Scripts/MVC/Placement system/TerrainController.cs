@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using UnityEngine.Playables;
 using Unity.VisualScripting;
 
 public class TerrainController : MonoBehaviour
@@ -37,7 +36,6 @@ public class TerrainController : MonoBehaviour
 
     // xStart, yStart, Index - heightMap
     private Dictionary<Vector3Int, float[,]> storedHeights = new Dictionary<Vector3Int, float[,]>();
-
     private void Start()
     {
         // Terrain
@@ -89,13 +87,11 @@ public class TerrainController : MonoBehaviour
             GameObject bottom = CurrentObject.transform.Find("Floor").gameObject;
             bounds = bottom.GetComponent<Renderer>().bounds;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Debug.LogWarning(ex);
-
             // Ha nincs Floor akkor az alapot használjuk
             bounds = Structure.GetComponentInChildren<Renderer>().bounds;
-            Debug.LogWarning("Floor nem található, Renderer bounds lesz használva!");
+            // Debug.LogWarning("Floor nem található, Renderer bounds lesz használva!");
         }
 
         // A Structure aljának koordinátája átváltva - normalizálva heightmapre
@@ -160,7 +156,7 @@ public class TerrainController : MonoBehaviour
         {
             currentHeightMap = terrainData.GetHeights(xStart, zStart, width, depth);
         }
-        catch (Exception e) { Debug.LogWarning("Can't access terrain heights"); return; }
+        catch (Exception) { Debug.LogWarning("Can't access terrain heights"); return; }
 
         float[,] newHeights = new float[depth, width];
 
@@ -239,7 +235,7 @@ public class TerrainController : MonoBehaviour
         {
             originalHeightMap = terrainData.GetHeights(xStart, zStart, width, depth);
         }
-        catch (Exception e) { Debug.LogWarning("Can't access terrain heights"); return; }
+        catch (Exception) { Debug.LogWarning("Can't access terrain heights"); return; }
 
         // A kulcs, xStart, zStart és a StructureIndex-ből áll
         Vector3Int SaveKey = new Vector3Int(xStart, zStart, index);

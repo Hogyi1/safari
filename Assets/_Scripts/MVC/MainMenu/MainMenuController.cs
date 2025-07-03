@@ -1,16 +1,37 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Controls the main menu panels and game navigation actions such as continue and exit.
 /// </summary>
 public class MainMenuController : MonoBehaviour
 {
-    /// <summary>
-    /// Array of menu GameObjects to toggle on navigation.
-    /// </summary>
-    [SerializeField] GameObject[] menus;
+    [Header("Menu Navigation")]
 
-    [SerializeField] private string gameSceneName = "Bemutato";
+    /// <summary>
+    /// Reference to the save slots menu used for selecting save files.
+    /// </summary>
+    [SerializeField] private SaveSlotsMenu saveSlotsMenu;
+
+    /// <summary>
+    /// Array of menu GameObjects to toggle during navigation.
+    /// </summary>
+    [SerializeField] private GameObject[] menus;
+
+    /// <summary>
+    /// Button used to continue the most recently saved game.
+    /// </summary>
+    [SerializeField] private Button continueGameButton;
+
+    /// <summary>
+    /// Button used to load an existing save game from the save slots menu.
+    /// </summary>
+    [SerializeField] private Button loadGameButton;
+
+    /// <summary>
+    /// The name of the main game scene to load when starting or continuing a game.
+    /// </summary>
+    [SerializeField] private string gameSceneName;
 
     /// <summary>
     /// Hides all menu panels on start.
@@ -18,6 +39,7 @@ public class MainMenuController : MonoBehaviour
     private void Start()
     {
         mm_HideAllMenus();
+        DisableButtonsDependingOnData();
     }
 
     /// <summary>
@@ -30,7 +52,7 @@ public class MainMenuController : MonoBehaviour
         {
             menu.SetActive(false);
         }
-        activeMenu.SetActive(true);  
+        activeMenu.SetActive(true);
     }
 
     /// <summary>
@@ -38,14 +60,8 @@ public class MainMenuController : MonoBehaviour
     /// </summary>
     public void mm_Continue()
     {
-        if (SceneHandler.Instance != null)
-        {
-            SceneHandler.Instance.LoadGameScene(gameSceneName);
-        }
-        else
-        {
-            Debug.LogWarning("SceneHandler.Instance is null. Can't load menu.");
-        }
+        //DataPersistenceManager.Instance.LoadGame();
+        SceneLoadManager.LoadScene(gameSceneName);
     }
 
     /// <summary>
@@ -68,4 +84,36 @@ public class MainMenuController : MonoBehaviour
             menu.SetActive(false);
         }
     }
+
+    /// <summary>
+    /// Called when the "New Game" button is clicked.
+    /// Activates the save slots menu for starting a new game.
+    /// </summary>
+    public void OnNewGameClicked()
+    {
+        saveSlotsMenu.ActivateMenu(false);
+    }
+
+    /// <summary>
+    /// Called when the "Load Game" button is clicked.
+    /// Activates the save slots menu for loading an existing game.
+    /// </summary>
+    public void OnLoadGameClicked()
+    {
+        saveSlotsMenu.ActivateMenu(true);
+    }
+
+    /// <summary>
+    /// Disables the "Continue" and "Load Game" buttons
+    /// if no game data is found in the current profile.
+    /// </summary>
+    private void DisableButtonsDependingOnData()
+    {
+        if (!DataPersistenceManager.Instance.HasGameData())
+        {
+            continueGameButton.interactable = false;
+            loadGameButton.interactable = false;
+        }
+    }
+
 }

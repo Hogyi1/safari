@@ -20,10 +20,10 @@ TagManager:
   - Terrain
   - UIWorld
   - Animal
+  - MinimapIcon
+  - WordMap
   - Tourist_Path
-  - 
-  - 
-  - 
+  - Group
   - 
   - 
   - 

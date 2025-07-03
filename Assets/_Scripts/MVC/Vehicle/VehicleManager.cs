@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static VehicleState;
 
@@ -9,7 +11,7 @@ using static VehicleState;
 /// and manages tour start and finish in an MVC architecture.
 /// </summary>
 [RequireComponent(typeof(VehicleFactory))]
-public class VehicleManager : MonoBehaviour, IUpgradeable
+public class VehicleManager : MonoBehaviour, IUpgradeable, IBuyableManager, IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the VehicleManager.
@@ -20,16 +22,19 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
 
     [Tooltip("Which manager type is mine")]
     [SerializeField] private ManagerType myType = ManagerType.Vehicle;
-    [Tooltip("The position, where the vehicles should return to")]
-    [SerializeField] private GameObject garage;
+
     [Tooltip("Maximum waiting time per vehicle in seconds")]
     [SerializeField] private const float maxWaitingTime = 15f;
-    [Tooltip("The amount of an upgrade session")]
-    [SerializeField] private const int upgradeAmount = 2;
-
 
     private List<Vehicle> activeVehicles = new List<Vehicle>();
-    private int capacity = 5;
+    private int maxCapacity;
+    private Action OnHandlerResponse;
+
+    /// <summary>
+    /// Unity lifecycle method that initializes the singleton instance,
+    /// subscribes to road-related events, and disables the GameObject by default.
+    /// Ensures only one instance of the manager exists across scenes.
+    /// </summary>
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -40,19 +45,32 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        factory = GetComponent<VehicleFactory>();
+
+        // Events
+        OnHandlerResponse = () => gameObject.SetActive(true);
+        DataPersistenceManager.Instance.OnAllLoaded += OnHandlerResponse;
+
+        gameObject.SetActive(false);
     }
 
-    private void Start()
-    {
-        RoadManager.Instance.OnRoadRemoved += HandleRedirect;
-    }
+    private void OnDestroy() => DataPersistenceManager.Instance.OnAllLoaded -= OnHandlerResponse;
 
+    private void Start() => RoadManager.Instance.OnRoadRemoved += HandleRedirect;
+
+    /// <summary>
+    /// Unity lifecycle method that initializes the singleton instance,
+    /// subscribes to road-related events, and disables the GameObject by default.
+    /// Ensures only one instance of the manager exists across scenes.
+    /// </summary>
     private void Update()
     {
         float delta = Time.deltaTime;
 
         foreach (var vehicle in activeVehicles)
         {
+            if (vehicle.IsUnityNull()) return;
             switch (vehicle.Model.State)
             {
                 case Full:
@@ -71,19 +89,21 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
         }
     }
 
+
     /// <summary>
     /// Spawns a new vehicle at a parking spot and registers it.
     /// </summary>
     /// <param name="vehicleTypeIndex">Index to select vehicle data from factory.</param>
     public void SpawnVehicle(int vehicleTypeIndex)
     {
-        if (capacity <= activeVehicles.Count) return;
+        if (maxCapacity <= activeVehicles.Count) return;
         int id = IDGenerator.GenerateID();
 
         Vehicle newVehicle = factory.CreateVehicle(id, vehicleTypeIndex);
         if (newVehicle != null)
             activeVehicles.Add(newVehicle);
     }
+
 
     /// <summary>
     /// Removes a vehicle by ID, destroying its view GameObject if present.
@@ -95,12 +115,15 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
 
         if (toRemove != null)
         {
+            toRemove.Model.AssignedTouristIDs
+                .ForEach(tid => TouristManager.Instance.SetTouristState(tid, TouristState.Finished));
             activeVehicles.Remove(toRemove);
 
             if (toRemove.View != null)
                 Destroy(toRemove.View.gameObject);
         }
     }
+
 
     /// <summary>
     /// Attempts to assign a tourist to an available vehicle.
@@ -120,37 +143,34 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
         foreach (var vehicle in available)
         {
             if (vehicle.Model.AddPassenger(touristID))
+            {
+                GameEvents.Instance.NotifyObservers(EventType.VISITOR_TRANSPORTED, 1);
                 return vehicle.ID;
+            }
         }
 
         return -1;
     }
 
-    /// <summary>
-    /// Determines the parking spot position for spawning vehicles.
-    /// </summary>
-    public Vector3 GetParkingSpot()
-    {
-        Vector3 pos;
-        try
-        {
-            pos = garage.transform.Find("Garage").position;
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning("Nincsen beállítva Garage az alap beállításokat fogom használni");
-            pos = garage.GetComponent<Renderer>().bounds.center;
-        }
-        return pos;
-    }
 
     /// <summary>
     /// Finds a random route via the RoadManager.
     /// </summary>
-    private List<Vector3> FindRoute()
-    {
-        return RoadManager.Instance.SearchForRandomPath();
-    }
+    private List<Vector3> FindRoute() => RoadManager.Instance.SearchForRandomPath();
+
+
+    /// <summary>
+    /// Determines the parking spot position for spawning vehicles.
+    /// </summary>
+    public Vector3 GetParkingSpot() => FacilityManager.Instance.GetSpawnPosition(myType);
+
+
+    /// <summary>
+    /// Gets the interacting position of the garage
+    /// </summary>
+    /// <returns>The interacting position of the garage</returns>
+    public Vector3 GetGaragePosition() => FacilityManager.Instance.GetInteractingPosition(myType);
+
 
     /// <summary>
     /// Checks if all passengers of a vehicle have arrived by querying TouristManager.
@@ -160,6 +180,7 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
         return !vehicle.Model.AssignedTouristIDs
             .Any(id => TouristManager.Instance.GetTouristState(id) == TouristState.Walking);
     }
+
 
     /// <summary>
     /// Starts the tour for a vehicle if all passengers have arrived.
@@ -177,8 +198,10 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
 
             vehicle.View.gameObject.SetActive(true);
             vehicle.View.MoveOnRoute(FindRoute(), Finished);
+            GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 5);
         }
     }
+
 
     /// <summary>
     /// Finishes the tour for a vehicle, resets passenger states, and returns it to parking.
@@ -202,24 +225,23 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
         }
     }
 
-    public void SetVehicleState(int iD, VehicleState newState)
-    {
-        activeVehicles.Find(t => t.ID == iD).Model.State = newState;
-    }
 
+    /// <summary>
+    /// Handles rerouting of all vehicles currently on tour or returning (busy) when a road is removed.
+    /// Attempts to find a new valid path using the <see cref="RoadManager"/>.
+    /// - If no path is found and the vehicle was on tour, it is marked as <c>Finished</c>.
+    /// - If no path is found and the vehicle was returning, it is reset to garage.
+    /// - If a path is found, the vehicle is redirected using <see cref="VehicleView.MoveOnRoute"/>.
+    /// </summary>
     private void HandleRedirect()
     {
-        Debug.Log("Redirecting rn");
         var vehiclesOnTour = activeVehicles.FindAll(t => t.Model.State == On_tour || t.Model.State == Busy);
 
         foreach (var vehicle in vehiclesOnTour)
         {
             bool toExit = vehicle.Model.State == On_tour;
-            Debug.Log("ToExit? " + toExit);
             List<Vector3> newPath = RoadManager.Instance.FindNewPath(vehicle.View.transform.position, toExit);
             vehicle.View.StopAllCoroutines();
-            Debug.Log("current state " + vehicle.Model.State);
-            Debug.Log("do i have a path " + (newPath.Count != 0));
 
             if (newPath.Count == 0 && toExit) vehicle.Model.State = Finished;
             else if (newPath.Count == 0 && !toExit) vehicle.View.ResetVehicle();
@@ -228,28 +250,63 @@ public class VehicleManager : MonoBehaviour, IUpgradeable
         }
     }
 
-    public List<AnimalType> GetAnimalsInSight(int vehicleID)
-    {
-        return activeVehicles.Find(t => t.ID == vehicleID).View.animalsInView;
-    }
 
-    public Vector3 GetGaragePosition(int ID)
-    {
-        return FacilityManager.Instance.GetInteractingPosition(myType);
-    }
-
-    public void LevelUp()
-    {
-        capacity += upgradeAmount;
-    }
-
-    public void LevelDown()
-    {
-        capacity -= upgradeAmount;
-    }
-
-    public int MaxCapacity => capacity;
+    /* GETTERS SETTERS */
+    public void SetVehicleState(int iD, VehicleState newState) => activeVehicles.Find(t => t.ID == iD).Model.State = newState;
+    public Vehicle GetVehicle(int ID) => activeVehicles.Find(t => t.ID == ID);
+    public List<AnimalType> GetAnimalsInSight(int vehicleID) => activeVehicles.FirstOrDefault(t => t.ID == vehicleID).View.AnimalsInView;
+    public void LevelUp(int amount) => maxCapacity += amount;
+    public void LevelDown(int amount) => maxCapacity -= amount;
+    public bool CanBuy() => Capacity < MaxCapacity;
+    public void SetCapacity(int amount) => maxCapacity = amount;
+    public int MaxCapacity => maxCapacity;
     public int Capacity => activeVehicles.Count;
+    public List<Vehicle> AllVehicles => activeVehicles;
+
+
+    /// <summary>
+    /// Gets the loading priority for this manager. Lower values are loaded earlier.
+    /// Used to ensure vehicles are loaded after essential dependencies like roads.
+    /// </summary>
+    public float Priority => 1000f;
+
+
+    /// <summary>
+    /// Loads vehicle-related data from the provided <see cref="GameData"/> object.
+    /// Restores the maximum vehicle capacity and re-creates all saved vehicles.
+    /// </summary>
+    /// <param name="data">The <see cref="GameData"/> object containing saved vehicle data.</param>
+    /// <returns>Coroutine enumerator used for asynchronous data loading.</returns>
+    public IEnumerator LoadData(GameData data)
+    {
+        yield return Register(data.vehicleDatas);
+    }
+
+
+    /// <summary>
+    /// Saves the current state of all vehicles to the provided <see cref="GameData"/> object.
+    /// Includes both manager-level data (e.g., max capacity) and individual vehicle states.
+    /// </summary>
+    /// <param name="data">The <see cref="GameData"/> object to write vehicle data into.</param>
+    public void SaveData(GameData data)
+    {
+        data.vehicleDatas.Clear();
+        activeVehicles.ForEach(t => data.vehicleDatas.Add(t.GetSaveData()));
+    }
+
+
+    /// <summary>
+    /// Asynchronously registers all vehicles from a saved list by re-creating them through the factory.
+    /// Waits one frame before beginning to ensure dependencies (like scene setup) are ready.
+    /// </summary>
+    /// <param name="data">List of <see cref="VehicleSaveData"/> entries to restore.</param>
+    /// <returns>Coroutine that completes after all vehicles have been instantiated and added.</returns>
+    private IEnumerator Register(List<VehicleSaveData> data)
+    {
+        yield return new WaitForEndOfFrame();
+        data.ForEach(t => activeVehicles.Add(factory.CreateVehicle(t)));
+        yield return new WaitForEndOfFrame();
+    }
 }
 
 /// <summary>

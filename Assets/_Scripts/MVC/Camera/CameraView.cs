@@ -1,10 +1,13 @@
 using UnityEngine;
 using Unity.Cinemachine;
+using System.Collections;
 
-public class CameraView : MonoBehaviour
+public class CameraView : MonoBehaviour, IDataPersistence
 {
     [SerializeField] private CinemachineCamera cinemachineCamera;
     private CinemachineFollow followComponent;
+
+    public float Priority => 3000f;
 
     /// <summary>
     /// Cache the Cinemachine body component used for follow-offset adjustments.
@@ -21,6 +24,14 @@ public class CameraView : MonoBehaviour
     public void Move(Vector3 delta)
     {
         transform.position += delta;
+    }
+
+    /// <summary>
+    /// Directly set the camera’s world position.
+    /// </summary>
+    public void SetPosition(Vector3 newWorldPos)
+    {
+        transform.position = newWorldPos;
     }
 
     /// <summary>
@@ -41,4 +52,17 @@ public class CameraView : MonoBehaviour
     {
         followComponent.FollowOffset = Vector3.Lerp(followComponent.FollowOffset, offset, zoomSpeed * Time.deltaTime);
     }
+
+    public IEnumerator LoadData(GameData data)
+    {
+        gameObject.transform.position = data.cameraSaveData.CameraPosition;
+        gameObject.transform.rotation = Quaternion.Euler(data.cameraSaveData.CameraRotation);
+        yield return null;
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.cameraSaveData = new CameraSaveData(gameObject.transform.position, gameObject.transform.rotation.eulerAngles);
+    }
+
 }

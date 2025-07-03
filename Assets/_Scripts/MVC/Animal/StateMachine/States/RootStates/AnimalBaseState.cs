@@ -23,18 +23,22 @@ public abstract class AnimalBaseState
     public void UpdateStates()
     {
         UpdateState();
-        if (currentSubState != null) currentSubState.UpdateStates();
+        currentSubState?.UpdateStates();
     }
     protected void SwitchState(AnimalBaseState newState)
     {
+        currentSubState?.ExitState();
+        currentSubState = null;
+
         ExitState();
 
-        newState.EnterState();
+        if (newState.isRootState)
+            newState.EnterState();
 
         if (isRootState)
             context.RootState = newState;
-        else if (currentSuperState != null)
-            currentSuperState.SetSubState(newState);
+        else
+            currentSuperState?.SetSubState(newState);
     }
     protected void SetSuperState(AnimalBaseState newSuperState)
     {
@@ -42,9 +46,20 @@ public abstract class AnimalBaseState
     }
     protected void SetSubState(AnimalBaseState newSubState)
     {
+        currentSubState?.ExitState();
         currentSubState = newSubState;
         newSubState.EnterState();
         newSubState.SetSuperState(this);
+    }
+
+    protected void ExitAllSubStates()
+    {
+        if (currentSubState != null)
+        {
+            currentSubState.ExitAllSubStates();
+            currentSubState.ExitState();
+            currentSubState = null;
+        }
     }
 
     public AnimalBaseState GetSubState()

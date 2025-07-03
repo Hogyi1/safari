@@ -51,7 +51,7 @@ public class StructureView : MonoBehaviour, IInteractable, IPlaceable
     {
         isActive = true;
         fadeEffect.FadeIn();
-        PopupManager.Instance.ActivateStructurePopup(((ISelectable)MySelectable).GetUIData(), GetGameObject());
+        PopupManager.Instance.ActivatePopup(((ISelectable)MySelectable).GetUIData(), GetGameObject());
     }
 
     // Interakció megszüntetése, állapot alaphelyzetbe (fade out)

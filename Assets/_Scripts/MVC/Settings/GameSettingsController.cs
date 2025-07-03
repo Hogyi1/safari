@@ -8,13 +8,14 @@
     // Implement permanent saving solution here...
 */
 
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
 /// Controller responsible for applying, saving, and loading game settings.
 /// Implements a simple persistence mechanism via PlayerPrefs.
 /// </summary>
-public class GameSettingsController : MonoBehaviour
+public class GameSettingsController : MonoBehaviour, IDataPersistence
 {
     /// <summary>
     /// Singleton instance for global access to game settings operations.
@@ -25,6 +26,8 @@ public class GameSettingsController : MonoBehaviour
     /// Current settings data used by the game.
     /// </summary>
     public GameSettingsModel CurrentSettings = new GameSettingsModel();
+
+    public float Priority => 10000f;
 
     /// <summary>
     /// Ensures only one instance exists and loads saved settings on awake.
@@ -181,4 +184,26 @@ public class GameSettingsController : MonoBehaviour
         ApplyGraphicsSettings();
         ApplyDisplaySettings();
     }
+
+    /// <summary>
+    /// Loads all settings
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public IEnumerator LoadData(GameData data)
+    {
+        // Always has game data
+        CurrentSettings = data.settingsSaveData;
+        ApplyGraphicsSettings();
+        ApplyDisplaySettings();
+
+        yield return null;
+    }
+
+    /// <summary>
+    /// Saves the current settings int othe main game data
+    /// </summary>
+    /// <param name="data">The saveable game data</param>
+    public void SaveData(GameData data) => data.settingsSaveData = CurrentSettings;
+
 }

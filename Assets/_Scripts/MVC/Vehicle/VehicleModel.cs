@@ -4,37 +4,38 @@ using UnityEngine;
 /// <summary>
 /// Represents a vehicle in the system, managing passenger assignments and waiting time.
 /// </summary>
+[System.Serializable]
 public class VehicleModel
 {
     /// <summary>
     /// Unique identifier of the vehicle.
     /// </summary>
-    private int iD;
+    [SerializeField] private int iD;
 
     /// <summary>
     /// Current operational state of the vehicle.
     /// </summary>
-    private VehicleState state;
+    [SerializeField] private VehicleState state;
 
     /// <summary>
     /// Type of the vehicle (e.g., Jeep, Bus, Van).
     /// </summary>
-    private VehicleType type;
+    [SerializeField] private VehicleType type;
 
     /// <summary>
     /// Maximum number of passengers the vehicle can hold.
     /// </summary>
-    private int capacity;
+    [SerializeField] private int capacity;
 
     /// <summary>
-    /// Space already taken by existing passengers.
+    /// Space taken up in garage
     /// </summary>
-    private int spaceTaken;
+    [SerializeField] private int spaceTaken;
 
     /// <summary>
     /// Accumulated waiting time in seconds.
     /// </summary>
-    private float waitingTime;
+    [SerializeField] private float waitingTime;
 
     /// <summary>
     /// IDs of tourists assigned to this vehicle.
@@ -66,7 +67,7 @@ public class VehicleModel
     public int Capacity => capacity;
 
     /// <summary>
-    /// Gets the space already taken in the vehicle.
+    /// Gets the space taken in the garage
     /// </summary>
     public int SpaceTaken => spaceTaken;
 
@@ -76,6 +77,12 @@ public class VehicleModel
     public float WaitingTime => waitingTime;
 
     /// <summary>
+    /// Icon of vehicles
+    /// </summary>
+    public Sprite Icon;
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="VehicleModel"/> class.
     /// </summary>
     /// <param name="id">Unique identifier for this vehicle.</param>
@@ -83,12 +90,31 @@ public class VehicleModel
     public VehicleModel(int id, VehicleData data)
     {
         iD = id;
-        type = data.type;
-        capacity = data.capacity;
-        spaceTaken = data.spacetaken;
+        type = data.Type;
+        capacity = data.Capacity;
+        spaceTaken = data.SpaceTaken;
         state = VehicleState.Empty;
         waitingTime = 0f;
+        this.Icon = data.Icon;
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VehicleModel"/> class.
+    /// </summary>
+    /// <param name="vehicleData">Unique save for this vehicle.</param>
+    /// <param name="data">Data object containing type, capacity, and space-taken values.</param>
+    public VehicleModel(VehicleSaveData vehicleData, VehicleData data)
+    {
+        iD = vehicleData.ID;
+        type = data.Type;
+        capacity = data.Capacity;
+        spaceTaken = data.SpaceTaken;
+        state = vehicleData.State;
+        waitingTime = vehicleData.WaitingTime;
+        AssignedTouristIDs = vehicleData.AssignedTourists;
+        Icon = data.Icon;
+    }
+
 
     /// <summary>
     /// Attempts to add a passenger by their tourist ID.
@@ -107,6 +133,7 @@ public class VehicleModel
         return true;
     }
 
+
     /// <summary>
     /// Adds to the waiting time counter.
     /// </summary>
@@ -116,6 +143,7 @@ public class VehicleModel
         waitingTime += time;
     }
 
+
     /// <summary>
     /// Clears all assigned passengers and resets waiting time.
     /// </summary>
@@ -124,6 +152,7 @@ public class VehicleModel
         AssignedTouristIDs.Clear();
         waitingTime = 0f;
     }
+
 }
 
 /// <summary>

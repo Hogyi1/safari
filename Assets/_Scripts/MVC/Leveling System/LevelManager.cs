@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ using UnityEngine;
 /// and unlocking content based on completed levels.
 /// Implements ILevelObserver to respond to experience gain events.
 /// </summary>
-public class LevelManager : MonoBehaviour, ILevelObserver
+public class LevelManager : MonoBehaviour, ILevelObserver, IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the LevelManager for global access.
@@ -16,7 +17,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     /// <summary>
     /// List of all level configurations, including required experience and unlock data.
     /// </summary>
-    [SerializeField] private List<LevelData> levels = new();
+    private List<LevelData> levels = new();
 
     /// <summary>
     /// The player's current level, starting at 1.
@@ -68,6 +69,8 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     /// </summary>
     public int MaxLevel => levels.Count;
 
+    public float Priority => 0;
+
     /// <summary>
     /// Ensures only one instance of LevelManager exists and persists across scenes.
     /// </summary>
@@ -80,8 +83,9 @@ public class LevelManager : MonoBehaviour, ILevelObserver
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    }
 
+        levels = new List<LevelData>(Resources.LoadAll<LevelData>(""));
+    }
 
     /// <summary>
     /// Initializes the required experience for the starting level
@@ -97,6 +101,9 @@ public class LevelManager : MonoBehaviour, ILevelObserver
         }
 
         GameEvents.Instance.AddObserver(this);
+
+        // Unlock first level contents
+        UnlockContent(levels[currentLevel - 1]);
     }
 
     /// <summary>
@@ -117,7 +124,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     /// <param name="amount">Amount of experience associated with the event.</param>
     public void OnNotify(EventType eventType, int amount)
     {
-        if (eventType == EventType.EXP_GAIN)
+        if (eventType == EventType.EXP_ADD)
         {
             AddExp(amount);
         }
@@ -131,8 +138,10 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     {
         currentExp += amount;
         progress = (float)currentExp / requiredExp;
-        Debug.Log("Current exp: " + currentExp);
-        Debug.Log("Current progress: " + progress);
+        //Debug.Log("Current exp: " + currentExp);
+        //Debug.Log("Current progress: " + progress);
+
+        GameEvents.Instance.NotifyObservers(EventType.EXP_GAINED, amount);
 
         if (currentExp >= requiredExp)
         {
@@ -145,7 +154,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver
                 if (!isMaxLevel)
                 {
                     isMaxLevel = true;
-                    GameEvents.Instance.NotifyObservers(EventType.EXP_GAIN, 0);
+                    GameEvents.Instance.NotifyObservers(EventType.EXP_ADD, 0);
                 }
 
                 currentExp = requiredExp; // Lock exp to max
@@ -163,7 +172,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver
     {
         currentLevel++;
 
-        GameEvents.Instance.NotifyObservers(EventType.LEVEL_UP, currentLevel);
+        GameEvents.Instance.NotifyObservers(EventType.LEVEL_UP, 1);
 
         // Request an alert that tells the player they leveled up and shows the current level.
         GameEvents.Instance.RequestAlert(
@@ -173,7 +182,7 @@ public class LevelManager : MonoBehaviour, ILevelObserver
             displayTime: 2.5f,
             fadeOutTime: 0.4f
         );
-        
+
         if ((currentLevel - 1) < levels.Count)
         {
             UnlockContent(levels[currentLevel - 1]);
@@ -215,5 +224,22 @@ public class LevelManager : MonoBehaviour, ILevelObserver
         if (levelNumber < 1 || levelNumber > levels.Count)
             return null;
         return levels[levelNumber - 1];
+    }
+
+    public IEnumerator LoadData(GameData data)
+    {
+        currentLevel = data.levelSaveData.CurrentLevel;
+        currentExp = data.levelSaveData.CurrentExp;
+        progress = data.levelSaveData.Progress;
+        isMaxLevel = data.levelSaveData.IsMaxLevel;
+        yield return null;
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.levelSaveData.CurrentLevel = this.currentLevel;
+        data.levelSaveData.CurrentExp = this.currentExp;
+        data.levelSaveData.Progress = this.progress;
+        data.levelSaveData.IsMaxLevel = this.isMaxLevel;
     }
 }

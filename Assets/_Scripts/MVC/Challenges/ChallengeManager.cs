@@ -1,17 +1,21 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
 /// Central manager for all challenges, handling their progress updates and reward collection.
 /// </summary>
-public class ChallengeManager : MonoBehaviour, IChallengeObserver
+public class ChallengeManager : MonoBehaviour, IChallengeObserver, IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the ChallengeManager.
     /// </summary>
     public static ChallengeManager Instance { get; private set; }
 
-    [SerializeField] private List<Challenge> challenges = new();
+    public float Priority => 0f;
+
+    private List<Challenge> challenges = new();
 
     /// <summary>
     /// Ensures a single instance and persists this object across scenes.
@@ -26,6 +30,8 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        challenges = new List<Challenge>(Resources.LoadAll<Challenge>(""));
     }
 
     /// <summary>
@@ -48,10 +54,11 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
     }
 
     /// <summary>
-    /// Called when a subscribed event occurs; updates progress on matching challenges.
+    /// Handles game events by updating progress for any challenges that match the given event type.
+    /// Also triggers the ALL_CHALLENGES_COMPLETED event if all challenges (except one) are completed or collected.
     /// </summary>
-    /// <param name="eventType">The type of event that occurred.</param>
-    /// <param name="amount">The value associated with the event.</param>
+    /// <param name="eventType">The type of game event that occurred.</param>
+    /// <param name="amount">The numerical value associated with the event, used to update challenge progress.</param>
     public void OnNotify(EventType eventType, int amount)
     {
         foreach (var challenge in challenges)
@@ -61,6 +68,9 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
                 challenge.CalculateProgress(amount);
             }
         }
+
+        // Check challenge state: Trophy Collector
+        if (AllChallengesCompletedExceptOne(8)) GameEvents.Instance.NotifyObservers(EventType.ALL_CHALLENGES_COMPLETED, 1);
     }
 
     /// <summary>
@@ -92,8 +102,7 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
             {
                 if (challenge.CollectReward())
                 {
-                    // TODO: Add prize to currency
-                    Debug.Log($"Collected {challenge.prize} coins from: {challenge.description}");
+                    EconomyManager.Instance.AddMoney(challenge.prize);
                     return true;
                 }
             }
@@ -119,5 +128,53 @@ public class ChallengeManager : MonoBehaviour, IChallengeObserver
     public List<Challenge> GetChallengesByState(ChallengeState state)
     {
         return challenges.FindAll(c => c.state == state);
+    }
+
+    /// Determines whether all challenges - excluding the one with the specified ID - are either completed or collected.
+    /// Used to check near-completion conditions for triggering related achievements or events.
+    /// </summary>
+    /// <param name="excludedChallengeId">The ID of the challenge to exclude from the completion check.</param>
+    /// <returns>True if all other challenges are completed or collected; otherwise, false.</returns>
+    public bool AllChallengesCompletedExceptOne(int excludedChallengeId)
+    {
+        List<Challenge> otherChallenges = challenges.Where(ch => ch.id != excludedChallengeId).ToList();
+
+        int completedCount = otherChallenges.Count(ch =>
+            ch.state == ChallengeState.COMPLETED
+            || ch.state == ChallengeState.COLLECTED);
+
+        return completedCount == otherChallenges.Count;
+    }
+
+    /// <summary>
+    /// Gets challenge by its ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>Challenge</returns>
+    public Challenge GetChallengeById(int id)
+    {
+        foreach (var challenge in challenges)
+        {
+            if (challenge.id == id)
+                return challenge;
+        }
+        return null;
+    }
+
+    public IEnumerator LoadData(GameData data)
+    {
+        data.challengeDatas.ForEach(t =>
+        {
+            Challenge c = GetChallengeById(t.ID);
+            c.SetState(t.State);
+            c.progress = t.Progress;
+        });
+        yield return null;
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.challengeDatas.Clear();
+        challenges.ForEach(t => data.challengeDatas.Add(new ChallengeSaveData(t.id, t.state, t.progress)));
     }
 }

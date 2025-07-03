@@ -1,62 +1,105 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class AtTargetState : AnimalBaseState, IRootState
+/// <summary>
+/// Substate where the animal has arrived at the target.
+/// It determines the appropriate interaction based on the type of the target (e.g., drink, eat, mate, hunt).
+/// </summary>
+public class AtTargetState : AnimalBaseState
 {
-    ColliderTrigger[] triggers;
+    private ColliderTrigger[] triggers;
+
     public AtTargetState(AnimalStateMachine stateMachine, AnimalStateFactory factory, params ColliderTrigger[] triggers)
-            : base(stateMachine, factory)
+        : base(stateMachine, factory)
     {
         isRootState = false;
         this.triggers = triggers;
     }
 
+    /// <summary>
+    /// Called when entering the state. Stops movement and initiates an interaction substate based on the target type.
+    /// </summary>
     public override void EnterState()
     {
-        context.animal.View.StopMovement();
-        // Trigger alapján beállítjuk mit fogunk csinálni
+        var model = context.animal.Model;
+        var view = context.animal.View;
+
+        view.StopMovement();
+
         foreach (var trigger in triggers)
         {
             switch (trigger)
             {
                 case ColliderTrigger.Prey:
-                    if (context.animal.Model.Prey != null) SetSubState(factory.Hunt());
+                    if (model.PreyID > 0)
+                        SetSubState(factory.Hunt());
                     break;
+
                 case ColliderTrigger.Mate:
-                    if (context.animal.Model.Mate != null) SetSubState(factory.Breed());
+                    if (model.MateID > 0)
+                        SetSubState(factory.Breed());
                     break;
+
                 case ColliderTrigger.Water:
-                    if (context.animal.Model.Target != Vector3.zero) SetSubState(factory.Drink());
+                    if (model.Target != Vector3.zero)
+                        SetSubState(factory.Drink());
                     break;
+
                 case ColliderTrigger.Food:
-                    if (context.animal.Model.Target != Vector3.zero && context.animal.Model.Prey == null) SetSubState(factory.Eat());
+                    if (model.Target != Vector3.zero && model.PreyID < 0)
+                        SetSubState(factory.Eat());
                     break;
+
                 default:
-                    context.animal.Model.SetTarget(Vector3.zero);
+                    model.SetTarget(Vector3.zero);
                     break;
             }
         }
     }
 
+    /// <summary>
+    /// Called every frame. Checks if the animal has lost the target or moved away unexpectedly.
+    /// </summary>
     public override void UpdateState()
     {
         CheckSwitchStates();
     }
 
+    /// <summary>
+    /// If the target is lost or the animal has moved away, switches to the appropriate state.
+    /// </summary>
     public override void CheckSwitchStates()
     {
-        if (context.animal.Model.Target == Vector3.zero && context.animal.Group == null)
+        var model = context.animal.Model;
+        var view = context.animal.View;
+
+        if (model.Target == Vector3.zero)
+        {
             SwitchState(factory.Searching(triggers));
-        else if (!context.animal.View.Arrived && context.animal.Model.Target != Vector3.zero)
+        }
+        else if (!view.Arrived && model.Target != Vector3.zero)
+        {
             SwitchState(factory.OnTarget(triggers));
-        else if (context.animal.Model.IsBreeding && context.animal.Group != null && context.animal.Model.Target == Vector3.zero)
-            SwitchState(factory.Searching(triggers));
+        }
     }
+
+    /// <summary>
+    /// Cleans up any substates when exiting this state.
+    /// </summary>
     public override void ExitState()
     {
-        currentSubState = null;
+        ExitAllSubStates();
     }
+
+    /// <summary>
+    /// This substate manages its own substates dynamically during EnterState.
+    /// </summary>
     public override void InitializeSubState() { }
 
-    public void CalculateModelData() { }
+    /// <summary>
+    /// Returns the name of the current substate, or a generic message if none is active.
+    /// </summary>
+    public override string ToString()
+    {
+        return currentSubState?.ToString() ?? "Interacting at target";
+    }
 }

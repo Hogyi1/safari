@@ -65,6 +65,7 @@ public class StageEffect : MonoBehaviour
     /// <returns>IEnumerator for coroutine execution.</returns>
     private IEnumerator ChangeMaterials(float to)
     {
+        yield return new WaitForEndOfFrame();
         float time = 0f;
         float from = changeableMaterials[0].GetFloat("_Amount");
         while (Mathf.Abs(changeableMaterials[0].GetFloat("_Amount") - to) > 0.01f)

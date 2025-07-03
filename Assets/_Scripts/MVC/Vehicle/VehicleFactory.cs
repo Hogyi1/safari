@@ -9,61 +9,117 @@ public class VehicleFactory : MonoBehaviour
 {
     /// <summary>
     /// In-memory cache of all VehicleData assets loaded from Resources.
+    /// Used to avoid repeated loading and improve performance.
     /// </summary>
     private List<VehicleData> vehicleDatabase = new List<VehicleData>();
-    [SerializeField] private GameObject VehicleParent;
+
 
     /// <summary>
-    /// Unity Start callback. Loads all VehicleData assets into the cache.
+    /// Parent transform under which all vehicle GameObjects are instantiated.
+    /// Helps keep the hierarchy organized.
     /// </summary>
-    private void Start()
+    [SerializeField] private GameObject VehicleParent;
+
+
+    /// <summary>
+    /// Unity Start callback. Loads all VehicleData assets into the cache
+    /// at the beginning of the game.
+    /// </summary>
+    private void Awake()
     {
         LoadAllVehicles();
     }
 
+
     /// <summary>
-    /// Creates a new Vehicle, instantiating its prefab at the given position,
-    /// setting up its view and model components, and returning the assembled object.
+    /// Creates a new Vehicle by type ID, instantiating its prefab at the
+    /// default parking spot, and initializing its view and model components.
     /// </summary>
     /// <param name="id">Unique runtime identifier for the Vehicle instance.</param>
-    /// <param name="vehicleDataId">Identifier used to look up the VehicleData asset.</param>
-    /// <param name="position">World position where the vehicle prefab will be spawned.</param>
-    /// <returns>
-    /// A new <see cref="Vehicle"/> object combining ID, model, and view,
-    /// or null if no matching VehicleData was found.
-    /// </returns>
+    /// <param name="vehicleDataId">The VehicleData ID used to select prefab and attributes.</param>
+    /// <returns>A fully constructed <see cref="Vehicle"/> object, or null if data not found.</returns>
     public Vehicle CreateVehicle(int id, int vehicleDataId)
     {
         var data = FindVehicleData(vehicleDataId);
         if (data == null)
             return null;
+
+
+
         Vector3 position = VehicleManager.Instance.GetParkingSpot();
-        var instance = Instantiate(data.vehiclePrefab, position, Quaternion.identity);
+        var instance = Instantiate(data.VehiclePrefab, position, Quaternion.identity);
         instance.transform.SetParent(VehicleParent.transform, true);
 
         var view = instance.GetComponent<VehicleView>();
-        view.SetSpeed(data.speed);
+        view.SetSpeed(data.Speed);
         view.gameObject.SetActive(false);
 
         var model = new VehicleModel(id, data);
         return new Vehicle(id, model, view);
     }
 
+
     /// <summary>
-    /// Finds the VehicleData asset matching the given ID in the loaded cache.
+    /// Recreates a Vehicle from its saved state data, restoring position, route, and state.
     /// </summary>
-    /// <param name="vehicleDataId">Identifier to match against VehicleData.VehicleID.</param>
-    /// <returns>
-    /// The matching <see cref="VehicleData"/> asset, or null if not found.
-    /// </returns>
+    /// <param name="vehicleData">Previously saved vehicle data to restore from.</param>
+    /// <returns>A fully reconstructed <see cref="Vehicle"/> instance.</returns>
+    public Vehicle CreateVehicle(VehicleSaveData vehicleData)
+    {
+        LoadAllVehicles();
+        var data = FindVehicleData(vehicleData.Type);
+        if (data == null)
+        {
+            return null;
+        }
+
+        Vector3 position = vehicleData.CurrentPosition;
+        var instance = Instantiate(data.VehiclePrefab, position, Quaternion.identity);
+        instance.transform.SetParent(VehicleParent.transform, true);
+
+        var view = instance.GetComponent<VehicleView>();
+        view.SetSpeed(data.Speed);
+
+        if (vehicleData.CurrentRoute.Count > 0)
+        {
+            view.MoveOnRoute(vehicleData.CurrentRoute, vehicleData.NextState);
+            // No need to restore AnimalsInView; OnTrigger will repopulate it
+        }
+        else
+        {
+            view.gameObject.SetActive(false);
+        }
+        Debug.Log(view.AnimalsInView);
+        var model = new VehicleModel(vehicleData, data);
+        return new Vehicle(vehicleData.ID, model, view);
+    }
+
+
+    /// <summary>
+    /// Finds and returns the VehicleData asset that matches the given VehicleID.
+    /// </summary>
+    /// <param name="vehicleDataId">The ID of the vehicle type to retrieve.</param>
+    /// <returns>Corresponding <see cref="VehicleData"/> object or null if not found.</returns>
     private VehicleData FindVehicleData(int vehicleDataId)
     {
         return vehicleDatabase.Find(v => v.VehicleID == vehicleDataId);
     }
 
+
     /// <summary>
-    /// Loads all VehicleData ScriptableObjects from the "Vehicles" Resources folder
-    /// into the in-memory cache.
+    /// Finds and returns the VehicleData asset that matches the given VehicleType enum.
+    /// </summary>
+    /// <param name="type">The <see cref="VehicleType"/> to search for.</param>
+    /// <returns>Matching <see cref="VehicleData"/> or null if not found.</returns>
+    private VehicleData FindVehicleData(VehicleType type)
+    {
+        return vehicleDatabase.Find(v => v.Type == type);
+    }
+
+
+    /// <summary>
+    /// Loads all VehicleData ScriptableObjects from the "Resources/Vehicles" folder
+    /// into memory at the beginning of runtime.
     /// </summary>
     private void LoadAllVehicles()
     {

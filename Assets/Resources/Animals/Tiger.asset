@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 510fbff66f1ebac4bbdcc1b3d5fd3541, type: 3}
   m_Name: Tiger
   m_EditorClassIdentifier: 
-  MaxAge: 13
-  Diet: 1
-  Type: 2
+  MaxAge: 10
+  Diet: 0
+  Type: 1
   Speed: 1
-  AnimalPrefab: {fileID: 1961308377243283440, guid: 056fb172bf2e96f4095b77ce0ef77e16, type: 3}
+  AnimalID: 2
+  Price: 400
+  AnimalPrefab: {fileID: 2194514249963069068, guid: c03f2a9460aaba442a3b6b76f4660e67, type: 3}
+  Icon: {fileID: 21300000, guid: e34c6a6fa26e0fe4099b60e60dc78918, type: 3}

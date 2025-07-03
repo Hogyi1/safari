@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
 using static VehicleState;
 
 /// <summary>
@@ -9,26 +8,18 @@ using static VehicleState;
 /// Handles navigation to positions and along routes without direct NavMeshAgent or animations.
 /// </summary>
 [RequireComponent(typeof(NavigatorComponent))]
-public class VehicleView : MonoBehaviour, INavigatable
+public class VehicleView : MonoBehaviour, INavigatable, IInteractable
 {
     private int iD;
     private VehicleModel model;
+    private bool isActive = false;
+    private VehicleState nextState;
+    public List<AnimalType> AnimalsInView = new();
+
     [SerializeField] private NavigatorComponent navigator;
-    [SerializeField] private Transform door;
+    [SerializeField] private FadeEffect fadeEffect;
 
     [SerializeField] LayerMask animalLayermask;
-    public List<AnimalType> animalsInView = new();
-
-    public float waitingTime;
-    public VehicleState state;
-    public List<int> tourstIDS;
-
-    private void Update()
-    {
-        waitingTime = model.WaitingTime;
-        state = model.State;
-        tourstIDS = model.AssignedTouristIDs;
-    }
 
     /// <summary>
     /// Initializes this view with its corresponding model and sets up the navigator.
@@ -41,14 +32,6 @@ public class VehicleView : MonoBehaviour, INavigatable
         this.iD = model.ID;
     }
 
-    /// <summary>
-    /// Gets the world position of the vehicle's door for tourists to walk to.
-    /// </summary>
-    public Vector3 GetDoorPosition()
-    {
-        if (door != null) return door.position;
-        return transform.GetChild(1).position;
-    }
 
     /// <summary>
     /// Moves the vehicle along a sequence of waypoints in order.
@@ -58,8 +41,10 @@ public class VehicleView : MonoBehaviour, INavigatable
     {
         // Delegate setting waypoints to navigator
         navigator.SetWayPoints(waypoints);
+        nextState = newState;
         StartCoroutine(WaitForArrival(newState));
     }
+
 
     /// <summary>
     /// Waits until the navigator reports arrival, then updates state if necessary.
@@ -71,6 +56,7 @@ public class VehicleView : MonoBehaviour, INavigatable
         VehicleManager.Instance.SetVehicleState(iD, newState);
         if (newState == Empty) ResetVehicle();
     }
+
 
     /// <summary>
     /// TriggerEnter handler: adds animal types to the in-view list.
@@ -84,9 +70,10 @@ public class VehicleView : MonoBehaviour, INavigatable
         if (av != null && av.enabled)
         {
             AnimalType type = av.Model.Type;
-            animalsInView.Add(type);
+            AnimalsInView.Add(type);
         }
     }
+
 
     /// <summary>
     /// TriggerExit handler: removes animal types from the in-view list.
@@ -100,11 +87,11 @@ public class VehicleView : MonoBehaviour, INavigatable
         if (av != null && av.enabled)
         {
             AnimalType type = av.Model.Type;
-            animalsInView.Remove(type);
+            AnimalsInView.Remove(type);
         }
     }
 
-    // === INavigatable metódusok delegálása ===
+    // === Delegation for INavigatable interface ===
     public void SetTarget(Vector3 dest) => navigator.SetTarget(dest);
     public void SetWayPoints(List<Vector3> wp) => navigator.SetWayPoints(wp);
     public void Follow(MonoBehaviour t) => navigator.Follow(t);
@@ -112,16 +99,21 @@ public class VehicleView : MonoBehaviour, INavigatable
     public void StopMovement() => navigator.StopMovement();
     public void ResetMovement() => navigator.ResetMovement();
 
+    // === Getters ===
+    public bool Arrived => navigator.Arrived;
+    public List<Vector3> CurrentRoute => navigator.CurrentRoute;
+    public VehicleState NextState => nextState;
+
     /// <summary>
-    /// Returns to position and deactivates the vehicle
+    /// Resets the vehicle's position and state.
     /// </summary>
-    /// <param name="parkingSpace"></param>
     public void ResetVehicle()
     {
         transform.position = VehicleManager.Instance.GetParkingSpot();
         VehicleManager.Instance.SetVehicleState(iD, Empty);
-        gameObject.SetActive(false);
+        if (isActive) InputManager.Instance.DisableView();
     }
+
 
     /// <summary>
     /// Sets the agents speed
@@ -132,6 +124,51 @@ public class VehicleView : MonoBehaviour, INavigatable
         navigator.Agent.speed = speed;
     }
 
-    // === Érkezés logika ===
-    public bool Arrived => navigator.Arrived;
+
+    private void OnDestroy()
+    {
+        if (isActive) PopupManager.Instance.HidePopup();
+    }
+
+
+    /// <summary>
+    /// Hover event – fades in the vehicle highlight.
+    /// </summary>
+    public void OnHover()
+    {
+        fadeEffect.FadeIn();
+    }
+
+
+    /// <summary>
+    /// Mouse exit event – fades out if not active.
+    /// </summary>
+    public void OnExit()
+    {
+        if (!isActive)
+        {
+            fadeEffect.FadeOut();
+        }
+    }
+
+
+    /// <summary>
+    /// On interaction – activates UI popup and highlight.
+    /// </summary>
+    public void OnAction()
+    {
+        isActive = true;
+        fadeEffect.FadeIn();
+        PopupManager.Instance.ActivatePopup(VehicleManager.Instance.GetVehicle(iD).GetUIData(), gameObject);
+    }
+
+
+    /// <summary>
+    /// Cancels interaction – fades out and marks inactive.
+    /// </summary>
+    public void OnCancel()
+    {
+        isActive = false;
+        fadeEffect.FadeOut();
+    }
 }

@@ -14,15 +14,15 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: fe78538fa590900468d5f4065cb45d02, type: 2}
     - target: {fileID: -8679921383154817045, guid: f4124b3c179dbaa49b1088e31e7f7942, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 40.942787
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f4124b3c179dbaa49b1088e31e7f7942, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.05
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f4124b3c179dbaa49b1088e31e7f7942, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.2294393
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f4124b3c179dbaa49b1088e31e7f7942, type: 3}
       propertyPath: m_LocalRotation.w
@@ -153,14 +153,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 1150709480168379446}
   navigator: {fileID: 1518360179436753518}
-  destination: {x: 0, y: 0, z: 0}
-  hasPath: 0
-  Loco: 0
-  isWalking: 0
-  arrived: 0
-  waitingmood: 0
-  mood: 0
-  fav: 0
 --- !u!114 &1319439414337280365
 MonoBehaviour:
   m_ObjectHideFlags: 0

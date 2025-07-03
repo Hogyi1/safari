@@ -49,23 +49,14 @@ public class InteractableViewHandler : MonoBehaviour
         IInteractable hoveredObject = GetHoveredObjectScript();
         if (hoveredObject != LastView)
         {
-            if (!LastView.IsUnityNull())
-            {
-                LastView.OnExit();
-            }
+            if (!LastView.IsUnityNull()) LastView.OnExit();
+
             LastView = hoveredObject;
 
-            if (!LastView.IsUnityNull())
-            {
-                LastView.OnHover();
-            }
+            if (!LastView.IsUnityNull()) LastView.OnHover();
         }
 
-        if (hoveredObject == null && !LastView.IsUnityNull())
-        {
-            LastView.OnExit();
-        }
-
+        if (hoveredObject == null && !LastView.IsUnityNull()) LastView.OnExit();
     }
 
     /// <summary>
@@ -73,7 +64,7 @@ public class InteractableViewHandler : MonoBehaviour
     /// </summary>
     private void HandleClick()
     {
-        if (LastView != null)
+        if (!LastView.IsUnityNull())
         {
             SetViewActive();
         }
@@ -128,6 +119,7 @@ public class InteractableViewHandler : MonoBehaviour
             PopupManager.Instance.HidePopup();
             ActiveView.OnCancel();
             ActiveView = null;
+            LastView = null;
         }
     }
 
@@ -138,8 +130,10 @@ public class InteractableViewHandler : MonoBehaviour
     {
         if (!LastView.IsUnityNull())
         {
+            if (ActiveView == LastView) return;
+            var nextActive = LastView;
             SetViewInactive();
-            ActiveView = LastView;
+            ActiveView = nextActive;
             ActiveView.OnAction();
         }
     }

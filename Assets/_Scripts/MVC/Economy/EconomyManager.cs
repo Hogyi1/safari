@@ -1,20 +1,30 @@
-    using UnityEngine;
+using System;
+using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
 
 /// <summary>
 /// Manages the game's economy: tracks money, expenses, income, and handles transactions.
 /// Implements a singleton pattern for global access.
 /// </summary>
-public class EconomyManager : MonoBehaviour
+public class EconomyManager : MonoBehaviour, IDataPersistence
 {
     /// <summary>
     /// Singleton instance of the EconomyManager.
     /// </summary>
     public static EconomyManager Instance { get; private set; }
 
+    public float Priority => 0f;
+
     /// <summary>
     /// The underlying economy data object.
     /// </summary>
-    private Economy Economy { get; set; }
+    private Economy Economy = new Economy();
+
+    [SerializeField] private int maxTicketPrice = 50;
+
+    public bool Incoming;
+    private Action OnHandlerResponse;
 
     /// <summary>
     /// Ensures only one instance exists and persists across scenes.
@@ -28,15 +38,21 @@ public class EconomyManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        OnHandlerResponse = () => gameObject.SetActive(true);
+        DataPersistenceManager.Instance.OnAllLoaded += OnHandlerResponse;
+
+        gameObject.SetActive(false);
     }
+
+    private void OnDestroy() => DataPersistenceManager.Instance.OnAllLoaded -= OnHandlerResponse;
 
     /// <summary>
     /// Initializes the economy data on start.
     /// </summary>
     private void Start()
     {
-        this.Economy = new Economy();
+        if (Economy.IsUnityNull())
+            Economy = new Economy();
     }
 
     /// <summary>
@@ -50,6 +66,7 @@ public class EconomyManager : MonoBehaviour
         {
             Economy.CurrentMoney -= amount;
             Economy.OverallExpense += amount;
+            Incoming = false;
             return true;
         }
         return false;
@@ -63,6 +80,8 @@ public class EconomyManager : MonoBehaviour
     {
         Economy.CurrentMoney += amount;
         Economy.OverallIncome += amount;
+        GameEvents.Instance.NotifyObservers(EventType.MONEY_GAIN, amount);
+        Incoming = true;
     }
 
     /// <summary>
@@ -70,7 +89,7 @@ public class EconomyManager : MonoBehaviour
     /// </summary>
     public void CalculateExpenses()
     {
-        var Rangers = 0; // NPCManager.GetRangers().Count();
+        int Rangers = RangerManager.Instance.Capacity;
         Economy.CurrentExpenses = Rangers * Economy.RangerSalary;
     }
 
@@ -80,7 +99,7 @@ public class EconomyManager : MonoBehaviour
     public void PayForTicket()
     {
         AddMoney(Economy.TicketPrice);
-        // Economy.OverallIncome += Economy.TicketPrice;
+        Economy.OverallIncome += Economy.TicketPrice;
     }
 
     /// <summary>
@@ -89,6 +108,7 @@ public class EconomyManager : MonoBehaviour
     /// <returns>True if the payment succeeded; otherwise false.</returns>
     public bool PaySalary()
     {
+        CalculateExpenses();
         return RemoveMoney(Economy.RangerSalary);
     }
 
@@ -98,11 +118,7 @@ public class EconomyManager : MonoBehaviour
     /// <param name="price">The new ticket price.</param>
     public void ChangeTicketPrice(int price)
     {
-        if (price > 50 || price < 1)
-        {
-            return;
-        }
-
+        if (price > maxTicketPrice || price < 1) return;
         Economy.TicketPrice = price;
     }
 
@@ -111,30 +127,30 @@ public class EconomyManager : MonoBehaviour
     /// </summary>
     /// <param name="price">The price to check against current money.</param>
     /// <returns>True if current money is greater than or equal to the price; otherwise false.</returns>
-    public bool HasEnoughMoney(int price)
-    {
-        return Economy.CurrentMoney >= price;
-    }
-
-    /// <summary>
-    /// Calculates the selling price for an item at 50% of its original price.
-    /// </summary>
-    /// <param name="price">The original price of the item.</param>
-    /// <returns>The selling price rounded to the nearest integer.</returns>
-    public int GetSellingPrice(int price)
-    {
-        return (int)Mathf.Round(price * 0.5f);
-    }
+    public bool HasEnoughMoney(int price) => Economy.CurrentMoney >= price;
 
     /// <summary>
     /// Retrieves the current Economy data instance.
     /// </summary>
     /// <returns>The underlying Economy object.</returns>
-    public Economy getEconomy() {
+    public Economy GetEconomy() => Economy;
 
-        return this.Economy;
-    
+    public IEnumerator LoadData(GameData data)
+    {
+        Economy = data.Economy;
+        yield return null;
     }
 
+    public void SaveData(GameData data)
+    {
+        data.Economy = this.Economy;
+    }
+
+
+    /// <summary>
+    /// The influence of the ticket price regarding the tourist spawning
+    /// </summary>
+    /// <returns>Ticket influence</returns>
+    public float GetTicketInfluence() => Mathf.Clamp01(1f - Economy.TicketPrice / maxTicketPrice) + 0.5f;
 
 }
