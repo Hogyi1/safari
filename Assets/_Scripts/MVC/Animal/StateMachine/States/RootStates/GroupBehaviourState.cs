@@ -14,6 +14,8 @@ public class GroupBehaviourState : AnimalBaseState, IRootState
         isRootState = true;
     }
 
+    public int GetGroupID() => group.groupID;
+
     /// <summary>
     /// Called when the state is entered. Subscribes to group change events and sets up listeners.
     /// </summary>
@@ -37,8 +39,6 @@ public class GroupBehaviourState : AnimalBaseState, IRootState
 
         if (group != null)
             group.OnStateChanged += HandleStateChanged;
-
-        Debug.Log(group.groupID);
     }
 
     /// <summary>

@@ -116,14 +116,6 @@ public class GroupModel
         GetAnimal(animalID).SetGroup(-1);
     }
 
-    private void RemoveAnimal(int animalID)
-    {
-        if (!members.Contains(animalID))
-            return;
-
-        members.Remove(animalID);
-    }
-
     /// <summary>
     /// Updates the center position of the group by averaging member positions.
     /// </summary>
@@ -199,19 +191,18 @@ public class GroupModel
         bool allDone = AllFinished();
 
         // Ha kevert a szükséglet (éhes + szomjas), különválasztjuk
-        if (anyHungry && anyThirsty)
+        if (anyHungry && anyThirsty && allDone)
         {
-            if (thirstyAnimals.Count >= 2)
-            {
-                thirstyAnimals.ForEach(RemoveAnimal);
-                GroupManager.Instance.CreateGroup(thirstyAnimals, Thirsty);
-                thirstyAnimals.Clear();
-            }
+            var overStimulated = thirstyAnimals.Where(t => GetAnimal(t).Model.IsOverstimulated).Any();
 
-            List<int> overStimulatedAnimals = thirstyAnimals
-            .Where(t => GetAnimal(t).Model.IsOverstimulated && !GetAnimal(t).Model.IsConsuming)
-            .ToList();
-            overStimulatedAnimals.ForEach(LeaveGroup);
+            if (overStimulated)
+            {
+                thirstyAnimals.ForEach(LeaveGroup);
+                if (thirstyAnimals.Count >= 2)
+                {
+                    GroupManager.Instance.CreateGroup(thirstyAnimals, Thirsty);
+                }
+            }
             return;
         }
 

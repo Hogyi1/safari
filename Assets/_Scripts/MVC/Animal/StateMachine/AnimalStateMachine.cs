@@ -41,6 +41,8 @@ public class AnimalStateMachine : MonoBehaviour
     public int GroupID;
     public Vector3 GroupTarget;
     public GroupState gState;
+    public int BehaviourGroupID;
+    public ColliderTrigger[] Triggers;
     public bool GroupHasPrey;
 
     public void Init(Animal context)
@@ -89,6 +91,12 @@ public class AnimalStateMachine : MonoBehaviour
 
         try
         {
+            if (RootState is GroupBehaviourState groupState)
+            {
+                BehaviourGroupID = groupState.GetGroupID();
+            }
+
+
             AnimalBaseState suBState = RootState.GetSubState();
             rootState = RootState.ToString();
             if (suBState != null) subState = suBState.ToString();

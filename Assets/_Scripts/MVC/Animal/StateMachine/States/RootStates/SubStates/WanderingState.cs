@@ -106,7 +106,6 @@ public class WanderingState : AnimalBaseState
     /// </summary>
     private void TryRegisterSource(Func<bool> saveSourceFunc)
     {
-        Debug.Log(saveSourceFunc + " tried saving ");
         if (!context.animal.InGroup || !saveSourceFunc())
             return;
 
